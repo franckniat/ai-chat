@@ -1,10 +1,9 @@
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { PrismaClient } from "@prisma/client";
 import { twoFactor, emailOTP } from "better-auth/plugins"
+import { prisma } from "@/lib/db";
 
-const prisma = new PrismaClient();
 
 export const auth = betterAuth({
     appName: "AI Chat",
