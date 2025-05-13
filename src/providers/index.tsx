@@ -5,7 +5,7 @@ import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 
 export function Providers({ children }: { children: React.ReactNode }) {
     return (
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <ProgressBar
                 height="3px"
                 color="var(--primary)"
