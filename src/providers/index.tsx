@@ -8,7 +8,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <ProgressBar
                 height="3px"
-                color="var(--primary)"
+                color="#737373"
                 options={{ showSpinner: false }}
             />
             {children}
