@@ -1,20 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
-
+import { getSessionCookie } from "better-auth/cookies";
+import { authRoutes } from "@/routes";
+ 
 export async function middleware(request: NextRequest) {
-	const session = await auth.api.getSession({
-		headers: await headers()
-	})
-
-	if (!session) {
-		return NextResponse.redirect(new URL("/sign-in", request.url));
+	const sessionCookie = getSessionCookie(request);
+	const isAuthRoute = authRoutes.includes(request.nextUrl.pathname);
+ 
+	if (!sessionCookie && isAuthRoute ) {
+		return null
 	}
-
-	return NextResponse.next();
+	if (sessionCookie && isAuthRoute) {
+		return NextResponse.redirect(new URL("/chat", request.url));
+	}
 }
-
+ 
 export const config = {
-	runtime: "nodejs",
-	matcher: ["/dashboard"], // Apply middleware to specific routes
+	matcher: ["/dashboard", "/chat", "/settings", "/login", "/register"],
 };
