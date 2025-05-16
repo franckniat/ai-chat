@@ -1,17 +1,21 @@
 "use client";
 
+import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "./theme-provider";
-import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
+import { ProgressProvider } from '@bprogress/next/app';
 
 export function Providers({ children }: { children: React.ReactNode }) {
     return (
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <ProgressBar
+            <Toaster richColors closeButton />
+            <ProgressProvider
                 height="3px"
-                color="#737373"
+                color="#525252"
                 options={{ showSpinner: false }}
-            />
-            {children}
+                shallowRouting
+            >
+                {children}
+            </ProgressProvider>
         </ThemeProvider>
     );
 }
