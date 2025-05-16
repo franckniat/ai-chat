@@ -7,21 +7,16 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { registerSchema, RegisterSchema } from "@/schemas/user"
 import { Form, FormMessage, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form"
-import { FormAlert } from "@/components/ui/form-alert"
-import { useState, useTransition } from "react"
+import { useTransition } from "react"
+import { authClient } from "@/lib/auth-client"
+import { toast } from "sonner"
 
-type MessageType = {
-    type: "default" | "destructive" | "warning" | "success";
-    title: string;
-    description: string;
-}
 
 export function RegisterForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<"form">) {
     const [isPending, startTransition] = useTransition();
-    const [message, setMessage] = useState<MessageType | null>(null);
     const registerform = useForm<RegisterSchema>({
         resolver: zodResolver(registerSchema),
         defaultValues: {
@@ -32,13 +27,27 @@ export function RegisterForm({
     })
 
     const onSubmit = async (data: RegisterSchema) => {
-        startTransition(() => {
-            setMessage({
-                type: "success",
-                title: "Success",
-                description: "Login successful"
-            });
-            console.log(data)
+        startTransition(async () => {
+            await authClient.signUp.email({
+                name: data.name,
+                email: data.email,
+                password: data.password,
+            }, {
+                onRequest: () => {
+                    toast.info("Registering...")
+                },
+                onSuccess: async () => {
+                    toast.success("Account created", {
+                        description: "Your account has been created. Check your email to verify your account.",
+                    })
+                },
+                onError: (error) => {
+                    console.log(error)
+                    toast.error("Something went wrong", {
+                        description: error.error.message ?? "Something went wrong",
+                    })
+                },
+            })
         })
     }
     return (
@@ -96,13 +105,6 @@ export function RegisterForm({
                             )}
                         />
                     </div>
-                    {message && (
-                        <FormAlert
-                            title={message.title}
-                            description={message.description}
-                            variant={message.type}
-                        />
-                    )}
                     <Button disabled={isPending || registerform.formState.isSubmitting} type="submit" className="w-full">
                         Continue with email
                     </Button>

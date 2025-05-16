@@ -1,7 +1,7 @@
 "use server";
 
-import { signIn } from "@/lib/auth-client";
-import { LoginSchema } from "@/schemas/user";
+import { signIn, signUp } from "@/lib/auth-client";
+import { LoginSchema, RegisterSchema } from "@/schemas/user";
 import { redirect } from "next/navigation";
 
 export const signInGoogle = async () => {
@@ -21,11 +21,12 @@ export const signInEmail = async (data:LoginSchema) => {
     return session
 }
 
-export const signUpEmail = async (data:LoginSchema) => {
-    const { data: session } = await signIn.email({
+export const signUpEmail = async (data:RegisterSchema) => {
+    const { data: session, error } = await signUp.email({
+        name: data.name,
         email: data.email,
         password: data.password,
     });
-    console.log(session)
+    return { session, error }
 }
 
