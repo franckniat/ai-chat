@@ -26,10 +26,9 @@ export async function middleware(request: NextRequest) {
 		if (isAuthRoute || isPasswordRoute) {
 			return NextResponse.next();
 		}
-		return NextResponse.redirect(new URL("/login", request.url));
 	}
 
-	if (isProtectedRoute && !session.user.emailVerified) {
+	if (isProtectedRoute && !session?.user.emailVerified) {
 		return NextResponse.redirect(new URL("/login", request.url));
 	}
 
