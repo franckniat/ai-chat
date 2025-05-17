@@ -2,15 +2,8 @@
 
 import * as React from "react"
 import {
-    BarChartIcon,
-    FolderIcon,
     HelpCircleIcon,
-    LayoutDashboardIcon,
-    ListIcon,
-    SearchIcon,
-    SettingsIcon,
     Sparkles,
-    UsersIcon,
 } from "lucide-react"
 
 import { NavMain } from "@/components/chat/nav-main"
@@ -28,55 +21,19 @@ import {
 import Link from "next/link"
 
 const data = {
-    navMain: [
-        {
-            title: "Dashboard",
-            url: "#",
-            icon: LayoutDashboardIcon,
-        },
-        {
-            title: "Lifecycle",
-            url: "#",
-            icon: ListIcon,
-        },
-        {
-            title: "Analytics",
-            url: "#",
-            icon: BarChartIcon,
-        },
-        {
-            title: "Projects",
-            url: "#",
-            icon: FolderIcon,
-        },
-        {
-            title: "Team",
-            url: "#",
-            icon: UsersIcon,
-        },
-    ],
+    navMain: [],
     navSecondary: [
-        {
-            title: "Settings",
-            url: "#",
-            icon: SettingsIcon,
-        },
         {
             title: "Get Help",
             url: "#",
             icon: HelpCircleIcon,
-        },
-        {
-            title: "Search",
-            url: "#",
-            icon: SearchIcon,
         },
     ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return (
-        <Sidebar collapsible="offcanvas" {...props}>
+        <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>

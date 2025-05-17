@@ -2,9 +2,9 @@
 
 import {
     BellIcon,
+    ChevronsUpDown,
     CreditCardIcon,
     LogOutIcon,
-    MoreVerticalIcon,
     UserCircleIcon,
 } from "lucide-react"
 
@@ -63,7 +63,7 @@ export function NavUser() {
                             size="lg"
                             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                         >
-                            <Avatar className="h-8 w-8 rounded-lg grayscale">
+                            <Avatar className="h-8 w-8 rounded-lg">
                                 {user.image && <AvatarImage src={user.image} alt={user.name} />}
                                 <AvatarFallback className="rounded-lg">{getInitials(user.name)}</AvatarFallback>
                             </Avatar>
@@ -73,7 +73,7 @@ export function NavUser() {
                                     {user.email}
                                 </span>
                             </div>
-                            <MoreVerticalIcon className="ml-auto size-4" />
+                            <ChevronsUpDown className="ml-auto size-4" />
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
