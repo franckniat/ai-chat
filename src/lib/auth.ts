@@ -3,17 +3,20 @@ import { nextCookies } from "better-auth/next-js";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { twoFactor, openAPI } from "better-auth/plugins"
 import { prisma } from "@/lib/db";
-import { sendVerificationEMail } from "./mail";
+import { sendVerificationEMail, sendResetPasswordEMail } from "./mail";
 
 
 export const auth = betterAuth({
-    appName: "AI Chat",
+    appName: "niato ai",
     database: prismaAdapter(prisma, {
         provider: "postgresql",
     }),
     emailAndPassword: {
         enabled: true,
         requireEmailVerification: true,
+        sendResetPassword: async ({ user, url }) => {
+            await sendResetPasswordEMail(user.email as string, url);
+        }
     },
     socialProviders: {
         google: {
