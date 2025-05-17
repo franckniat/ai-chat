@@ -3,28 +3,22 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
-import { useState, useTransition } from "react"
+import { useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { loginSchema } from "@/schemas/user"
 import { LoginSchema } from "@/schemas/user"
 import { Form, FormMessage, FormDescription, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form"
-import { FormAlert } from "@/components/ui/form-alert"
 import { useRouter, useSearchParams } from "next/navigation";
 import { signInGoogle } from "@/actions/auth";
-
-type MessageType = {
-    type: "default" | "destructive" | "warning" | "success";
-    title: string;
-    description: string;
-}
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 export function LoginForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<"form">) {
     const [isPending, startTransition] = useTransition();
-    const [message, setMessage] = useState<MessageType | null>(null);
     const router = useRouter();
     const params = useSearchParams();
     const loginform = useForm<LoginSchema>({
@@ -35,15 +29,29 @@ export function LoginForm({
         }
     })
     const onSubmit = async (data: LoginSchema) => {
-        startTransition(() => {
-            setMessage({
-                type: "success",
-                title: "Success",
-                description: "Login successful"
-            });
-            console.log(data)
-            const callbackUrl = params.get("callbackUrl") || "/chat";
-            router.push(callbackUrl);
+        startTransition(async () => {
+            await authClient.signIn.email({
+                email: data.email,
+                password: data.password,
+            }, {
+                onRequest: () => {
+                    toast.info("Please wait ...")
+                },
+                onSuccess: async () => {
+                    toast.success("Logged in", {
+                        description: "You have been logged in.",
+                    })
+                    toast.info("Please wait ...")
+                    const callbackUrl = params.get("callbackUrl") || "/chat";
+                    router.push(callbackUrl);
+                },
+                onError: (error) => {
+                    console.log(error)
+                    toast.error("Something went wrong", {
+                        description: error.error.message ?? "Something went wrong",
+                    })
+                },
+            })
         })
     }
     return (
@@ -94,13 +102,6 @@ export function LoginForm({
                             )}
                         />
                     </div>
-                    {message && (
-                        <FormAlert
-                            title={message.title}
-                            description={message.description}
-                            variant={message.type}
-                        />
-                    )}
                     <Button disabled={isPending || loginform.formState.isSubmitting} type="submit" className="w-full">
                         Login
                     </Button>
