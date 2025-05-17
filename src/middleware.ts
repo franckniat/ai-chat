@@ -5,6 +5,7 @@ import { Session } from "@/lib/auth";
 const authRoutes = ["/login", "/register", "/email-verified"];
 const passwordRoutes = ["/reset-password", "/forgot-password"];
 const protectedRoutes = ["/chat"];
+const apiAuthRoutes = ["/api/auth/"];
 
 export async function middleware(request: NextRequest) {
 
@@ -21,9 +22,10 @@ export async function middleware(request: NextRequest) {
 	const isAuthRoute = authRoutes.includes(request.nextUrl.pathname);
 	const isPasswordRoute = passwordRoutes.includes(request.nextUrl.pathname);
 	const isProtectedRoute = protectedRoutes.includes(request.nextUrl.pathname);
+	const isApiAuthRoute = apiAuthRoutes.some((route) => request.nextUrl.pathname.startsWith(route));
 
 	if (!session) {
-		if (isAuthRoute || isPasswordRoute) {
+		if (isAuthRoute || isPasswordRoute || isApiAuthRoute) {
 			return NextResponse.next();
 		}
 	}
