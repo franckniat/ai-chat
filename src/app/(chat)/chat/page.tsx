@@ -9,9 +9,9 @@ export default async function ChatPage() {
 
 
   return (
-    <div className="flex flex-1 items-center justify-center">
+    <div className="">
       {JSON.stringify(session, null, 4)}
-      
+      <div className="h-screen w-[calc(100%-var(--sidebar-width))]">  </div>
     </div>
   )
 }
