@@ -4,7 +4,7 @@ import React from 'react'
 export default async function ChatPage() {
   return (
     <div className="">
-      <MessagesContent chatID="" messages={[]}/>
+      <MessagesContent />
     </div>
   )
 }
