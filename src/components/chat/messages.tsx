@@ -6,12 +6,14 @@ import { useSession } from "@/lib/auth-client";
 import { useChat } from '@ai-sdk/react';
 import MessageFormatter from "./message-formatter";
 import { useState } from "react";
+import { Button } from "../ui/button";
 
 export default function MessagesContent() {
     const { data: session } = useSession();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [loading, setLoading] = useState(false);
-    const { messages, input, handleInputChange, handleSubmit } = useChat({
+    const { messages, input, handleInputChange, handleSubmit, status, stop, error, reload } = useChat({
+        api: "/api/chat",
         onResponse: () => {
             setLoading(true);
         },
@@ -69,11 +71,22 @@ export default function MessagesContent() {
                         </div>
                     </div>
                 ))}
+                {error && (
+                    <>
+                        <div>An error occurred.</div>
+                        <Button type="button" onClick={() => reload()}>
+                            Retry
+                        </Button>
+                    </>
+                )}
             </div>
             <FormChat
+                name="prompt"
                 input={input}
                 handleInputChange={handleInputChange}
                 handleSubmit={handleSubmit}
+                isLoading={status === "streaming" || status === 'submitted'}
+                stop={stop}
             />
         </div>
     );
