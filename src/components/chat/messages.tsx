@@ -10,6 +10,7 @@ import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { useRouter } from "next/navigation";
 import { type Message as AIMessage } from "@ai-sdk/react";
+import { Bot } from "lucide-react";
 
 export default function MessagesContent({ id, initialMessages = [] }: { id?: string, initialMessages?: AIMessage[]}) {
 	const { data: session } = useSession();
@@ -85,7 +86,7 @@ export default function MessagesContent({ id, initialMessages = [] }: { id?: str
 
 	return (
 		<div className="relative pb-24">
-			<div className="space-y-5 max-w-[800px] mx-auto px-3">
+			<div className="space-y-3 md:space-y-5 max-w-[800px] mx-auto px-3">
 				{!id && (
 					<div className="space-y-3 flex flex-col items-center">
 						<h1 className="text-2xl font-bold text-center">
@@ -111,7 +112,7 @@ export default function MessagesContent({ id, initialMessages = [] }: { id?: str
 					</div>
 				)}
 				{messages.map((m) => (
-					<div key={m.id} className="flex gap-2 py-6 relative">
+					<div key={m.id} className="flex flex-col sm:flex-row gap-2 py-6 relative">
 						{m.role === "user" ? (
 							<Avatar className="border-2 border-foreground/60 pointer-events-none cursor-pointer">
 								{session?.user.image ? (
@@ -125,8 +126,8 @@ export default function MessagesContent({ id, initialMessages = [] }: { id?: str
 								)}
 							</Avatar>
 						) : (
-							<Avatar className="border-2 border-primary cursor-pointer pointer-events-none">
-								<AvatarFallback>AI</AvatarFallback>
+							<Avatar className="border-2 border-primary cursor-pointer pointer-events-none flex items-center justify-center">
+								<Bot size={20}/>
 							</Avatar>
 						)}
 						<div className="flex-1 space-y-2 group">

@@ -3,6 +3,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import prisma from "@/lib/db";
+import { revalidatePath } from "next/cache";
 
 const token = process.env.GITHUB_TOKEN;
 const endpoint = "https://models.github.ai/inference";
@@ -73,6 +74,7 @@ export async function POST(req: Request) {
             chatId: chat.id,
         },
     });
+    revalidatePath("/app/chat");
 
     return Response.json({ chatId: chat.id });
 }
