@@ -22,7 +22,7 @@ export default function FormChat({
     stop,
     name,
 }: FormChatProps) {
-    const { state } = useSidebar();
+    const { state, isMobile } = useSidebar();
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && e.shiftKey) {
@@ -47,16 +47,17 @@ export default function FormChat({
 
     return (
         <div
-            className={`fixed bottom-0 ${state === "expanded" ? "w-[calc(100%-16rem)]" : "w-[calc(100%-3rem)]"}`}
+            className={`fixed bottom-0 z-20 ${isMobile ? "w-full left-0" : ""} ${state === "expanded" ? "w-[calc(100%-16rem)]" : "w-[calc(100%-3rem)]"} bg-background/90 backdrop-blur-md`}
         >
-            <div className="max-w-[1000px] mx-auto py-3 sm:py-5 md:py-8 px-3 bg-background/90 backdrop-blur-md">
+            <div className="max-w-[800px] mx-0 sm:mx-auto py-3 sm:px-3
+            md:py-5 md:px-3">
                 <form
                     className="flex items-center gap-2 relative"
                     onSubmit={handleSubmit}
                 >
                     <Textarea
                         name={name}
-                        className="w-full resize-none overflow-y-auto placeholder:text-foreground/50 pr-12"
+                        className="w-full placeholder:text-sm md:placeholder:text-base resize-none overflow-y-auto placeholder:text-foreground/50 pr-12 mx-1"
                         placeholder="Envoyer un message"
                         value={input}
                         disabled={isLoading}
@@ -65,7 +66,7 @@ export default function FormChat({
                         autoFocus
                         style={{
                             height: "auto",
-                            maxHeight: "200px",
+                            maxHeight: isMobile ? "100px" : "150px",
                         }}
                     />
                     {isLoading ? (
@@ -86,7 +87,7 @@ export default function FormChat({
                         </Button>
                     )}
                 </form>
-                <p className="text-xs text-center mt-3 text-foreground/50">
+                <p className="text-[8px] sm:text-xs text-center mt-3 text-foreground/50">
                     Pensez à vérifier les informations que l&#039;IA vous donne, il peut
                     arriver qu&#039;elle se trompe.
                 </p>
