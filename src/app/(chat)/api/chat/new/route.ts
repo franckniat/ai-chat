@@ -1,6 +1,5 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { createOpenAI } from "@ai-sdk/openai";
 import { smoothStream, streamText } from "ai";
@@ -31,7 +30,6 @@ export async function POST(req: Request) {
     }
     const model = client("openai/gpt-4.1");
 
-    // Générer le titre d'abord
     const titleResult = streamText({
         model,
         messages: [{ role: "user", content: userMessage }],
@@ -45,11 +43,9 @@ export async function POST(req: Request) {
         chatTitle += chunk;
     }
 
-    // Créer le chat avec le titre généré
-    let chatId = await createDbChat(session.user.id, chatTitle);
+    const chatId = await createDbChat(session.user.id, chatTitle);
     await saveMessage(chatId, "user", userMessage);
 
-    // Générer la réponse IA pour le premier message
     const aiResponse = streamText({
         model,
         messages: [{ role: "user", content: userMessage }],

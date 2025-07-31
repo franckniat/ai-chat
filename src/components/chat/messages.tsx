@@ -14,9 +14,10 @@ import { Bot, Loader2 } from "lucide-react";
 import { ChatSDKError } from "@/lib/errors";
 import { toast } from "sonner";
 import { useMessages } from "@/hooks/use-messages";
+import { Session } from "@/lib/auth";
 
 // Composant mémorisé pour chaque message
-const MessageItem = memo(({ message, session }: { message: AIMessage; session: any }) => (
+const MessageItem = memo(({ message, session }: { message: AIMessage; session: Session }) => (
 	<div
 		key={message.id}
 		className="flex flex-col sm:flex-row gap-2 py-6 relative"
@@ -99,9 +100,9 @@ export default function MessagesContent({
 		if (e && typeof e.preventDefault === 'function') {
 			e.preventDefault();
 		}
-		
+
 		setIsCreatingChat(true);
-		
+
 		try {
 			const res = await fetch("/api/chat/new", {
 				method: "POST",
@@ -171,7 +172,7 @@ export default function MessagesContent({
 		return () => {
 			observer.disconnect();
 		};
-	}, [onViewportEnter, onViewportLeave]);
+	}, [onViewportEnter, onViewportLeave, endRef]);
 
 	// Défilement automatique lors de nouveaux messages si l'utilisateur est en bas
 	useEffect(() => {
@@ -234,7 +235,7 @@ export default function MessagesContent({
 					</div>
 				)}
 				{messages.map((m) => (
-					<MessageItem key={m.id} message={m} session={session} />
+					<MessageItem key={m.id} message={m} session={session as Session} />
 				))}
 				{(status === 'submitted' || isCreatingChat) && (
 					<div className="flex flex-col sm:flex-row gap-2 py-6 relative">
@@ -258,7 +259,7 @@ export default function MessagesContent({
 				)}
 				{error && (
 					<div className="space-y-2">
-						<div className="text-red-500">Une erreur s'est produite.</div>
+						<div className="text-red-500">Une erreur s&apos;est produite.</div>
 						<Button type="button" onClick={() => reload()} variant="outline" size="sm">
 							Réessayer
 						</Button>
