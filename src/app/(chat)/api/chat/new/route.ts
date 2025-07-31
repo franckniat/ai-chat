@@ -1,9 +1,10 @@
-import { streamText, smoothStream, generateText } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { createOpenAI } from "@ai-sdk/openai";
+import { smoothStream, streamText } from "ai";
+import { createDbChat, saveMessage } from "@/lib/chat-store";
 
 const token = process.env.GITHUB_TOKEN;
 const endpoint = "https://models.github.ai/inference";
@@ -13,8 +14,6 @@ const client = createOpenAI({
     baseURL: endpoint,
 });
 
-const model = client("openai/gpt-4.1");
-
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
@@ -22,59 +21,52 @@ export async function POST(req: Request) {
         headers: await headers(),
     });
     const body = await req.json();
-    const userMessage = body.message;
+    const userMessage = body.message as string;
+
     if (!userMessage) {
         return new Response("Missing message", { status: 400 });
     }
     if (!session) {
         return new Response("Unauthorized", { status: 401 });
     }
+    const model = client("openai/gpt-4.1");
 
-    const generatedTitle = await generateText({
-        model: model,
-        messages: [{
-            role: "user",
-            content: `Je viens de commancer une discussion avec toi. Génére un titre de moins de 120 caractères à la conversation sachant que ceci est son premier message:"${userMessage}"`
-        }],
+    // Générer le titre d'abord
+    const titleResult = streamText({
+        model,
+        messages: [{ role: "user", content: userMessage }],
+        system: "Generate a short, concise title (maximum 6 words) for this chat conversation based on the user's message. Only return the title, nothing else.",
+        experimental_transform: smoothStream(),
+        temperature: 1,
     });
 
-    const chat = await prisma.chat.create({
-        data: {
-            title: generatedTitle.text,
-            userId: session.user.id,
-        },
-    });
+    let chatTitle = "";
+    for await (const chunk of titleResult.textStream) {
+        chatTitle += chunk;
+    }
 
-    await prisma.message.create({
-        data: {
-            role: "user",
-            content: userMessage,
-            chatId: chat.id,
-        },
-    });
+    // Créer le chat avec le titre généré
+    let chatId = await createDbChat(session.user.id, chatTitle);
+    await saveMessage(chatId, "user", userMessage);
 
+    // Générer la réponse IA pour le premier message
     const aiResponse = streamText({
-        model: model,
+        model,
+        messages: [{ role: "user", content: userMessage }],
         system: "Your name is niato ai and you are a helpful assistant. Always be kind and helpful.",
         experimental_transform: smoothStream(),
         temperature: 1,
-        messages: [{ role: "user", content: userMessage }],
     });
 
-    let fullText = '';
-
-    for await (const textPart of aiResponse.textStream) {
-        fullText += textPart;
+    let aiResponseText = "";
+    for await (const chunk of aiResponse.textStream) {
+        aiResponseText += chunk;
     }
 
-    await prisma.message.create({
-        data: {
-            role: "assistant",
-            content: fullText,
-            chatId: chat.id,
-        },
-    });
-    revalidatePath("/app/chat");
+    // Sauvegarder la réponse IA
+    await saveMessage(chatId, "assistant", aiResponseText);
 
-    return Response.json({ chatId: chat.id });
+    revalidatePath(`/chat`);
+
+    return Response.json({ chatId });
 }

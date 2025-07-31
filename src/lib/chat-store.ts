@@ -13,14 +13,12 @@ export interface ChatWithMessages {
 
 export async function createDbChat(
     userId: string,
-    initialMessageContent?: string
+    title: string
 ): Promise<string> {
     const chat = await prisma.chat.create({
         data: {
             userId,
-            title: initialMessageContent
-                ? initialMessageContent.substring(0, 100)
-                : "Nouveau Chat",
+            title,
         },
     });
     return chat.id;
