@@ -24,12 +24,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
             system: "Your name is niato ai and you are a helpful assistant. Always be kind and helpful.",
             experimental_transform: smoothStream(),
             temperature: 1,
+            onFinish: async (completion) => {
+                await saveMessage(id, "assistant", completion.text);
+            }
         });
-        let fullText = '';
-        for await (const textPart of result.textStream) {
-            fullText += textPart;
-        }
-        await saveMessage(id, "assistant", fullText);
 
         return result.toDataStreamResponse();
     } catch (error) {

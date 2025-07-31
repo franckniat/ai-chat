@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React from "react";
+import React, { memo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -17,7 +17,7 @@ interface MessageFormatterProps {
 	content: string;
 }
 
-const MessageFormatter: React.FC<MessageFormatterProps> = ({ content }) => {
+const MessageFormatter: React.FC<MessageFormatterProps> = memo(({ content }) => {
 	return (
 		<ReactMarkdown
 			remarkPlugins={[remarkGfm]}
@@ -156,6 +156,8 @@ const MessageFormatter: React.FC<MessageFormatterProps> = ({ content }) => {
 			{content}
 		</ReactMarkdown>
 	);
-};
+});
+
+MessageFormatter.displayName = 'MessageFormatter';
 
 export default MessageFormatter;

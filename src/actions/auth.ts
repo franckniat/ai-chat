@@ -9,7 +9,16 @@ export const signInGoogle = async () => {
         provider: "google",
     });
     if(data?.url && data.redirect) {
-        redirect(data.url)
+        redirect(data.url);
+    }
+}
+
+export const signInGithub = async () => {
+    const { data } = await signIn.social({
+        provider: "github",
+    });
+    if(data?.url && data.redirect) {
+        redirect(data.url);
     }
 }
 
