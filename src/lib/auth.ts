@@ -5,8 +5,6 @@ import { twoFactor, openAPI } from "better-auth/plugins"
 import { sendVerificationEMail, sendResetPasswordEMail } from "./mail";
 import prisma from "@/lib/db";
 
-
-
 export const auth = betterAuth({
     appName: "niato ai",
     database: prismaAdapter(prisma, {
@@ -21,9 +19,15 @@ export const auth = betterAuth({
     },
     socialProviders: {
         google: {
+            prompt: "select_account", 
             clientId: process.env.GOOGLE_CLIENT_ID as string,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
             redirectURI: `${process.env.BETTER_AUTH_URL}/api/auth/callback/google`,
+        },
+        github:{
+            clientId: process.env.GITHUB_CLIENT_ID as string,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+            redirectURI: `${process.env.BETTER_AUTH_URL}/api/auth/callback/github`,
         },
     },
     emailVerification: {
