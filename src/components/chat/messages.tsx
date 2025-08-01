@@ -20,7 +20,7 @@ import { Session } from "@/lib/auth";
 const MessageItem = memo(({ message, session }: { message: AIMessage; session: Session }) => (
 	<div
 		key={message.id}
-		className="flex flex-col sm:flex-row gap-2 py-6 relative"
+		className="flex flex-col sm:flex-row gap-4 py-6 relative"
 	>
 		{message.role === "user" ? (
 			<Avatar className="border-2 border-foreground/60 pointer-events-none cursor-pointer">
@@ -39,13 +39,13 @@ const MessageItem = memo(({ message, session }: { message: AIMessage; session: S
 				<Bot size={20} />
 			</Avatar>
 		)}
-		<div className="flex-1 space-y-2 group">
+		<div className="flex-1 space-y-2 group tracking-tight">
 			<p className="font-bold group-hover:text-primary">
 				{message.role == "user"
 					? session?.user?.name
-					: "niato ai 🏄"}
+					: "niato ai"}
 			</p>
-			<div className="result-ai text-foreground/90">
+			<div className="result-ai text-foreground/90 prose prose-base prose-neutral dark:prose-invert">
 				<MessageFormatter content={message.content} />
 			</div>
 			<div className="absolute -bottom-2 right-2 group-hover:block hidden">
