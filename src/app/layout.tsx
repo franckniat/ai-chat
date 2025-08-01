@@ -1,30 +1,43 @@
-import type { Metadata } from "next";
-import { Space_Grotesk } from "next/font/google";
-import { Providers } from "@/providers";
-import "./globals.css";
-import { Analytics } from "@vercel/analytics/next"
+import type { Metadata } from 'next'
+import { Geist, Geist_Mono, JetBrains_Mono } from 'next/font/google'
+import { Providers } from '@/providers'
+import './globals.css'
+import { Analytics } from '@vercel/analytics/next'
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
-});
+const geist = Geist({
+    variable: '--font-geist',
+    subsets: ['latin'],
+})
+
+const geistMono = Geist_Mono({
+    variable: '--font-geist-mono',
+    subsets: ['latin'],
+})
+
+const jetbrainsMono = JetBrains_Mono({
+    variable: '--font-jetbrains-mono',
+    subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
-  title: "niato chat",
-  description: "niato chat is a smart messaging app powered by multiple AI models. Get instant, accurate, and personalized responses. Choose the AI model that fits your needs.",
-};
+    title: 'niato chat',
+    description:
+        'niato chat is a smart messaging app powered by multiple AI models. Get instant, accurate, and personalized responses. Choose the AI model that fits your needs.',
+}
 
 export default function RootLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode
 }>) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${spaceGrotesk.variable} ${spaceGrotesk.className} antialiased`}>
-        <Providers>{children}</Providers>
-        <Analytics />
-      </body>
-    </html>
-  );
+    return (
+        <html lang="en" suppressHydrationWarning>
+            <body
+                className={`${geist.variable} ${geistMono.variable} ${jetbrainsMono.variable} font-mono antialiased`}
+            >
+                <Providers>{children}</Providers>
+                <Analytics />
+            </body>
+        </html>
+    )
 }
