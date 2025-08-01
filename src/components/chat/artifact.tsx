@@ -17,7 +17,6 @@ interface ArtifactProps {
 }
 
 export const Artifact: React.FC<ArtifactProps> = ({
-    id,
     type,
     language = 'javascript',
     title,
