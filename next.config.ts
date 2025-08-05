@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { PrismaPlugin } from '@prisma/nextjs-monorepo-workaround-plugin';
 
 const nextConfig: NextConfig = {
   env: {
@@ -12,12 +11,6 @@ const nextConfig: NextConfig = {
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     EMAIL_VERIFICATION_CALLBACK_URL: process.env.EMAIL_VERIFICATION_CALLBACK_URL,
     UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
-  },
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.plugins = [...config.plugins, new PrismaPlugin()];
-    }
-    return config;
   },
 };
 
