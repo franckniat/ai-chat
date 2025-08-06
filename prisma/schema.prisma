@@ -5,10 +5,10 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../node_modules/@niato-ai/prisma-client"
-  moduleFormat    = "esm"
-  binaryTargets   = ["native", "rhel-openssl-3.0.x"]
+  provider      = "prisma-client-js"
+  output        = "../node_modules/@niato-ai/prisma-client"
+  moduleFormat  = "esm"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
@@ -17,13 +17,13 @@ datasource db {
 }
 
 model User {
-  id               String    @id @default(cuid())
+  id               String  @id @default(cuid())
   name             String
-  email            String    @unique
-  emailVerified    Boolean   @default(false)
+  email            String  @unique
+  emailVerified    Boolean @default(false)
   image            String?
-  role             String    @default("user")
-  twoFactorEnabled Boolean   @default(false)
+  role             String  @default("user")
+  twoFactorEnabled Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
