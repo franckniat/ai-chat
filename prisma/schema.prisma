@@ -6,9 +6,9 @@
 
 generator client {
   provider = "prisma-client-js"
-  output       = "../node_modules/@niato-ai/prisma-client"
-  moduleFormat = "esm"
-  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  output   = "../node_modules/@niato-ai/prisma-client"
+  moduleFormat    = "esm"
+  binaryTargets   = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
