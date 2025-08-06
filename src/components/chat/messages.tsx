@@ -45,7 +45,7 @@ const MessageItem = memo(({ message, session }: { message: AIMessage; session: S
 					? session?.user?.name
 					: "niato ai"}
 			</p>
-			<div className="result-ai text-foreground/90 prose prose-base prose-neutral dark:prose-invert">
+			<div className="result-ai text-foreground/90 prose prose-base prose-neutral dark:prose-invert prose-headings:font-mono">
 				<MessageFormatter content={message.content} />
 			</div>
 			<div className="absolute -bottom-2 right-2 group-hover:block hidden">
