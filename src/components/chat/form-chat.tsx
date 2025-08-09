@@ -57,7 +57,7 @@ export default function FormChat({
                 >
                     <Textarea
                         name={name}
-                        className="w-full placeholder:text-sm md:placeholder:text-base resize-none overflow-y-auto placeholder:text-foreground/50 pr-12 mx-1"
+                        className="w-full placeholder:text-sm placeholder:items-center md:placeholder:text-base resize-none overflow-y-auto placeholder:text-foreground/50 pr-12 mx-1 border-foreground/5 rounded-2xl min-h-14"
                         placeholder="Envoyer un message"
                         value={input}
                         disabled={isLoading}
@@ -66,13 +66,14 @@ export default function FormChat({
                         autoFocus
                         style={{
                             height: "auto",
-                            maxHeight: isMobile ? "100px" : "150px",
+                            maxHeight: isMobile ? "100px" : "250px",
                         }}
                     />
                     {isLoading ? (
-                        <Button 
+                        <Button
                             variant="outline"
-                            className="absolute right-2 bottom-2"
+                            size="icon"
+                            className="absolute right-4 bottom-2 rounded-full"
                             onClick={stop}
                         >
                             <CircleStop size={20} />
@@ -80,8 +81,9 @@ export default function FormChat({
                     ) : (
                         <Button
                             type="submit"
+                            size={"icon"}
                             disabled={isLoading || !input}
-                            className="absolute right-2 bottom-2"
+                            className="absolute right-3 bottom-2 rounded-full"
                         >
                             <ArrowUp size={20} />
                         </Button>

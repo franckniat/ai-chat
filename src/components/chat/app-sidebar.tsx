@@ -44,7 +44,7 @@ export function AppSidebar({ chatList, ...props }: AppSidebarProps) {
         ],
     }
     return (
-        <Sidebar collapsible="icon" {...props} variant="floating">
+        <Sidebar collapsible="offcanvas" {...props} variant="floating">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem className="flex items-center gap-2 justify-between">

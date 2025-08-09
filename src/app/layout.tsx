@@ -38,7 +38,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body
-                className={`${geist.variable} ${geistMono.variable} ${jetbrainsMono.variable} ${dmSans.className} antialiased`}
+                className={`${geist.variable} ${geistMono.variable} ${jetbrainsMono.variable} ${geist.className} tracking-[0.04rem] text-pretty antialiased`}
             >
                 <Providers>{children}</Providers>
                 <Analytics />
