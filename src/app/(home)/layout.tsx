@@ -1,6 +1,7 @@
 import { Spotlight } from "@/components/ui/spotlight"
 //import { Footer } from "./components/footer"
 import Navbar from "./components/navbar"
+import Footer from "./components/footer"
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -10,6 +11,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             <main className="min-h-screen max-w-[1280px] mx-auto pt-[80px]">
                 {children}
             </main>
+            <Footer />
         </>
     )
 }
