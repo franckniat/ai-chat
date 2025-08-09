@@ -44,7 +44,7 @@ export function AppSidebar({ chatList, ...props }: AppSidebarProps) {
         ],
     }
     return (
-        <Sidebar collapsible="icon" {...props}>
+        <Sidebar collapsible="icon" {...props} variant="floating">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem className="flex items-center gap-2 justify-between">
@@ -52,7 +52,7 @@ export function AppSidebar({ chatList, ...props }: AppSidebarProps) {
                             asChild
                             className="data-[slot=sidebar-menu-button]:!p-1.5 w-fit h-fit"
                         >
-                            <Link href="/chat">
+                            <Link href="/">
                                 <Sparkles className="h-5 w-5" />
                                 <span className="text-base font-semibold">niato ai.</span>
                             </Link>

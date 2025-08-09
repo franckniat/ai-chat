@@ -10,7 +10,7 @@ export function SiteHeader() {
     const { theme, setTheme } = useTheme();
     return (
         <header
-            className={`group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 flex h-14 shrink-0 items-center gap-2 border-b transition-[width,height] bg-background/90 backdrop-blur ease-linear fixed top-0 z-50 ${isMobile ? "w-full" : ""} ${state === "expanded" && `w-[calc(100%-16rem)]`} ${state === "collapsed" && `w-[calc(100%-3rem)]`}`}
+            className={`group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 flex h-14 shrink-0 items-center gap-2 transition-[width,height] bg-background/90 backdrop-blur ease-linear fixed top-0 z-50 ${isMobile ? "w-full" : ""} ${state === "expanded" && `w-[calc(100%-16rem)]`} ${state === "collapsed" && `w-[calc(100%-3rem)]`}`}
         >
             <div className="flex w-full justify-between items-center gap-1 px-4 lg:gap-2 lg:px-6">
                 <div className="flex items-center gap-2">
@@ -20,6 +20,7 @@ export function SiteHeader() {
                         className="mx-2 data-[orientation=vertical]:h-4"
                     />
                 </div>
+
                 <div className="flex items-center gap-2">
                     <Button
                         className="relative"
