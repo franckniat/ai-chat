@@ -21,11 +21,11 @@ export default async function ChatLayout({
 	return (
 		<SidebarProvider>
 			<AppSidebar chatList={chatList} />
-			<SidebarInset>
+			<SidebarInset >
 				<SiteHeader />
 				<div className="flex flex-1 flex-col">
 					<div className="@container/main flex flex-1 flex-col gap-2">
-						<div className="flex flex-col gap-4 py-16 md:gap-6 md:py-20 px-3 md:px-6">
+						<div className="flex flex-col gap-4 py-16 md:gap-6 md:py-20 px-3 md:px-6 overflow-y-auto">
 							{children}
 						</div>
 					</div>
