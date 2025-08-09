@@ -10,7 +10,7 @@ import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { useRouter } from "next/navigation";
 import { type Message as AIMessage } from "@ai-sdk/react";
-import { Bot, Loader2 } from "lucide-react";
+import { Bot, Loader2, Sparkles } from "lucide-react";
 import { ChatSDKError } from "@/lib/errors";
 import { toast } from "sonner";
 import { useMessages } from "@/hooks/use-messages";
@@ -45,7 +45,7 @@ const MessageItem = memo(({ message, session }: { message: AIMessage; session: S
 					? session?.user?.name
 					: "niato ai"}
 			</p>
-			<div className="result-ai text-foreground/90 prose prose-base prose-neutral dark:prose-invert prose-headings:font-mono">
+			<div className="result-ai text-foreground/90 prose prose-base prose-neutral dark:prose-invert prose-headings:font-mono tracking-[0.03rem]">
 				<MessageFormatter content={message.content} />
 			</div>
 			<div className="absolute -bottom-2 right-2 group-hover:block hidden">
@@ -212,11 +212,15 @@ export default function MessagesContent({
 			>
 				{!id && (
 					<div className="space-y-3 flex flex-col items-center">
-						<h1 className="text-2xl font-bold text-center">
-							niato ai 🏄
-						</h1>
+                        <Sparkles className="h-8 w-8 animate-pulse" />
+						{/* <h1 className="text-2xl font-extrabold text-center font-mono">
+							niato ai.
+						</h1> */}
+                        <p className="text-center text-muted-foreground">
+                            How can I help you today ?
+                        </p>
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-							{examples.map((example) => (
+							{!isCreatingChat && examples.map((example) => (
 								<Card
 									key={example.title}
                                     onClick={() => {
