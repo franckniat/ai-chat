@@ -212,13 +212,13 @@ export default function MessagesContent({
 			>
 				{!id && (
 					<div className="space-y-3 flex flex-col items-center">
-                        <Sparkles className="h-8 w-8 animate-pulse" />
-						{/* <h1 className="text-2xl font-extrabold text-center font-mono">
-							niato ai.
-						</h1> */}
-                        <p className="text-center text-muted-foreground">
-                            How can I help you today ?
-                        </p>
+						<Sparkles className="h-8 w-8 animate-pulse" />
+						<h1 className="text-2xl font-bold text-center">
+							niato ai 🏄
+						</h1>
+						<p className="text-center text-muted-foreground">
+							How can I help you today ?
+						</p>
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 							{!isCreatingChat && examples.map((example) => (
 								<Card
