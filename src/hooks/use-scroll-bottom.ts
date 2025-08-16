@@ -17,15 +17,23 @@ export function useScrollToBottom() {
     useSWR<ScrollFlag>('messages:should-scroll', null, { fallbackData: false });
 
   useEffect(() => {
-    if (scrollBehavior) {
-      endRef.current?.scrollIntoView({ behavior: scrollBehavior });
+    if (scrollBehavior && endRef.current) {
+      // Utiliser scrollIntoView avec des options plus robustes
+      endRef.current.scrollIntoView({ 
+        behavior: scrollBehavior,
+        block: 'end',
+        inline: 'nearest'
+      });
       setScrollBehavior(false);
     }
   }, [setScrollBehavior, scrollBehavior]);
 
   const scrollToBottom = useCallback(
     (scrollBehavior: ScrollBehavior = 'smooth') => {
-      setScrollBehavior(scrollBehavior);
+      // Vérifier que l'élément existe avant de déclencher le scroll
+      if (endRef.current) {
+        setScrollBehavior(scrollBehavior);
+      }
     },
     [setScrollBehavior],
   );

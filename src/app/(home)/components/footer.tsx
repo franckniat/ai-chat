@@ -1,4 +1,3 @@
-import { Github, Instagram, Linkedin, TwitterIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
