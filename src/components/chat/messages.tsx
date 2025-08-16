@@ -1,8 +1,7 @@
 "use client";
 
 import FormChat from "./form-chat";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { useSession } from "@/lib/auth-client";
+import { Avatar } from "../ui/avatar";
 import { useChat } from "@ai-sdk/react";
 import MessageFormatter from "./message-formatter";
 import { useEffect, memo, useMemo, useState, useRef } from "react";
@@ -14,7 +13,6 @@ import { Bot, Loader2, Sparkles } from "lucide-react";
 import { ChatSDKError } from "@/lib/errors";
 import { toast } from "sonner";
 import { useMessages } from "@/hooks/use-messages";
-import { Session } from "@/lib/auth";
 
 // Composant mémorisé pour chaque message
 const MessageItem = memo(({ message }: { message: AIMessage }) => (
@@ -56,7 +54,6 @@ export default function MessagesContent({
     id?: string;
     initialMessages?: AIMessage[];
 }) {
-    const { data: session } = useSession();
     const router = useRouter();
     const [isCreatingChat, setIsCreatingChat] = useState(false);
     const lastMessageContentRef = useRef<string>("");

@@ -1,16 +1,11 @@
 import type { Metadata } from 'next'
-import { DM_Sans, Geist, Geist_Mono, JetBrains_Mono } from 'next/font/google'
+import { Geist, Geist_Mono, JetBrains_Mono } from 'next/font/google'
 import { Providers } from '@/providers'
 import './globals.css'
 import { Analytics } from '@vercel/analytics/next'
 
 const geist = Geist({
     variable: '--font-geist',
-    subsets: ['latin'],
-})
-
-const dmSans = DM_Sans({
-    variable: '--font-dm-sans',
     subsets: ['latin'],
 })
 
