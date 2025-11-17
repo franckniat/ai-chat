@@ -9,7 +9,7 @@ export default function HomePage() {
         <div className="px-4 py-5">
             <div className="pt-[130px] md:pt-[190px] lg:pt-[250px]">
                 <div className="max-w-[1280px] mx-auto px-3 ">
-                    <div className="flex items-center flex-col justify-center gap-5">
+                    <div className="flex items-center flex-col justify-center gap-5 border border-green-800">
                         <Link href="/chat?model=gpt-4o-mini&source=home">
                             <Badge variant="outline">
                                 🚀 Chat with GPT-4.1 for free
