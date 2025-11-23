@@ -6,6 +6,9 @@ import { cn } from '@/lib/utils'
 import { ArrowRight, Bot, Zap, Shield, Sparkles, MessageSquare, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
+import FeatureCard from '@/components/ui/FeatureCard'
+import FaqItem from '@/components/ui/FaqItem'
+import { TestimonialCard } from '@/components/ui/TestimonialCard'
 
 /**
  * ==============================================================================
@@ -203,62 +206,8 @@ export default function HomePage() {
     )
 }
 
-/**
- * ==============================================================================
- * HELPER COMPONENTS
- * ==============================================================================
- * Small, reusable components specific to the landing page.
- * ==============================================================================
- */
 
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
-    return (
-        <Card className="border-none shadow-none bg-background/50 hover:bg-background/80 transition-colors">
-            <CardHeader>
-                <div className="mb-4 p-3 bg-primary/10 w-fit rounded-xl">
-                    {icon}
-                </div>
-                <CardTitle className="text-xl">{title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p className="text-muted-foreground leading-relaxed">
-                    {description}
-                </p>
-            </CardContent>
-        </Card>
-    )
-}
 
-function TestimonialCard({ name, role, content, initials }: { name: string, role: string, content: string, initials: string }) {
-    return (
-        <Card className="h-full">
-            <CardContent className="pt-6">
-                <div className="flex flex-col gap-4">
-                    <p className="text-muted-foreground italic">"{content}"</p>
-                    <div className="flex items-center gap-3 mt-4">
-                        <Avatar>
-                            <AvatarFallback>{initials}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <p className="font-semibold text-sm">{name}</p>
-                            <p className="text-xs text-muted-foreground">{role}</p>
-                        </div>
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    )
-}
 
-function FaqItem({ question, answer }: { question: string, answer: string }) {
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-lg">{question}</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p className="text-muted-foreground">{answer}</p>
-            </CardContent>
-        </Card>
-    )
-}
+
+
