@@ -1,7 +1,5 @@
 import { Badge } from '@/components/ui/badge'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import {  buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ArrowRight, Bot, Zap, Shield, Sparkles, MessageSquare, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
