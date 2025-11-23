@@ -10,7 +10,7 @@ import { loginSchema } from "@/schemas/user"
 import { LoginSchema } from "@/schemas/user"
 import { Form, FormMessage, FormDescription, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form"
 import { useRouter, useSearchParams } from "next/navigation";
-import { signInGithub, signInGoogle } from "@/actions/auth";
+import { signInGithub, signInGoogle } from "@/app/actions/auth";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 

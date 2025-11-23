@@ -10,7 +10,7 @@ import { Form, FormMessage, FormControl, FormField, FormItem, FormLabel } from "
 import { useTransition } from "react"
 import { authClient } from "@/lib/auth-client"
 import { toast } from "sonner"
-import { signInGithub, signInGoogle } from "@/actions/auth"
+import { signInGithub, signInGoogle } from "@/app/actions/auth"
 
 
 export function RegisterForm({
