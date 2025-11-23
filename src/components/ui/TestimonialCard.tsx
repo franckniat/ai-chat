@@ -6,7 +6,7 @@ export function TestimonialCard({ name, role, content, initials }: { name: strin
         <Card className="h-full">
             <CardContent className="pt-6">
                 <div className="flex flex-col gap-4">
-                    <p className="text-muted-foreground italic">"{content}"</p>
+                    <p className="text-muted-foreground italic">{content}</p>
                     <div className="flex items-center gap-3 mt-4">
                         <Avatar>
                             <AvatarFallback>{initials}</AvatarFallback>
