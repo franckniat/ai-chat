@@ -11,6 +11,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@ai-sdk/google": "^2.0.42",
     "@ai-sdk/openai": "^2.0.71",
     "@ai-sdk/react": "^2.0.100",
     "@better-fetch/fetch": "^1.1.18",

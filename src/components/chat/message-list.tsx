@@ -2,19 +2,60 @@
 
 import { useChatContext } from "./chat-context";
 import { useMessages } from "@/hooks/use-messages";
-import { useEffect, useMemo, useRef, memo } from "react";
+import { useEffect, useMemo, useRef, memo, useState } from "react";
 import { Avatar } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import { Bot, Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles, Copy, Share2, Check } from "lucide-react";
 import MessageFormatter from "./message-formatter";
 import { type UIMessage } from "ai";
+import { toast } from "sonner";
 
 // Composant mémorisé pour chaque message
 const MessageItem = memo(({ message }: { message: UIMessage }) => {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = async () => {
+        const textContent = message.parts
+            .filter((part) => part.type === "text")
+            .map((part) => part.text)
+            .join("");
+
+        try {
+            await navigator.clipboard.writeText(textContent);
+            setCopied(true);
+            toast.success("Copié dans le presse-papier");
+            setTimeout(() => setCopied(false), 2000);
+        } catch (error) {
+            toast.error("Erreur lors de la copie");
+            console.error("Erreur lors de la copie dans le presse-papier:", error);
+        }
+    };
+
+    const handleShare = async () => {
+        const textContent = message.parts
+            .filter((part) => part.type === "text")
+            .map((part) => part.text)
+            .join("");
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: "Réponse niato ai",
+                    text: textContent,
+                });
+            } catch (error) {
+                console.error("Erreur lors du partage:", error);
+            }
+        } else {
+            // Fallback : copier dans le presse-papier
+            handleCopy();
+        }
+    };
+
     return (
-        <div key={message.id} className="flex flex-col sm:flex-row gap-4 py-3 relative">
-            <div className="flex-1 space-y-2 group tracking-tight w-full">
+        <div key={message.id} className="flex flex-col sm:flex-row gap-4 py-3 relative group">
+            <div className="flex-1 space-y-2 tracking-tight w-full">
                 {message.role === "user" && (
                     <div className="flex justify-end w-full">
                         <div className="bg-foreground/10 border border-foreground/15 rounded-xl px-5 py-3">
@@ -27,10 +68,41 @@ const MessageItem = memo(({ message }: { message: UIMessage }) => {
                     </div>
                 )}
                 {message.role === "assistant" && (
-                    <div className="result-ai text-foreground/90 prose prose-base prose-neutral dark:prose-invert prose-headings:font-mono tracking-[0.03rem] max-w-[800px]">
-                        {message.parts.map((part, index) => (
-                            <MessageFormatter key={index} content={part.type === "text" ? part.text : ""} />
-                        ))}
+                    <div className="relative">
+                        <div className="result-ai text-foreground/90 prose prose-base prose-neutral dark:prose-invert prose-headings:font-mono tracking-[0.03rem] max-w-[800px]">
+                            {message.parts.map((part, index) => (
+                                <MessageFormatter key={index} content={part.type === "text" ? part.text : ""} />
+                            ))}
+                        </div>
+                        <div className="flex items-center gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleCopy}
+                                className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                            >
+                                {copied ? (
+                                    <>
+                                        <Check className="h-4 w-4 mr-1" />
+                                        <span className="text-xs">Copié</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Copy className="h-4 w-4 mr-1" />
+                                        <span className="text-xs">Copier</span>
+                                    </>
+                                )}
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleShare}
+                                className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                            >
+                                <Share2 className="h-4 w-4 mr-1" />
+                                <span className="text-xs">Partager</span>
+                            </Button>
+                        </div>
                     </div>
                 )}
             </div>
@@ -210,22 +282,12 @@ export default function MessageList() {
                     <MessageItem key={m.id} message={m} />
                 ))}
                 {(status === "submitted" || isCreatingChat) && (
-                    <div className="flex flex-col sm:flex-row gap-2 py-6 relative">
+                    <div className="flex items-baseline flex-row gap-2 py-6 relative">
                         <Avatar className="border-2 border-primary cursor-pointer pointer-events-none flex items-center justify-center">
-                            <Bot size={20} />
+                            <Loader2 size={20} className="text-primary animate-spin" />
                         </Avatar>
                         <div className="flex-1 space-y-2 group">
-                            <p className="font-bold group-hover:text-primary">niato ai 🏄</p>
-                            <div className="result-ai text-foreground/90">
-                                <div className="flex items-center space-x-2">
-                                    <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                                    <span className="text-sm text-foreground/60">
-                                        {isCreatingChat
-                                            ? "Création de la conversation..."
-                                            : "Réflexion en cours..."}
-                                    </span>
-                                </div>
-                            </div>
+                            <p className="group-hover:text-primary text-sm">Thinking ...</p>
                         </div>
                     </div>
                 )}

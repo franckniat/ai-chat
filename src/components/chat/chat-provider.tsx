@@ -16,7 +16,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
     const [input, setInput] = useState("");
 
     const {
-        regenerate,
+        regenerate: originalRegenerate,
         messages,
         sendMessage,
         status,
@@ -32,22 +32,17 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
                 toast.error(error.message);
             }
         },
-    });
-
-    // Redirection après la création du chat
-    useEffect(() => {
-        if (!chatId && messages.length > 0) {
-            const lastMessage = messages[messages.length - 1];
-            // Vérifier si le dernier message contient un chatId dans ses métadonnées
-            if (lastMessage.metadata && typeof lastMessage.metadata === 'object') {
-                const metadata = lastMessage.metadata as { chatId?: string };
-                if (metadata.chatId) {
-                    setChatId(metadata.chatId);
-                    router.push(`/chat/${metadata.chatId}`);
+        onData: (dataPart) => {
+            // Récupérer le chatId depuis les données du stream
+            if (!chatId && dataPart.type === 'data-message' && dataPart.data) {
+                const messageData = dataPart.data as { chatId?: string };
+                if (messageData.chatId) {
+                    setChatId(messageData.chatId);
+                    router.push(`/chat/${messageData.chatId}`);
                 }
             }
-        }
-    }, [messages, chatId, router, setChatId]);
+        },
+    });
 
     // Reset isCreatingChat quand le streaming commence
     useEffect(() => {
@@ -64,7 +59,29 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
         if (!chatId) {
             setIsCreatingChat(true);
         }
-        sendMessage({text: input});
+        sendMessage(
+            { text: input },
+            {
+                body: {
+                    chatId: chatId
+                }
+            }
+        );
+        setInput("");
+    };
+
+    // Wrapper pour regenerate qui inclut le chatId
+    const regenerate = () => {
+        if (chatId) {
+            originalRegenerate({
+                body: {
+                    chatId: chatId
+                }
+            });
+        } else {
+            // Si pas de chatId, utiliser la fonction originale
+            originalRegenerate();
+        }
     };
 
     return (
