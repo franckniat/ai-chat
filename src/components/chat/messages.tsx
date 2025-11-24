@@ -4,10 +4,8 @@ import FormChat from "./form-chat";
 import { Avatar } from "../ui/avatar";
 import { useChat } from "@ai-sdk/react";
 import MessageFormatter from "./message-formatter";
-import { useEffect, memo, useMemo, useState, useRef } from "react";
+import { useEffect, memo, useState, useRef } from "react";
 import { Button } from "../ui/button";
-import { Card, CardContent } from "../ui/card";
-import { useRouter } from "next/navigation";
 import { type UIMessage as AIMessage } from "@ai-sdk/react";
 import { Bot, Loader2, Sparkles } from "lucide-react";
 import { ChatSDKError } from "@/lib/errors";
@@ -52,7 +50,6 @@ export default function MessagesContent({
     id?: string;
     initialMessages?: AIMessage[];
 }) {
-    const router = useRouter();
     const [input, setInput] = useState("");
     const lastMessageContentRef = useRef<string>("");
     const {
