@@ -101,7 +101,7 @@ export async function POST(req: Request) {
                 },
             });
 
-            writer.merge(result.toUIMessageStream());
+            writer.merge(result.toUIMessageStream({sendSources: true}));
         },
     });
 
