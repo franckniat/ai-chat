@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono, JetBrains_Mono } from 'next/font/google'
+import { Geist_Mono, JetBrains_Mono, Instrument_Sans } from 'next/font/google'
 import { Providers } from '@/providers'
 import './globals.css'
 import { Analytics } from '@vercel/analytics/next'
 
-const geist = Geist({
-    variable: '--font-geist',
+const instrumentSans = Instrument_Sans({
+    variable: '--font-instrument-sans',
     subsets: ['latin'],
 })
 
@@ -33,7 +33,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body
-                className={`${geist.variable} ${geistMono.variable} ${jetbrainsMono.variable} font-sans tracking-[0.05rem] text-pretty antialiased`}
+                className={` ${instrumentSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} font-sans tracking-[0.05rem] text-pretty antialiased`}
             >
                 <Providers>{children}</Providers>
                 <Analytics />
