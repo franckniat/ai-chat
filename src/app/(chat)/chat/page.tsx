@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
-//import { createChat } from "@/lib/chat-store";
-import MessagesContent from "@/components/chat/messages";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import ChatInitializer from "@/components/chat/chat-initializer";
+import MessageList from "@/components/chat/message-list";
 
 export default async function Page() {
     const session = await auth.api.getSession({
@@ -13,7 +13,8 @@ export default async function Page() {
     }
     return (
         <>
-            <MessagesContent />
+            <ChatInitializer id={null} initialMessages={[]} />
+            <MessageList />
         </>
     );
 }

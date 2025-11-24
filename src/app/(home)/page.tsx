@@ -1,12 +1,13 @@
-import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { ArrowRight, Bot, Zap, Shield, Sparkles, MessageSquare, CheckCircle2 } from "lucide-react";
-import Link from "next/link";
-import React from "react";
-import FeatureCard from "@/components/ui/FeatureCard";
-import FaqItem from "@/components/ui/FaqItem";
-import { TestimonialCard } from "@/components/ui/TestimonialCard";
+
+import { Badge } from '@/components/ui/badge'
+import {  buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { ArrowRight, Bot, Zap, Shield, Sparkles, MessageSquare, CheckCircle2 } from 'lucide-react'
+import Link from 'next/link'
+import React from 'react'
+import FeatureCard from '@/components/ui/FeatureCard'
+import FaqItem from '@/components/ui/FaqItem'
+import { TestimonialCard } from '@/components/ui/TestimonialCard'
 
 /**
  * ==============================================================================
