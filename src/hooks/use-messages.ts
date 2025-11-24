@@ -7,7 +7,8 @@ export function useMessages({
   status,
 }: {
   chatId: string;
-  status: UseChatHelpers['status'];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  status: UseChatHelpers<any>['status'];
 }) {
   const {
     containerRef,
@@ -19,7 +20,8 @@ export function useMessages({
   } = useScrollToBottom();
 
   const [hasSentMessage, setHasSentMessage] = useState(false);
-  const previousStatusRef = useRef<UseChatHelpers['status']>('ready');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const previousStatusRef = useRef<UseChatHelpers<any>['status']>('ready');
 
   useEffect(() => {
     if (chatId) {
