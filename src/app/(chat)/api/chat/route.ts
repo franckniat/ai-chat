@@ -1,17 +1,14 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { createOpenAI } from "@ai-sdk/openai";
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { streamText, createUIMessageStream, createUIMessageStreamResponse, generateId } from "ai";
-import { createDbChat, saveMessage, updateChatTitle } from "@/lib/chat-store";
+import { createDbChat, saveMessage, titlePrompt, updateChatTitle } from "@/lib/chat-store";
+import type { Message } from "@niato-ai/prisma-client";
+import { getMessagesByChatId } from "@/data/message";
 
-const token = process.env.GITHUB_TOKEN;
-const endpoint = "https://models.github.ai/inference";
-
-const client = createOpenAI({
-    apiKey: token,
-    baseURL: endpoint,
+const google = createGoogleGenerativeAI({
+    apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
 });
-
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
@@ -23,9 +20,7 @@ export async function POST(req: Request) {
         return new Response("Unauthorized", { status: 401 });
     }
 
-    const body = await req.json();
-    const messages = body.messages;
-    let chatId = body.chatId;
+    const { messages, chatId: receivedChatId } = await req.json();
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
         return new Response("Missing messages", { status: 400 });
@@ -43,16 +38,23 @@ export async function POST(req: Request) {
         userMessage = lastMessage.content;
     }
 
+    let currentChatId = receivedChatId;
     let isNewChat = false;
+    let dbMessages: Message[] = [];
 
-    if (!chatId) {
+    if (!currentChatId) {
+        // Créer un nouveau chat avec un titre générique
         isNewChat = true;
-        chatId = await createDbChat(session.user.id, "Nouvelle conversation");
+        currentChatId = await createDbChat(session.user.id, "Nouvelle conversation");
+    } else {
+        // Récupérer les messages existants pour le contexte
+        dbMessages = await getMessagesByChatId(currentChatId);
     }
 
-    await saveMessage(chatId, "user", userMessage);
+    // Sauvegarder le message de l'utilisateur
+    await saveMessage(currentChatId, "user", userMessage);
 
-    const model = client("openai/gpt-4.1");
+    const model = google('gemini-2.5-flash');
 
     const stream = createUIMessageStream({
         execute: ({ writer }) => {
@@ -60,23 +62,33 @@ export async function POST(req: Request) {
                 writer.write({
                     type: 'data-message',
                     id: generateId(),
-                    data: { chatId }
+                    data: { chatId: currentChatId }
                 });
             }
 
             const result = streamText({
                 model,
-                messages,
+                messages: dbMessages.length > 0
+                    ? [
+                        ...dbMessages.map(msg => ({
+                            role: msg.role as 'user' | 'assistant' | 'system',
+                            content: msg.content
+                        })),
+                        { role: 'user' as const, content: userMessage }
+                    ]
+                    : [{ role: 'user' as const, content: userMessage }],
                 system: "Your name is niato ai and you are a helpful assistant. Always be kind and helpful.",
                 temperature: 1,
+                maxOutputTokens: 1000, // Limite de tokens pour la réponse (environ 750 mots)
                 onFinish: async ({ text }) => {
-                    await saveMessage(chatId, "assistant", text);
+                    await saveMessage(currentChatId, "assistant", text);
 
                     if (isNewChat) {
+                        // Générer et mettre à jour le titre en arrière-plan
                         const titleResult = streamText({
                             model,
                             messages: [{ role: "user", content: userMessage }],
-                            system: "Generate a short, concise title (maximum 6 words) for this chat conversation based on the user's message. Only return the title, nothing else.",
+                            system: titlePrompt,
                         });
 
                         let chatTitle = "";
@@ -84,7 +96,7 @@ export async function POST(req: Request) {
                             chatTitle += chunk;
                         }
 
-                        await updateChatTitle(chatId, chatTitle);
+                        await updateChatTitle(currentChatId, chatTitle.trim());
                     }
                 },
             });
