@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import FormChat from "./form-chat";
 import { DefaultChatTransport } from "ai";
+import { PromptInputMessage } from "../ai-elements/prompt-input";
 
 export default function ChatProvider({ children }: { children: ReactNode }) {
     const router = useRouter();
@@ -25,7 +26,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
         setMessages,
     } = useChat({
         transport: new DefaultChatTransport({
-            api: "/api/chat"
+            api: "/api/chat",
         }),
         onError: (error) => {
             if (error instanceof ChatSDKError) {
@@ -34,7 +35,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
         },
         onData: (dataPart) => {
             // Récupérer le chatId depuis les données du stream
-            if (!chatId && dataPart.type === 'data-message' && dataPart.data) {
+            if (!chatId && dataPart.type === "data-message" && dataPart.data) {
                 const messageData = dataPart.data as { chatId?: string };
                 if (messageData.chatId) {
                     setChatId(messageData.chatId);
@@ -53,18 +54,26 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInput(e.target.value);
-    }
+    };
 
-    const handleSubmit = () => {
+    const handleSubmit = (message: PromptInputMessage) => {
         if (!chatId) {
             setIsCreatingChat(true);
         }
+        const hasText = Boolean(message.text);
+        const hasAttachments = Boolean(message.files?.length);
+        if (!(hasText || hasAttachments)) {
+            return;
+        }
         sendMessage(
-            { text: input },
+            {
+                text: input,
+                files: message.files,
+            },
             {
                 body: {
-                    chatId: chatId
-                }
+                    chatId: chatId,
+                },
             }
         );
         setInput("");
@@ -75,8 +84,8 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
         if (chatId) {
             originalRegenerate({
                 body: {
-                    chatId: chatId
-                }
+                    chatId: chatId,
+                },
             });
         } else {
             // Si pas de chatId, utiliser la fonction originale

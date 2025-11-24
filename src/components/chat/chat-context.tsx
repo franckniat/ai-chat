@@ -2,11 +2,12 @@
 
 import { type UIMessage } from "ai";
 import { createContext, useContext } from "react";
+import { PromptInputMessage } from "../ai-elements/prompt-input";
 
 export interface ChatContextType {
     messages: UIMessage[];
     input: string;
-    handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+    handleSubmit: (message: PromptInputMessage) => void;
     handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
     status: "streaming" | "submitted" | "ready" | "error";
     stop: () => void;
