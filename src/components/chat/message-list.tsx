@@ -1,22 +1,17 @@
 "use client";
 
-import FormChat from "./form-chat";
+import { useChatContext } from "./chat-context";
+import { useMessages } from "@/hooks/use-messages";
+import { useEffect, useMemo, useRef, memo } from "react";
 import { Avatar } from "../ui/avatar";
-import { useChat } from "@ai-sdk/react";
-import MessageFormatter from "./message-formatter";
-import { useEffect, memo, useMemo, useState, useRef } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import { useRouter } from "next/navigation";
-import { type UIMessage as AIMessage } from "@ai-sdk/react";
 import { Bot, Loader2, Sparkles } from "lucide-react";
-import { ChatSDKError } from "@/lib/errors";
-import { toast } from "sonner";
-import { useMessages } from "@/hooks/use-messages";
-import { DefaultChatTransport } from "ai";
+import MessageFormatter from "./message-formatter";
+import { type UIMessage } from "ai";
 
 // Composant mémorisé pour chaque message
-const MessageItem = memo(({ message }: { message: AIMessage }) => {
+const MessageItem = memo(({ message }: { message: UIMessage }) => {
     return (
         <div key={message.id} className="flex flex-col sm:flex-row gap-4 py-3 relative">
             <div className="flex-1 space-y-2 group tracking-tight w-full">
@@ -45,35 +40,11 @@ const MessageItem = memo(({ message }: { message: AIMessage }) => {
 
 MessageItem.displayName = "MessageItem";
 
-export default function MessagesContent({
-    id,
-    initialMessages,
-}: {
-    id?: string;
-    initialMessages?: AIMessage[];
-}) {
-    const router = useRouter();
-    const [input, setInput] = useState("");
+export default function MessageList() {
+    const { messages, status, isCreatingChat, handleInputChange, regenerate, error, chatId } =
+        useChatContext();
     const lastMessageContentRef = useRef<string>("");
-    const {
-        messages,
-        sendMessage,
-        status,
-        stop,
-        error,
-        regenerate
-    } = useChat({
-        id,
-        transport: new DefaultChatTransport({
-            api: "/api/chat"
-        }),
-        messages: initialMessages,
-        onError: (error) => {
-            if (error instanceof ChatSDKError) {
-                toast.error(error.message);
-            }
-        },
-    });
+
     const {
         containerRef,
         endRef,
@@ -83,7 +54,7 @@ export default function MessagesContent({
         onViewportLeave,
         hasSentMessage,
     } = useMessages({
-        chatId: id || "",
+        chatId: chatId || "",
         status,
     });
 
@@ -169,7 +140,7 @@ export default function MessagesContent({
         if (messages.length > 0) {
             const lastMessage = messages[messages.length - 1];
             if (lastMessage?.role === "assistant" && status === "streaming") {
-                const currentContent = lastMessage.parts.find(p => p.type === "text")?.text || "";
+                const currentContent = lastMessage.parts.map(part => part.type === "text" ? part.text : "").join("");
                 if (currentContent !== lastMessageContentRef.current) {
                     lastMessageContentRef.current = currentContent;
                     // Scroll quand le contenu change
@@ -179,26 +150,66 @@ export default function MessagesContent({
         }
     }, [messages, status, scrollToBottom]);
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        sendMessage({ text: input });
-    };
+    const examples = useMemo(
+        () => [
+            {
+                title: "Summarize an article",
+                content: "Can you help me to summarize this article: ",
+            },
+            {
+                title: "Learn React",
+                content: "Show me how to create a simple React component.",
+            },
+            {
+                title: "Write a poem",
+                content: "Write a poem about the sea.",
+            },
+            {
+                title: "Tell a joke",
+                content: "Tell me a joke about cats.",
+            },
+        ],
+        []
+    );
 
     return (
         <div className="relative pb-24">
             <div ref={containerRef} className="space-y-3 md:space-y-5 max-w-[800px] mx-auto px-3">
-                {!id && (
+                {!chatId && messages.length === 0 && (
                     <div className="space-y-3 flex flex-col items-center">
                         <Sparkles className="h-8 w-8 animate-pulse" />
                         <p className="text-center text-muted-foreground">
                             How can I help you today ?
                         </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {!isCreatingChat &&
+                                examples.map((example) => (
+                                    <Card
+                                        key={example.title}
+                                        onClick={() => {
+                                            handleInputChange({
+                                                target: { value: example.content },
+                                            } as React.ChangeEvent<HTMLTextAreaElement>);
+                                        }}
+                                        className="cursor-pointer hover:bg-foreground/5"
+                                    >
+                                        <CardContent>
+                                            <p className="text-base md:text-lg font-bold text-center">
+                                                {example.title}
+                                            </p>
+                                            <p className="text-sm text-center text-muted-foreground">
+                                                {example.content}
+                                            </p>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                        </div>
                     </div>
                 )}
                 {messages.map((m) => (
                     <MessageItem key={m.id} message={m} />
                 ))}
-                {status === "submitted" && (
+                {(status === "submitted" || isCreatingChat) && (
                     <div className="flex flex-col sm:flex-row gap-2 py-6 relative">
                         <Avatar className="border-2 border-primary cursor-pointer pointer-events-none flex items-center justify-center">
                             <Bot size={20} />
@@ -209,7 +220,9 @@ export default function MessagesContent({
                                 <div className="flex items-center space-x-2">
                                     <Loader2 className="w-4 h-4 animate-spin text-primary" />
                                     <span className="text-sm text-foreground/60">
-                                        Réflexion en cours...
+                                        {isCreatingChat
+                                            ? "Création de la conversation..."
+                                            : "Réflexion en cours..."}
                                     </span>
                                 </div>
                             </div>
@@ -226,14 +239,6 @@ export default function MessagesContent({
                 )}
                 <div ref={endRef} className="h-1" />
             </div>
-            <FormChat
-                name="prompt"
-                input={input}
-                handleInputChange={(e) => setInput(e.target.value)}
-                handleSubmit={handleSubmit}
-                isLoading={status === "streaming" || status === "submitted"}
-                stop={stop}
-            />
         </div>
     );
 }

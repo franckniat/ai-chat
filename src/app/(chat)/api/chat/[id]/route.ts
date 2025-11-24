@@ -29,7 +29,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
             }
         });
 
-        return result.toDataStreamResponse();
+        return result.toUIMessageStreamResponse();
     } catch (error) {
         console.error("Error processing chat:", error);
         return new Response("Error processing chat", { status: 500 });

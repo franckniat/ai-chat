@@ -33,7 +33,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body
-                className={`${geist.variable} ${geistMono.variable} ${jetbrainsMono.variable} font-mono tracking-[0.03rem] text-pretty antialiased`}
+                className={`${geist.variable} ${geistMono.variable} ${jetbrainsMono.variable} font-sans tracking-[0.05rem] text-pretty antialiased`}
             >
                 <Providers>{children}</Providers>
                 <Analytics />
