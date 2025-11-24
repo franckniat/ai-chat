@@ -11,8 +11,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^1.3.22",
-    "@ai-sdk/react": "^1.2.12",
+    "@ai-sdk/openai": "^2.0.71",
+    "@ai-sdk/react": "^2.0.100",
     "@better-fetch/fetch": "^1.1.18",
     "@bprogress/next": "^3.2.12",
     "@hookform/resolvers": "^5.0.1",
@@ -36,7 +36,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@uploadthing/react": "^7.3.1",
     "@vercel/analytics": "^1.5.0",
-    "ai": "^4.3.16",
+    "ai": "^5.0.100",
     "algoliasearch": "^5.35.0",
     "better-auth": "^1.2.7",
     "class-variance-authority": "^0.7.1",
@@ -67,7 +67,7 @@
     "uploadthing": "^7.7.2",
     "usehooks-ts": "^3.1.1",
     "vaul": "^1.1.2",
-    "zod": "^3.24.4"
+    "zod": "^4.1.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -1,5 +1,5 @@
 import prisma from "@/lib/db";
-import { type Message as AIMessage } from 'ai';
+import { type UIMessage, generateId } from 'ai';
 import { Message as PrismaMessage } from "@niato-ai/prisma-client";
 
 export interface ChatWithMessages {
@@ -8,7 +8,7 @@ export interface ChatWithMessages {
     userId: string;
     createdAt: Date;
     updatedAt: Date;
-    messages: AIMessage[];
+    messages: UIMessage[];
 }
 
 export async function createDbChat(
@@ -26,11 +26,12 @@ export async function createDbChat(
 
 export async function saveMessage(
     chatId: string,
-    role: AIMessage["role"],
+    role: "user" | "assistant" | "system" | "tool",
     content: string
 ): Promise<PrismaMessage> {
     const message = await prisma.message.create({
         data: {
+            id: generateId(),
             chatId,
             role,
             content,
@@ -63,9 +64,14 @@ export async function getChatWithMessages(chatId: string, userId: string): Promi
         ...chat,
         messages: chat.messages.map(msg => ({
             id: msg.id,
-            role: msg.role as AIMessage['role'],
+            role: msg.role as UIMessage['role'],
             content: msg.content,
-            createdAt: msg.createdAt,
+            parts: [
+                {
+                    type: 'text' as const,
+                    text: msg.content,
+                }
+            ],
         })),
     };
 }
@@ -81,5 +87,12 @@ export async function getChatsForUser(userId: string): Promise<Pick<ChatWithMess
             updatedAt: true,
         },
         orderBy: { updatedAt: 'desc' },
+    });
+}
+
+export async function updateChatTitle(chatId: string, title: string): Promise<void> {
+    await prisma.chat.update({
+        where: { id: chatId },
+        data: { title },
     });
 }
