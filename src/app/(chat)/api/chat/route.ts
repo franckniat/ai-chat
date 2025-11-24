@@ -33,13 +33,14 @@ export async function POST(req: Request) {
 
     const lastMessage = messages[messages.length - 1];
 
-    // En v5, les messages peuvent avoir soit content (string) soit parts (array)
+    // En v5, les messages ont une structure parts (array)
     let userMessage = '';
-    if (typeof lastMessage.content === 'string') {
-        userMessage = lastMessage.content;
-    } else if (Array.isArray(lastMessage.parts)) {
-        const textPart = lastMessage.parts.find((p: any) => p.type === 'text');
+    if (Array.isArray(lastMessage.parts)) {
+        const textPart = lastMessage.parts.find((p: { type: string; text?: string }) => p.type === 'text');
         userMessage = textPart?.text || '';
+    } else if (typeof lastMessage.content === 'string') {
+        // Fallback pour compatibilité
+        userMessage = lastMessage.content;
     }
 
     let isNewChat = false;
