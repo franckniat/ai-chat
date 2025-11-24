@@ -17,3 +17,12 @@ export const getUserChatList = async (userId: string) => {
     });
     return chats;
 }
+
+export const getChatById = async (chatId: string) => {
+    const chat = await prisma.chat.findUnique({
+        where: {
+            id: chatId,
+        },
+    });
+    return chat;
+}

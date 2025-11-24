@@ -1,114 +1,122 @@
 "use client";
 
-import FormChat from "./form-chat";
+import { useChatContext } from "./chat-context";
+import { useMessages } from "@/hooks/use-messages";
+import { useEffect, useMemo, useRef, memo, useState } from "react";
 import { Avatar } from "../ui/avatar";
-import { useChat } from "@ai-sdk/react";
-import MessageFormatter from "./message-formatter";
-import { useEffect, memo, useMemo, useState, useRef } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import { useRouter } from "next/navigation";
-import { type Message as AIMessage } from "@ai-sdk/react";
-import { Bot, Loader2, Sparkles } from "lucide-react";
-import { ChatSDKError } from "@/lib/errors";
+import { Loader2, Sparkles, Copy, Share2, Check } from "lucide-react";
+import MessageFormatter from "./message-formatter";
+import { type UIMessage } from "ai";
 import { toast } from "sonner";
-import { useMessages } from "@/hooks/use-messages";
 
 // Composant mémorisé pour chaque message
-const MessageItem = memo(({ message }: { message: AIMessage }) => (
-    <div key={message.id} className="flex flex-col sm:flex-row gap-4 py-3 relative">
-        <div className="flex-1 space-y-2 group tracking-tight w-full">
-            {message.role === "user" && (
-                <div className="flex justify-end w-full">
-                    <div className="bg-foreground/10 border border-foreground/15 rounded-xl px-5 py-3">
-                        {message.content}
+const MessageItem = memo(({ message }: { message: UIMessage }) => {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = async () => {
+        const textContent = message.parts
+            .filter((part) => part.type === "text")
+            .map((part) => part.text)
+            .join("");
+
+        try {
+            await navigator.clipboard.writeText(textContent);
+            setCopied(true);
+            toast.success("Copié dans le presse-papier");
+            setTimeout(() => setCopied(false), 2000);
+        } catch (error) {
+            toast.error("Erreur lors de la copie");
+            console.error("Erreur lors de la copie dans le presse-papier:", error);
+        }
+    };
+
+    const handleShare = async () => {
+        const textContent = message.parts
+            .filter((part) => part.type === "text")
+            .map((part) => part.text)
+            .join("");
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: "Réponse niato ai",
+                    text: textContent,
+                });
+            } catch (error) {
+                console.error("Erreur lors du partage:", error);
+            }
+        } else {
+            // Fallback : copier dans le presse-papier
+            handleCopy();
+        }
+    };
+
+    return (
+        <div key={message.id} className="flex flex-col sm:flex-row gap-4 py-3 relative group">
+            <div className="flex-1 space-y-2 tracking-tight w-full">
+                {message.role === "user" && (
+                    <div className="flex justify-end w-full">
+                        <div className="bg-foreground/10 border border-foreground/15 rounded-xl px-5 py-3">
+                            {message.parts.map((part, index) => (
+                                <p key={index} className="whitespace-pre-wrap">
+                                    {part.type === "text" ? part.text : null}
+                                </p>
+                            ))}
+                        </div>
                     </div>
-                </div>
-            )}
-            {message.role === "assistant" && (
-                <div className="result-ai text-foreground/90 prose prose-base prose-neutral dark:prose-invert prose-headings:font-mono tracking-[0.03rem] max-w-[800px]">
-                    <MessageFormatter content={message.content} />
-                </div>
-            )}
-            {message.role === "assistant" && (
-                <div className="absolute -bottom-2 left-0 group-hover:block hidden">
-                    <p className="text-sm text-foreground/40">
-                        {message.createdAt &&
-                            message.createdAt.toLocaleTimeString("fr-FR", {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                            })}
-                    </p>
-                </div>
-            )}
+                )}
+                {message.role === "assistant" && (
+                    <div className="relative">
+                        <div className="result-ai text-foreground/90 prose prose-base prose-neutral dark:prose-invert prose-headings:font-mono tracking-[0.03rem] max-w-[800px]">
+                            {message.parts.map((part, index) => (
+                                <MessageFormatter key={index} content={part.type === "text" ? part.text : ""} />
+                            ))}
+                        </div>
+                        <div className="flex items-center gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleCopy}
+                                className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                            >
+                                {copied ? (
+                                    <>
+                                        <Check className="h-4 w-4 mr-1" />
+                                        <span className="text-xs">Copié</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Copy className="h-4 w-4 mr-1" />
+                                        <span className="text-xs">Copier</span>
+                                    </>
+                                )}
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleShare}
+                                className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                            >
+                                <Share2 className="h-4 w-4 mr-1" />
+                                <span className="text-xs">Partager</span>
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
-    </div>
-));
+    );
+});
 
 MessageItem.displayName = "MessageItem";
 
-export default function MessagesContent({
-    id,
-    initialMessages = [],
-}: {
-    id?: string;
-    initialMessages?: AIMessage[];
-}) {
-    const router = useRouter();
-    const [isCreatingChat, setIsCreatingChat] = useState(false);
+export default function MessageList() {
+    const { messages, status, isCreatingChat, handleInputChange, regenerate, error, chatId } =
+        useChatContext();
     const lastMessageContentRef = useRef<string>("");
-    const {
-        messages,
-        input,
-        handleInputChange,
-        handleSubmit,
-        status,
-        stop,
-        error,
-        reload,
-        setMessages,
-    } = useChat({
-        api: `/api/chat/${id as string}`,
-        initialMessages: initialMessages,
-        onError: (error) => {
-            if (error instanceof ChatSDKError) {
-                toast.error(error.message);
-            }
-        },
-    });
 
-    const handleFirstSubmit = async (e?: React.FormEvent) => {
-        if (e && typeof e.preventDefault === "function") {
-            e.preventDefault();
-        }
-
-        setIsCreatingChat(true);
-
-        try {
-            const res = await fetch("/api/chat/new", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ message: input }),
-            });
-
-            if (!res.ok) {
-                console.error("Error creating chat:", res.statusText);
-                toast.error("Erreur lors de la création du chat");
-                return;
-            }
-
-            const { chatId } = await res.json();
-            // Redirection simple, la réponse IA est déjà générée
-            router.push(`/chat/${chatId}`);
-        } catch (error) {
-            console.error("Error creating chat:", error);
-            toast.error("Erreur lors de la création du chat");
-        } finally {
-            setIsCreatingChat(false);
-        }
-    };
     const {
         containerRef,
         endRef,
@@ -118,17 +126,9 @@ export default function MessagesContent({
         onViewportLeave,
         hasSentMessage,
     } = useMessages({
-        chatId: id || "",
+        chatId: chatId || "",
         status,
     });
-
-    useEffect(() => {
-        if (id && initialMessages.length > 0) {
-            setMessages(initialMessages);
-        } else if (!id) {
-            setMessages([]);
-        }
-    }, [id, initialMessages, setMessages]);
 
     // Gestion automatique du défilement avec Intersection Observer
     useEffect(() => {
@@ -212,7 +212,7 @@ export default function MessagesContent({
         if (messages.length > 0) {
             const lastMessage = messages[messages.length - 1];
             if (lastMessage?.role === "assistant" && status === "streaming") {
-                const currentContent = lastMessage.content;
+                const currentContent = lastMessage.parts.map(part => part.type === "text" ? part.text : "").join("");
                 if (currentContent !== lastMessageContentRef.current) {
                     lastMessageContentRef.current = currentContent;
                     // Scroll quand le contenu change
@@ -247,7 +247,7 @@ export default function MessagesContent({
     return (
         <div className="relative pb-24">
             <div ref={containerRef} className="space-y-3 md:space-y-5 max-w-[800px] mx-auto px-3">
-                {!id && (
+                {!chatId && messages.length === 0 && (
                     <div className="space-y-3 flex flex-col items-center">
                         <Sparkles className="h-8 w-8 animate-pulse" />
                         <p className="text-center text-muted-foreground">
@@ -282,43 +282,25 @@ export default function MessagesContent({
                     <MessageItem key={m.id} message={m} />
                 ))}
                 {(status === "submitted" || isCreatingChat) && (
-                    <div className="flex flex-col sm:flex-row gap-2 py-6 relative">
+                    <div className="flex items-baseline flex-row gap-2 py-6 relative">
                         <Avatar className="border-2 border-primary cursor-pointer pointer-events-none flex items-center justify-center">
-                            <Bot size={20} />
+                            <Loader2 size={20} className="text-primary animate-spin" />
                         </Avatar>
                         <div className="flex-1 space-y-2 group">
-                            <p className="font-bold group-hover:text-primary">niato ai 🏄</p>
-                            <div className="result-ai text-foreground/90">
-                                <div className="flex items-center space-x-2">
-                                    <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                                    <span className="text-sm text-foreground/60">
-                                        {isCreatingChat
-                                            ? "Création de la conversation..."
-                                            : "Réflexion en cours..."}
-                                    </span>
-                                </div>
-                            </div>
+                            <p className="group-hover:text-primary text-sm">Thinking ...</p>
                         </div>
                     </div>
                 )}
                 {error && (
                     <div className="space-y-2">
                         <div className="text-red-500">Une erreur s&apos;est produite.</div>
-                        <Button type="button" onClick={() => reload()} variant="outline" size="sm">
+                        <Button type="button" onClick={() => regenerate()} variant="outline" size="sm">
                             Réessayer
                         </Button>
                     </div>
                 )}
                 <div ref={endRef} className="h-1" />
             </div>
-            <FormChat
-                name="prompt"
-                input={input}
-                handleInputChange={handleInputChange}
-                handleSubmit={id ? handleSubmit : handleFirstSubmit}
-                isLoading={status === "streaming" || status === "submitted" || isCreatingChat}
-                stop={stop}
-            />
         </div>
     );
 }
