@@ -1,13 +1,13 @@
-import {Resend} from "resend";
+import { Resend } from "resend";
 import { getUserByEmail } from "@/data/user";
-import { VerifyEmail } from "@/components/email/verify-email";
-import { ResetPasswordConfirmation } from "@/components/email/reset-password-confirmation";
+import { VerifyEmail } from "../../emails/verify-email";
+import { ResetPasswordConfirmation } from "../../emails/reset-password-confirmation";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export const sendVerificationEMail = async (email:string, url:string)=>{
+export const sendVerificationEMail = async (email: string, url: string) => {
     const user = await getUserByEmail(email)
-    if(!user) return {
+    if (!user) return {
         error: "Utilisateur non trouvé !"
     };
     await resend.emails.send({
@@ -22,9 +22,9 @@ export const sendVerificationEMail = async (email:string, url:string)=>{
     })
 }
 
-export const sendResetPasswordEMail = async (email:string, url:string)=>{
+export const sendResetPasswordEMail = async (email: string, url: string) => {
     const user = await getUserByEmail(email)
-    if(!user) return {
+    if (!user) return {
         error: "Utilisateur non trouvé !"
     };
     await resend.emails.send({
