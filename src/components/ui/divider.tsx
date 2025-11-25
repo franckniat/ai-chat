@@ -1,4 +1,4 @@
-import { Text, Hr, Tailwind } from "@react-email/components";
+import { Hr, Tailwind } from "@react-email/components";
 
 export function Divider() {
     return (
