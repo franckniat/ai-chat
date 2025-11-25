@@ -1,13 +1,32 @@
 "use client";
 import * as React from "react";
-import { Button } from "@/components/ui/button";
-import { ArrowUp, CircleStop } from "lucide-react";
+import {
+    PromptInput,
+    PromptInputActionAddAttachments,
+    PromptInputActionMenu,
+    PromptInputActionMenuContent,
+    PromptInputActionMenuTrigger,
+    //PromptInputAttachment,
+    //PromptInputAttachments,
+    PromptInputBody,
+    //PromptInputButton,
+    type PromptInputMessage,
+    //PromptInputSelect,
+    //PromptInputSelectContent,
+    //PromptInputSelectItem,
+    //PromptInputSelectTrigger,
+    //PromptInputSelectValue,
+    //PromptInputSpeechButton,
+    PromptInputSubmit,
+    PromptInputTextarea,
+    PromptInputFooter,
+    PromptInputTools,
+} from "@/components/ai-elements/prompt-input";
 import { useSidebar } from "../ui/sidebar";
-import { Textarea } from "../ui/textarea";
 
 interface FormChatProps {
     isLoading?: boolean;
-    handleSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
+    handleSubmit: (message: PromptInputMessage) => void;
     input?: string;
     handleInputChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
     stop?: () => void;
@@ -15,83 +34,73 @@ interface FormChatProps {
 }
 
 export default function FormChat({
-    isLoading,
     input,
     handleInputChange,
     handleSubmit,
-    stop,
-    name,
 }: FormChatProps) {
     const { state, isMobile } = useSidebar();
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "Enter" && e.shiftKey) {
-            e.preventDefault();
-            const val = input || "";
-            const selectionStart = e.currentTarget.selectionStart || 0;
-            const selectionEnd = e.currentTarget.selectionEnd || 0;
-            const before = val.slice(0, selectionStart);
-            const after = val.slice(selectionEnd) || "";
-            const newValue = `${before}\n${after}`;
-            handleInputChange?.({
-                target: { value: newValue },
-            } as React.ChangeEvent<HTMLTextAreaElement>);
-        } else if (e.key === "Enter") {
-            if (!input?.trim()) {
-                return;
-            }
-            e.preventDefault();
-            handleSubmit?.({} as React.FormEvent<HTMLFormElement>);
-        }
-    };
+    const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
     return (
         <div
             className={`fixed bottom-0 z-20 ${isMobile ? "w-full left-0" : ""} ${state === "expanded" ? "w-[calc(100%-16rem)]" : "w-[calc(100%-3rem)]"} bg-background/90 backdrop-blur-md`}
         >
-            <div className="max-w-[800px] mx-0 sm:mx-auto py-3 sm:px-3
-            md:py-5 md:px-3">
-                <form
-                    className="flex items-center gap-2 relative"
-                    onSubmit={handleSubmit}
-                >
-                    <Textarea
-                        name={name}
-                        className="w-full placeholder:text-sm placeholder:items-center md:placeholder:text-base resize-none overflow-y-auto placeholder:text-foreground/50 pr-12 mx-1 border-foreground/5 rounded-2xl min-h-14"
-                        placeholder="Envoyer un message"
-                        value={input}
-                        disabled={isLoading}
-                        onChange={handleInputChange}
-                        onKeyDown={handleKeyDown}
-                        autoFocus
-                        style={{
-                            height: "auto",
-                            maxHeight: isMobile ? "100px" : "250px",
-                        }}
-                    />
-                    {isLoading ? (
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            className="absolute right-4 bottom-2 rounded-full"
-                            onClick={stop}
-                        >
-                            <CircleStop size={20} />
-                        </Button>
-                    ) : (
-                        <Button
-                            type="submit"
-                            size={"icon"}
-                            disabled={isLoading || !input}
-                            className="absolute right-3 bottom-2 rounded-full"
-                        >
-                            <ArrowUp size={20} />
-                        </Button>
-                    )}
-                </form>
+            <div
+                className="max-w-[800px] mx-0 sm:mx-auto sm:px-3
+            md:py-5 md:px-3"
+            >
+                <PromptInput onSubmit={handleSubmit} className="mt-4" globalDrop multiple>
+                    {/* <PromptInputHeader>
+                        <PromptInputAttachments>
+                            {(attachment) => <PromptInputAttachment data={attachment} />}
+                        </PromptInputAttachments>
+                    </PromptInputHeader> */}
+                    <PromptInputBody>
+                        <PromptInputTextarea
+                            onChange={(e) => handleInputChange?.(e)}
+                            ref={textareaRef}
+                            value={input}
+                        />
+                    </PromptInputBody>
+                    <PromptInputFooter>
+                        <PromptInputTools>
+                            <PromptInputActionMenu>
+                                <PromptInputActionMenuTrigger />
+                                <PromptInputActionMenuContent>
+                                    <PromptInputActionAddAttachments />
+                                </PromptInputActionMenuContent>
+                            </PromptInputActionMenu>
+                            {/* <PromptInputButton
+                                onClick={() => setUseWebSearch(!useWebSearch)}
+                                variant={useWebSearch ? "default" : "ghost"}
+                            >
+                                <GlobeIcon size={16} />
+                                <span>Search</span>
+                            </PromptInputButton> */}
+                            {/* <PromptInputSelect
+                                onValueChange={(value) => {
+                                    setModel(value);
+                                }}
+                                value={model}
+                            >
+                                <PromptInputSelectTrigger>
+                                    <PromptInputSelectValue />
+                                </PromptInputSelectTrigger>
+                                <PromptInputSelectContent>
+                                    {models.map((model) => (
+                                        <PromptInputSelectItem key={model.id} value={model.id}>
+                                            {model.name}
+                                        </PromptInputSelectItem>
+                                    ))}
+                                </PromptInputSelectContent>
+                            </PromptInputSelect> */}
+                        </PromptInputTools>
+                        <PromptInputSubmit disabled={!input}  />
+                    </PromptInputFooter>
+                </PromptInput>
                 <p className="text-[8px] sm:text-xs text-center mt-3 text-foreground/50">
-                    Pensez à vérifier les informations que l&#039;IA vous donne, il peut
-                    arriver qu&#039;elle se trompe.
+                    Please verify the information provided by the AI, as it may sometimes be incorrect.
                 </p>
             </div>
         </div>

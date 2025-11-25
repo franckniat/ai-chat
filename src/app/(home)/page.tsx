@@ -1,12 +1,14 @@
-import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { ArrowRight, Bot, Zap, Shield, Sparkles, MessageSquare, CheckCircle2 } from "lucide-react";
-import Link from "next/link";
-import React from "react";
-import FeatureCard from "@/components/ui/FeatureCard";
-import FaqItem from "@/components/ui/FaqItem";
-import { TestimonialCard } from "@/components/ui/TestimonialCard";
+
+import { Badge } from '@/components/ui/badge'
+import {  buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { ArrowRight, Bot, Zap, Shield, Sparkles, MessageSquare, CheckCircle2 } from 'lucide-react'
+import Link from 'next/link'
+import React from 'react'
+import FeatureCard from '@/components/ui/FeatureCard'
+import FaqItem from '@/components/ui/FaqItem'
+import { TestimonialCard } from '@/components/ui/TestimonialCard'
+import { MagicCard } from '@/components/ui/magic-card'
 
 /**
  * ==============================================================================
@@ -211,7 +213,7 @@ export default function HomePage() {
               Final push to convert the visitor. Uses a distinct background style.
             */}
             <section className="py-20 px-6">
-                <div className="max-w-[1000px] mx-auto bg-primary/5 rounded-3xl p-8 md:p-16 text-center border border-primary/10">
+                <MagicCard className="max-w-[1000px] mx-auto bg-primary/5 rounded-3xl p-8 md:p-16 text-center border border-primary/10">
                     <h2 className="text-3xl md:text-5xl font-bold mb-6">
                         Ready to supercharge your productivity?
                     </h2>
@@ -228,8 +230,8 @@ export default function HomePage() {
                     >
                         Get Started for Free
                     </Link>
-                </div>
+                </MagicCard>
             </section>
         </div>
-    );
+    );  
 }

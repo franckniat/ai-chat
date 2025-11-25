@@ -1,9 +1,10 @@
-import MessagesContent from "@/components/chat/messages";
 import { auth } from "@/lib/auth";
 import { getChatWithMessages } from "@/lib/chat-store";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { type Message as AIMessage } from "@ai-sdk/react";
+import { type UIMessage } from "ai";
+import ChatInitializer from "@/components/chat/chat-initializer";
+import MessageList from "@/components/chat/message-list";
 
 export default async function ExistingChatPage({
 	params,
@@ -27,10 +28,11 @@ export default async function ExistingChatPage({
 
 	return (
 		<>
-			<MessagesContent
+			<ChatInitializer
 				id={chatData.id}
-				initialMessages={chatData.messages as AIMessage[]}
+				initialMessages={chatData.messages as UIMessage[]}
 			/>
+			<MessageList />
 		</>
 	);
 }
