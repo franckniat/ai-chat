@@ -39,9 +39,14 @@ export default function Navbar() {
             active: pathname === '/pricing',
         },
         {
-            href: '/contact',
-            label: 'Contact',
-            active: pathname === '/contact',
+            href: '/support',
+            label: 'Support',
+            active: pathname === '/support',
+        },
+        {
+            href: '/terms',
+            label: 'terms',
+            active: pathname === '/terms',
         },
     ]
 
