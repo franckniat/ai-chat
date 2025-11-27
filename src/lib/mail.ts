@@ -2,6 +2,7 @@ import { Resend } from "resend";
 import { getUserByEmail } from "@/data/user";
 import { VerifyEmail } from "../../emails/verify-email";
 import { ResetPasswordConfirmation } from "../../emails/reset-password-confirmation";
+import { SupportNotification } from "../../emails/support-notification";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -37,4 +38,32 @@ export const sendResetPasswordEMail = async (email: string, url: string) => {
             resetUrl: url,
         }) as React.ReactElement,
     })
+}
+
+export const sendSupportNotification = async (data: {
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+    type: "request" | "report";
+}) => {
+    try {
+        await resend.emails.send({
+            from: "Niato AI Support <support@ai.franckniat.site>",
+            to: process.env.SUPPORT_EMAIL || "support@ai.franckniat.site",
+            replyTo: data.email,
+            subject: `[${data.type === "request" ? "Demande" : "Signalement"}] ${data.subject}`,
+            react: SupportNotification({
+                name: data.name,
+                email: data.email,
+                subject: data.subject,
+                message: data.message,
+                type: data.type,
+            }) as React.ReactElement,
+        });
+        return { success: true };
+    } catch (error) {
+        console.error("Error sending support notification:", error);
+        return { error: "Erreur lors de l'envoi de la notification" };
+    }
 }
