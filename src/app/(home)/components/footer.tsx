@@ -6,7 +6,7 @@ export default function Footer() {
 		{ name: "Home", href: "/" },
 		{ name: "Products", href: "/posts" },
 		{ name: "Pricing", href: "/about" },
-		{ name: "Contact", href: "/contact" },
+		{ name: "support", href: "/support" },
 	];
 	return (
 		<footer className="py-10 border-t border-foreground/10 max-w-[1000px] mx-auto px-4 space-y-3 my-5">
