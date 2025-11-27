@@ -43,6 +43,11 @@ export default function Navbar() {
             label: 'Support',
             active: pathname === '/support',
         },
+        {
+            href: '/terms',
+            label: 'terms',
+            active: pathname === '/terms',
+        },
     ]
 
     useEffect(() => {

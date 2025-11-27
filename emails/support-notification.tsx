@@ -102,10 +102,14 @@ const logo = {
 };
 
 const contentSection = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: '0 24px',
 };
 
 const h1 = {
+
     fontSize: '24px',
     fontWeight: 'bold',
     margin: '0 0 24px',

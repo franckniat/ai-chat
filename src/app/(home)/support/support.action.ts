@@ -1,11 +1,12 @@
 "use server";
+// Action cote serveur
 
 import { actionClient } from "@/lib/safe-action";
 import { supportSchema } from "@/schemas/support";
 import { sendSupportNotification } from "@/lib/mail";
 
 export const submitSupportRequest = actionClient
-    .schema(supportSchema as any)
+    .schema(supportSchema)
     .action(async ({ parsedInput }) => {
         try {
             const result = await sendSupportNotification({

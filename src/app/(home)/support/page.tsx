@@ -73,8 +73,8 @@ export default function SupportPage() {
     }
 
     return (
-        <div className="min-h-screen py-20 px-4">
-            <div className="max-w-3xl mx-auto">
+        <div className="min-h-screen py-8 px-4">
+            <div className="max-w-2xl mx-auto">
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-bold mb-4">Centre d&apos;assistance</h1>
                     <p className="text-muted-foreground text-lg">

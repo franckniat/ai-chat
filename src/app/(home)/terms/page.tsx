@@ -16,7 +16,6 @@ export default function TermsPage() {
                 {/* Trust Banner */}
                 <div className="bg-primary/5 border border-primary/20 rounded-xl p-6 mb-12">
                     <div className="flex items-start gap-4">
-                        <Shield className="size-8 text-primary flex-shrink-0 mt-1" />
                         <div>
                             <h2 className="text-xl font-semibold mb-2">Vos données sont en sécurité</h2>
                             <p className="text-muted-foreground">
@@ -30,7 +29,6 @@ export default function TermsPage() {
                 {/* Table of Contents */}
                 <div className="bg-card border rounded-xl p-6 mb-8">
                     <h3 className="font-semibold mb-4 flex items-center gap-2">
-                        <FileText className="size-5" />
                         Table des matières
                     </h3>
                     <nav className="space-y-2">

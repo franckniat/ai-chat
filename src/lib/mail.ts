@@ -6,6 +6,7 @@ import { SupportNotification } from "../../emails/support-notification";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// verification email
 export const sendVerificationEMail = async (email: string, url: string) => {
     const user = await getUserByEmail(email)
     if (!user) return {
@@ -23,6 +24,7 @@ export const sendVerificationEMail = async (email: string, url: string) => {
     })
 }
 
+// reset password email
 export const sendResetPasswordEMail = async (email: string, url: string) => {
     const user = await getUserByEmail(email)
     if (!user) return {
@@ -40,6 +42,7 @@ export const sendResetPasswordEMail = async (email: string, url: string) => {
     })
 }
 
+// support notification email
 export const sendSupportNotification = async (data: {
     name: string;
     email: string;
@@ -50,7 +53,7 @@ export const sendSupportNotification = async (data: {
     try {
         await resend.emails.send({
             from: "Niato AI Support <support@ai.franckniat.site>",
-            to: process.env.SUPPORT_EMAIL || "support@ai.franckniat.site",
+            to: process.env.SUPPORT_EMAIL || "lekeumoruissel@gmail.com",
             replyTo: data.email,
             subject: `[${data.type === "request" ? "Demande" : "Signalement"}] ${data.subject}`,
             react: SupportNotification({
