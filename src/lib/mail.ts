@@ -42,6 +42,7 @@ export const sendResetPasswordEMail = async (email: string, url: string) => {
     })
 }
 
+
 // support notification email
 export const sendSupportNotification = async (data: {
     name: string;
