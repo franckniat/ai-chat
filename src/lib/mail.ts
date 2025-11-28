@@ -6,6 +6,7 @@ import { SupportNotification } from "../../emails/support-notification";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// verification email
 export const sendVerificationEMail = async (email: string, url: string) => {
     const user = await getUserByEmail(email)
     if (!user) return {
@@ -23,6 +24,7 @@ export const sendVerificationEMail = async (email: string, url: string) => {
     })
 }
 
+// reset password email
 export const sendResetPasswordEMail = async (email: string, url: string) => {
     const user = await getUserByEmail(email)
     if (!user) return {
