@@ -40,13 +40,8 @@ export default function Navbar() {
         },
         {
             href: '/support',
-            label: 'Support',
+            label: 'Contact',
             active: pathname === '/support',
-        },
-        {
-            href: '/terms',
-            label: 'terms',
-            active: pathname === '/terms',
         },
     ]
 

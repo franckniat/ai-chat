@@ -2,17 +2,11 @@ import { Resend } from "resend";
 import { getUserByEmail } from "@/data/user";
 import { VerifyEmail } from "../../emails/verify-email";
 import { ResetPasswordConfirmation } from "../../emails/reset-password-confirmation";
-<<<<<<< HEAD
 import { SupportNotification } from "../../emails/support-notification";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // verification email
-=======
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
->>>>>>> upstream/main
 export const sendVerificationEMail = async (email: string, url: string) => {
     const user = await getUserByEmail(email)
     if (!user) return {
@@ -30,10 +24,7 @@ export const sendVerificationEMail = async (email: string, url: string) => {
     })
 }
 
-<<<<<<< HEAD
 // reset password email
-=======
->>>>>>> upstream/main
 export const sendResetPasswordEMail = async (email: string, url: string) => {
     const user = await getUserByEmail(email)
     if (!user) return {
