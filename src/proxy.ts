@@ -7,7 +7,7 @@ const passwordRoutes = ["/reset-password", "/forgot-password"];
 const protectedRoutes = ["/chat"];
 const apiAuthRoutes = ["/api/auth/"];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
 
 	const { data: session } = await betterFetch<Session>(
 		"/api/auth/get-session",

@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
-import { Geist_Mono, JetBrains_Mono, Instrument_Sans } from 'next/font/google'
+import { Geist_Mono, JetBrains_Mono, Public_Sans } from 'next/font/google'
 import { Providers } from '@/providers'
 import './globals.css'
 import { Analytics } from '@vercel/analytics/next'
 
-const instrumentSans = Instrument_Sans({
-    variable: '--font-instrument-sans',
+const publicSans = Public_Sans({
+    variable: '--font-public-sans',
     subsets: ['latin'],
 })
 
@@ -33,7 +33,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body
-                className={` ${instrumentSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} font-sans tracking-[0.05rem] text-pretty antialiased`}
+                className={` ${publicSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} font-sans tracking-[0.05rem] text-pretty antialiased`}
             >
                 <Providers>{children}</Providers>
                 <Analytics />
