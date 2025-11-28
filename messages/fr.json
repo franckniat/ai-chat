@@ -1,0 +1,223 @@
+{
+    "HomePage": {
+        "badge": "Nouveau : Discutez gratuitement avec GPT-4.1",
+        "headline": "Libérez la puissance de",
+        "headlineHighlight": "l'Intelligence Artificielle",
+        "subheadline": "Découvrez la nouvelle génération de chat IA. Basculez facilement entre les modèles, analysez des documents et boostez votre productivité avec Niato AI.",
+        "ctaChat": "Commencer à discuter",
+        "ctaPricing": "Voir les tarifs",
+        "whyChoose": "Pourquoi choisir Niato AI ?",
+        "whyChooseSub": "Conçu pour les développeurs, créateurs et professionnels qui ont besoin d'une assistance IA fiable.",
+        "features": {
+            "multiModel": {
+                "title": "Support Multi-Modèles",
+                "desc": "Accédez à GPT-4, Claude 3 et Gemini Pro dans une interface unifiée."
+            },
+            "fast": {
+                "title": "Ultra Rapide",
+                "desc": "Optimisé pour la vitesse avec des réponses en streaming et une faible latence."
+            },
+            "secure": {
+                "title": "Sécurisé & Privé",
+                "desc": "Vos données sont chiffrées. Nous priorisons votre confidentialité et la sécurité des données."
+            },
+            "context": {
+                "title": "Contexte Intelligent",
+                "desc": "Gestion avancée du contexte pour des conversations plus longues et cohérentes."
+            },
+            "history": {
+                "title": "Historique de Chat",
+                "desc": "Sauvegardez, organisez et recherchez dans vos conversations passées sans effort."
+            },
+            "code": {
+                "title": "Coloration Syntaxique",
+                "desc": "Belle coloration syntaxique pour plus de 100 langages de programmation."
+            }
+        },
+        "testimonialsTitle": "Aimé par des milliers",
+        "faqTitle": "Questions Fréquentes",
+        "faq": {
+            "freePlan": {
+                "q": "Y a-t-il un plan gratuit ?",
+                "a": "Oui ! Vous pouvez utiliser nos modèles de base gratuitement pour toujours. Passez à la version supérieure uniquement si vous avez besoin d'accéder aux modèles premium comme GPT-4."
+            },
+            "credits": {
+                "q": "Comment fonctionne le système de crédits ?",
+                "a": "Nous utilisons un système simple de paiement à l'utilisation pour les modèles premium. Vous ne payez que ce que vous utilisez, sans frais mensuels cachés."
+            },
+            "cancel": {
+                "q": "Puis-je annuler à tout moment ?",
+                "a": "Absolument. Il n'y a pas de contrat à long terme. Vous pouvez annuler votre abonnement à tout moment depuis votre tableau de bord."
+            }
+        },
+        "ctaFinal": {
+            "title": "Prêt à booster votre productivité ?",
+            "desc": "Rejoignez des milliers d'utilisateurs qui utilisent déjà Niato AI pour travailler plus intelligemment.",
+            "button": "Commencer gratuitement"
+        }
+    },
+    "Navbar": {
+        "home": "Accueil",
+        "products": "Produits",
+        "pricing": "Tarifs",
+        "support": "Support",
+        "login": "Connexion",
+        "register": "S'inscrire",
+        "dashboard": "Tableau de bord",
+        "logout": "Déconnexion"
+    },
+    "Footer": {
+        "rights": "Tous droits réservés.",
+        "product": "Produit",
+        "features": "Fonctionnalités",
+        "pricing": "Tarifs",
+        "company": "Entreprise",
+        "about": "À propos",
+        "blog": "Blog",
+        "careers": "Carrières",
+        "legal": "Légal",
+        "privacy": "Confidentialité",
+        "terms": "Conditions",
+        "support": "Support",
+        "help": "Centre d'aide",
+        "contact": "Contact",
+        "status": "Statut"
+    },
+    "Support": {
+        "title": "Centre d'assistance",
+        "subtitle": "Besoin d'aide ? Envoyez-nous votre demande ou signalez un problème.",
+        "form": {
+            "type": "Type de demande",
+            "typePlaceholder": "Sélectionnez un type",
+            "typeRequest": "Demande d'assistance",
+            "typeReport": "Signalement",
+            "name": "Nom complet",
+            "namePlaceholder": "Jean Dupont",
+            "email": "Email",
+            "emailPlaceholder": "jean.dupont@example.com",
+            "subject": "Sujet",
+            "subjectPlaceholder": "Décrivez brièvement votre demande",
+            "message": "Message",
+            "messagePlaceholder": "Décrivez votre demande en détail...",
+            "submit": "Envoyer la demande",
+            "submitting": "Envoi en cours...",
+            "success": "Votre demande a été envoyée avec succès.",
+            "error": "Une erreur est survenue lors de l'envoi."
+        },
+        "footer": "Nous nous efforçons de répondre à toutes les demandes dans les 24-48 heures."
+    },
+    "Terms": {
+        "title": "Conditions d'utilisation et Confidentialité",
+        "lastUpdated": "Dernière mise à jour : {date}",
+        "trust": {
+            "title": "Vos données sont en sécurité",
+            "desc": "Nous nous engageons à protéger votre vie privée et à traiter vos données avec le plus grand soin. Vos informations personnelles sont chiffrées et stockées de manière sécurisée."
+        },
+        "toc": "Table des matières",
+        "sections": {
+            "terms": "1. Conditions d'utilisation",
+            "privacy": "2. Politique de confidentialité",
+            "dataCollection": "2.1 Données collectées",
+            "dataUsage": "2.2 Utilisation des données",
+            "dataSecurity": "2.3 Sécurité des données",
+            "userRights": "2.4 Vos droits"
+        },
+        "terms": {
+            "acceptance": {
+                "title": "1.1 Acceptation des conditions",
+                "content": "En accédant et en utilisant Niato AI, vous acceptez d'être lié par ces conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser notre service."
+            },
+            "usage": {
+                "title": "1.2 Utilisation du service",
+                "intro": "Vous vous engagez à :",
+                "list": {
+                    "legal": "Utiliser le service de manière légale et éthique",
+                    "security": "Ne pas tenter de contourner les mesures de sécurité",
+                    "illegal": "Ne pas utiliser le service pour des activités illégales ou nuisibles",
+                    "ip": "Respecter les droits de propriété intellectuelle",
+                    "confidentiality": "Maintenir la confidentialité de vos identifiants de connexion"
+                }
+            },
+            "ip": {
+                "title": "1.3 Propriété intellectuelle",
+                "content": "Tout le contenu, les fonctionnalités et les technologies de Niato AI sont la propriété exclusive de Niato AI et sont protégés par les lois sur la propriété intellectuelle."
+            },
+            "liability": {
+                "title": "1.4 Limitation de responsabilité",
+                "content": "Niato AI est fourni \"tel quel\" sans garantie d'aucune sorte. Nous ne sommes pas responsables des dommages directs, indirects, accessoires ou consécutifs résultant de l'utilisation du service."
+            }
+        },
+        "privacy": {
+            "collection": {
+                "title": "2.1 Données collectées",
+                "intro": "Nous collectons les types de données suivants :",
+                "account": {
+                    "title": "Informations de compte",
+                    "list": {
+                        "name": "Nom et prénom",
+                        "email": "Adresse email",
+                        "photo": "Photo de profil (optionnelle)"
+                    }
+                },
+                "usage": {
+                    "title": "Données d'utilisation",
+                    "list": {
+                        "history": "Historique des conversations avec l'IA",
+                        "prefs": "Préférences et paramètres",
+                        "nav": "Données de navigation (cookies, adresse IP)"
+                    }
+                }
+            },
+            "usage": {
+                "title": "2.2 Utilisation des données",
+                "intro": "Nous utilisons vos données pour :",
+                "list": {
+                    "service": "Fournir et améliorer nos services",
+                    "personalization": "Personnaliser votre expérience utilisateur",
+                    "communication": "Communiquer avec vous concernant votre compte",
+                    "security": "Assurer la sécurité et prévenir la fraude",
+                    "analysis": "Analyser l'utilisation du service pour l'améliorer"
+                },
+                "important": "Important : Nous ne vendons jamais vos données personnelles à des tiers."
+            },
+            "security": {
+                "title": "2.3 Sécurité des données",
+                "intro": "Nous mettons en œuvre des mesures de sécurité robustes :",
+                "encryption": {
+                    "title": "🔒 Chiffrement",
+                    "desc": "Toutes les données sont chiffrées en transit (HTTPS) et au repos"
+                },
+                "protection": {
+                    "title": "🛡️ Protection",
+                    "desc": "Authentification sécurisée et protection contre les accès non autorisés"
+                },
+                "access": {
+                    "title": "🔐 Contrôle d'accès",
+                    "desc": "Accès limité aux données par le personnel autorisé uniquement"
+                },
+                "monitoring": {
+                    "title": "📊 Surveillance",
+                    "desc": "Surveillance continue pour détecter les activités suspectes"
+                }
+            },
+            "rights": {
+                "title": "2.4 Vos droits (RGPD)",
+                "intro": "Conformément au RGPD, vous disposez des droits suivants :",
+                "list": {
+                    "access": "Droit d'accès : Obtenir une copie de vos données personnelles",
+                    "rectification": "Droit de rectification : Corriger vos données inexactes",
+                    "erasure": "Droit à l'effacement : Demander la suppression de vos données",
+                    "portability": "Droit à la portabilité : Recevoir vos données dans un format structuré",
+                    "objection": "Droit d'opposition : Vous opposer au traitement de vos données",
+                    "restriction": "Droit de limitation : Limiter le traitement de vos données"
+                },
+                "contact": "Pour exercer vos droits, contactez-nous via la <link>page de support</link>."
+            }
+        },
+        "contact": {
+            "title": "Questions ?",
+            "desc": "Si vous avez des questions concernant ces conditions ou notre politique de confidentialité, n'hésitez pas à nous contacter.",
+            "button": "Contactez-nous"
+        }
+    }
+}

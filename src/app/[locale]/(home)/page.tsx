@@ -3,8 +3,9 @@ import { Badge } from '@/components/ui/badge'
 import {  buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ArrowRight, Bot, Zap, Shield, Sparkles, MessageSquare, CheckCircle2 } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import FeatureCard from '@/components/ui/FeatureCard'
 import FaqItem from '@/components/ui/FaqItem'
 import { TestimonialCard } from '@/components/ui/TestimonialCard'
@@ -24,6 +25,8 @@ import { MagicCard } from '@/components/ui/magic-card'
  * ==============================================================================
  */
 export default function HomePage() {
+    const t = useTranslations('HomePage');
+
     return (
         <div className="flex flex-col min-h-screen">
             {/* 
@@ -44,24 +47,23 @@ export default function HomePage() {
                                 className="px-4 py-2 text-sm rounded-full backdrop-blur-sm"
                             >
                                 <span className="mr-2">🚀</span>
-                                New: Chat with GPT-4.1 for free
+                                {t('badge')}
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Badge>
                         </Link>
 
                         {/* Main Headline with Gradient Effect */}
                         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight font-mono">
-                            Unlock the power of <br className="hidden md:block" />
+                            {t('headline')} <br className="hidden md:block" />
                             <span className="text-primary relative inline-block mt-2">
-                                AI Intelligence
+                                {t('headlineHighlight')}
                                 <span className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-primary/0 via-primary to-primary/0 rounded-full opacity-50" />
                             </span>
                         </h1>
 
                         {/* Subheadline */}
                         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                            Experience the next generation of AI chat. Seamlessly switch between
-                            models, analyze documents, and boost your productivity with Niato AI.
+                            {t('subheadline')}
                         </p>
 
                         {/* Primary Call to Actions */}
@@ -73,7 +75,7 @@ export default function HomePage() {
                                     "w-full sm:w-auto px-8 text-lg h-12 rounded-full shadow-lg hover:shadow-primary/25 transition-all"
                                 )}
                             >
-                                Start Chatting
+                                {t('ctaChat')}
                                 <MessageSquare className="ml-2 h-5 w-5" />
                             </Link>
                             <Link
@@ -83,7 +85,7 @@ export default function HomePage() {
                                     "w-full sm:w-auto px-8 text-lg h-12 rounded-full"
                                 )}
                             >
-                                View Pricing
+                                {t('ctaPricing')}
                             </Link>
                         </div>
                     </div>
@@ -101,44 +103,43 @@ export default function HomePage() {
                 <div className="max-w-[1280px] mx-auto px-6">
                     <div className="text-center mb-16">
                         <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                            Why choose Niato AI?
+                            {t('whyChoose')}
                         </h2>
                         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                            Built for developers, creators, and professionals who need reliable AI
-                            assistance.
+                            {t('whyChooseSub')}
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <FeatureCard
                             icon={<Bot className="h-10 w-10 text-primary" />}
-                            title="Multi-Model Support"
-                            description="Access GPT-4, Claude 3, and Gemini Pro all in one unified interface."
+                            title={t('features.multiModel.title')}
+                            description={t('features.multiModel.desc')}
                         />
                         <FeatureCard
                             icon={<Zap className="h-10 w-10 text-primary" />}
-                            title="Lightning Fast"
-                            description="Optimized for speed with streaming responses and low latency edge computing."
+                            title={t('features.fast.title')}
+                            description={t('features.fast.desc')}
                         />
                         <FeatureCard
                             icon={<Shield className="h-10 w-10 text-primary" />}
-                            title="Secure & Private"
-                            description="Your data is encrypted. We prioritize your privacy and data security."
+                            title={t('features.secure.title')}
+                            description={t('features.secure.desc')}
                         />
                         <FeatureCard
                             icon={<Sparkles className="h-10 w-10 text-primary" />}
-                            title="Smart Context"
-                            description="Advanced context management allows for longer, more coherent conversations."
+                            title={t('features.context.title')}
+                            description={t('features.context.desc')}
                         />
                         <FeatureCard
                             icon={<MessageSquare className="h-10 w-10 text-primary" />}
-                            title="Chat History"
-                            description="Save, organize, and search through your past conversations effortlessly."
+                            title={t('features.history.title')}
+                            description={t('features.history.desc')}
                         />
                         <FeatureCard
                             icon={<CheckCircle2 className="h-10 w-10 text-primary" />}
-                            title="Code Highlighting"
-                            description="Beautiful syntax highlighting for over 100 programming languages."
+                            title={t('features.code.title')}
+                            description={t('features.code.desc')}
                         />
                     </div>
                 </div>
@@ -153,7 +154,7 @@ export default function HomePage() {
             <section className="py-20">
                 <div className="max-w-[1280px] mx-auto px-6">
                     <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-                        Loved by thousands
+                        {t('testimonialsTitle')}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <TestimonialCard
@@ -187,20 +188,20 @@ export default function HomePage() {
             <section className="py-20 bg-muted/30">
                 <div className="max-w-[800px] mx-auto px-6">
                     <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-                        Frequently Asked Questions
+                        {t('faqTitle')}
                     </h2>
                     <div className="space-y-4">
                         <FaqItem
-                            question="Is there a free plan?"
-                            answer="Yes! You can use our basic models for free forever. Upgrade only when you need access to premium models like GPT-4."
+                            question={t('faq.freePlan.q')}
+                            answer={t('faq.freePlan.a')}
                         />
                         <FaqItem
-                            question="How does the credit system work?"
-                            answer="We use a simple pay-as-you-go system for premium models. You only pay for what you use, with no hidden monthly fees."
+                            question={t('faq.credits.q')}
+                            answer={t('faq.credits.a')}
                         />
                         <FaqItem
-                            question="Can I cancel anytime?"
-                            answer="Absolutely. There are no long-term contracts. You can cancel your subscription at any time from your dashboard."
+                            question={t('faq.cancel.q')}
+                            answer={t('faq.cancel.a')}
                         />
                     </div>
                 </div>
@@ -215,11 +216,10 @@ export default function HomePage() {
             <section className="py-20 px-6">
                 <MagicCard className="max-w-[1000px] mx-auto bg-primary/5 rounded-3xl p-8 md:p-16 text-center border border-primary/10">
                     <h2 className="text-3xl md:text-5xl font-bold mb-6">
-                        Ready to supercharge your productivity?
+                        {t('ctaFinal.title')}
                     </h2>
                     <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                        Join thousands of users who are already using Niato AI to work smarter, not
-                        harder.
+                        {t('ctaFinal.desc')}
                     </p>
                     <Link
                         href="/chat"
@@ -228,7 +228,7 @@ export default function HomePage() {
                             "w-full sm:w-auto px-8 text-lg h-12 rounded-full shadow-lg hover:shadow-primary/25 transition-all"
                         )}
                     >
-                        Get Started for Free
+                        {t('ctaFinal.button')}
                     </Link>
                 </MagicCard>
             </section>

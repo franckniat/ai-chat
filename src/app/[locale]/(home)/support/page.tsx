@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslations } from 'next-intl'
 import { supportSchema, type SupportFormData } from '@/schemas/support'
 import { submitSupportRequest } from './support.action'
 import { Button } from '@/components/ui/button'
@@ -26,6 +27,7 @@ import {
 import { Loader2, Send, CheckCircle2, AlertCircle } from 'lucide-react'
 
 export default function SupportPage() {
+    const t = useTranslations('Support');
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [submitStatus, setSubmitStatus] = useState<{
         type: 'success' | 'error' | null
@@ -53,19 +55,19 @@ export default function SupportPage() {
             if (result?.data?.success) {
                 setSubmitStatus({
                     type: 'success',
-                    message: result.data.message,
+                    message: t('form.success'), // Use translation instead of server message for now
                 })
                 form.reset()
             } else {
                 setSubmitStatus({
                     type: 'error',
-                    message: result?.data?.message || 'Une erreur est survenue',
+                    message: result?.data?.message || t('form.error'),
                 })
             }
         } catch {
             setSubmitStatus({
                 type: 'error',
-                message: 'Une erreur est survenue lors de l\'envoi',
+                message: t('form.error'),
             })
         } finally {
             setIsSubmitting(false)
@@ -76,9 +78,9 @@ export default function SupportPage() {
         <div className="min-h-screen py-8 px-4">
             <div className="max-w-2xl mx-auto">
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold mb-4">Centre d&apos;assistance</h1>
+                    <h1 className="text-4xl font-bold mb-4">{t('title')}</h1>
                     <p className="text-muted-foreground text-lg">
-                        Besoin d&apos;aide ? Envoyez-nous votre demande ou signalez un problème.
+                        {t('subtitle')}
                     </p>
                 </div>
 
@@ -107,19 +109,19 @@ export default function SupportPage() {
                                 name="type"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Type de demande</FormLabel>
+                                        <FormLabel>{t('form.type')}</FormLabel>
                                         <Select
                                             onValueChange={field.onChange}
                                             defaultValue={field.value}
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Sélectionnez un type" />
+                                                    <SelectValue placeholder={t('form.typePlaceholder')} />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="request">Demande d&apos;assistance</SelectItem>
-                                                <SelectItem value="report">Signalement</SelectItem>
+                                                <SelectItem value="request">{t('form.typeRequest')}</SelectItem>
+                                                <SelectItem value="report">{t('form.typeReport')}</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -132,9 +134,9 @@ export default function SupportPage() {
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Nom complet</FormLabel>
+                                        <FormLabel>{t('form.name')}</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Jean Dupont" {...field} />
+                                            <Input placeholder={t('form.namePlaceholder')} {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -146,11 +148,11 @@ export default function SupportPage() {
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Email</FormLabel>
+                                        <FormLabel>{t('form.email')}</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="email"
-                                                placeholder="jean.dupont@example.com"
+                                                placeholder={t('form.emailPlaceholder')}
                                                 {...field}
                                             />
                                         </FormControl>
@@ -164,10 +166,10 @@ export default function SupportPage() {
                                 name="subject"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Sujet</FormLabel>
+                                        <FormLabel>{t('form.subject')}</FormLabel>
                                         <FormControl>
                                             <Input
-                                                placeholder="Décrivez brièvement votre demande"
+                                                placeholder={t('form.subjectPlaceholder')}
                                                 {...field}
                                             />
                                         </FormControl>
@@ -181,10 +183,10 @@ export default function SupportPage() {
                                 name="message"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Message</FormLabel>
+                                        <FormLabel>{t('form.message')}</FormLabel>
                                         <FormControl>
                                             <Textarea
-                                                placeholder="Décrivez votre demande en détail..."
+                                                placeholder={t('form.messagePlaceholder')}
                                                 className="min-h-[150px] resize-none"
                                                 {...field}
                                             />
@@ -203,12 +205,12 @@ export default function SupportPage() {
                                 {isSubmitting ? (
                                     <>
                                         <Loader2 className="mr-2 size-4 animate-spin" />
-                                        Envoi en cours...
+                                        {t('form.submitting')}
                                     </>
                                 ) : (
                                     <>
                                         <Send className="mr-2 size-4" />
-                                        Envoyer la demande
+                                        {t('form.submit')}
                                     </>
                                 )}
                             </Button>
@@ -218,7 +220,7 @@ export default function SupportPage() {
 
                 <div className="mt-8 text-center text-sm text-muted-foreground">
                     <p>
-                        Nous nous efforçons de répondre à toutes les demandes dans les 24-48 heures.
+                        {t('footer')}
                     </p>
                 </div>
             </div>

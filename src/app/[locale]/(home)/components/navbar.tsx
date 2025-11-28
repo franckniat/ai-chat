@@ -15,32 +15,35 @@ import { signOut } from '@/lib/auth-client';
 import { useSession } from '@/lib/auth-client'
 import { Moon, Sparkles, SquareArrowOutUpRight, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { Link, usePathname } from '@/i18n/routing'
+import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
+import { LanguageSwitcher } from '@/components/language-switcher'
 
 export default function Navbar() {
     const { theme, setTheme } = useTheme()
     const pathname = usePathname()
+    const t = useTranslations('Navbar')
+    
     const navLinks = [
         {
             href: '/',
-            label: 'Home',
+            label: t('home'),
             active: pathname === '/',
         },
         {
             href: '/products',
-            label: 'Products',
+            label: t('products'),
             active: pathname === '/products',
         },
         {
             href: '/pricing',
-            label: 'Pricing',
+            label: t('pricing'),
             active: pathname === '/pricing',
         },
         {
             href: '/support',
-            label: 'Contact',
+            label: t('support'),
             active: pathname === '/support',
         },
     ]
@@ -102,6 +105,7 @@ export default function Navbar() {
                         ))}
                     </div>
                     <div className="flex items-center gap-3">
+                        <LanguageSwitcher />
                         <Button
                             className="relative"
                             variant={'ghost'}
@@ -142,7 +146,7 @@ export default function Navbar() {
                                             <Link href="/settings" className="flex items-center gap-3 cursor-pointer">Settings</Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem asChild variant="destructive">
-                                            <button onClick={handleLogout} className="flex items-center gap-3 cursor-pointer w-full">Logout</button>
+                                            <button onClick={handleLogout} className="flex items-center gap-3 cursor-pointer w-full">{t('logout')}</button>
                                         </DropdownMenuItem>
                                     </DropdownMenuGroup>
                                 </DropdownMenuContent>
@@ -150,7 +154,7 @@ export default function Navbar() {
                         ) : (
                             <Link href={'/login'}>
                                 <Button size={'sm'} className="hidden md:block text-sm">
-                                    Get Started
+                                    {t('register')}
                                 </Button>
                             </Link>
                         )}
