@@ -39,9 +39,9 @@ export default function Navbar() {
             active: pathname === '/pricing',
         },
         {
-            href: '/contact',
+            href: '/support',
             label: 'Contact',
-            active: pathname === '/contact',
+            active: pathname === '/support',
         },
     ]
 
@@ -74,6 +74,7 @@ export default function Navbar() {
         }
     }, [])
     const { data: session } = useSession()
+    
     const handleLogout = async () => {
         try {
             await signOut();
@@ -115,16 +116,14 @@ export default function Navbar() {
                             <DropdownMenu>
                                 <DropdownMenuTrigger className="cursor-pointer rounded-full">
                                     <Avatar>
+                                        <AvatarImage
+                                            src={session.user?.image || undefined}
+                                            alt="User Avatar"
+                                            className="object-cover"
+                                        />
                                         <AvatarFallback>
                                             {session.user?.name?.charAt(0).toUpperCase()}
                                         </AvatarFallback>
-                                        {session.user?.image && (
-                                            <AvatarImage
-                                                src={session.user?.image}
-                                                alt="User Avatar"
-                                                className="object-cover"
-                                            />
-                                        )}
                                     </Avatar>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent>

@@ -12,14 +12,19 @@ import {
     Text,
     Font,
 } from "@react-email/components";
+import { Divider } from '@/components/ui/divider';
 
-interface VerifyEmailProps {
+interface ResetPasswordConfirmationProps {
     name?: string | null
-    email: string
-    verifyUrl: string
+    email?: string
+    resetUrl?: string
 }
 
-export const VerifyEmail: React.FC<Readonly<VerifyEmailProps>> = ({ name, email, verifyUrl }) => {
+export const ResetPasswordConfirmation: React.FC<Readonly<ResetPasswordConfirmationProps>> = ({
+    name = "John Doe",
+    email = "john@example.com",
+    resetUrl = "https://example.com/reset-password?token=abc123",
+}) => {
     return (
         <Html>
             <Head>
@@ -34,30 +39,34 @@ export const VerifyEmail: React.FC<Readonly<VerifyEmailProps>> = ({ name, email,
                     fontStyle="normal"
                 />
             </Head>
-            <Preview>Vérifiez votre email</Preview>
+            <Preview>Réinitialisation de votre mot de passe</Preview>
             <Body style={main}>
                 <Container style={container}>
                     <Section style={logoSection}>
                         <Heading style={logo}>niato ai.</Heading>
                     </Section>
                     <Section style={contentSection}>
-                        <Heading style={h1}>Vérifiez votre email</Heading>
+                        <Heading style={h1}>Réinitialiser votre mot de passe</Heading>
                         <Text style={text}>
-                            Bonjour {name || '👋'}, confirmez votre adresse email pour activer
-                            votre compte Niato AI.
+                            Bonjour {name || '👋'}, nous avons reçu une demande de
+                            réinitialisation de mot de passe pour le compte associé à {email}.
                         </Text>
-                        <Text style={text}>Adresse: {email}</Text>
                         <Section style={btnSection}>
-                            <Button style={button} href={verifyUrl}>
-                                Vérifier mon email
+                            <Button style={button} href={resetUrl}>
+                                Réinitialiser le mot de passe
                             </Button>
                         </Section>
+                        <Text style={text}>
+                            Si vous n&apos;êtes pas à l&apos;origine de cette demande, vous
+                            pouvez ignorer cet email en toute sécurité.
+                        </Text>
+                        <Divider />
                         <Text style={text}>
                             Si le bouton ne fonctionne pas, copiez-collez ce lien dans votre
                             navigateur:
                         </Text>
-                        <Link href={verifyUrl} style={link}>
-                            {verifyUrl}
+                        <Link href={resetUrl} style={link}>
+                            {resetUrl}
                         </Link>
                     </Section>
                     <Text style={footer}>
@@ -69,7 +78,7 @@ export const VerifyEmail: React.FC<Readonly<VerifyEmailProps>> = ({ name, email,
     )
 }
 
-export default VerifyEmail
+export default ResetPasswordConfirmation
 
 const main = {
     backgroundColor: '#ffffff',
@@ -100,6 +109,9 @@ const contentSection = {
 };
 
 const h1 = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',   
     fontSize: '24px',
     fontWeight: 'bold',
     margin: '0 0 16px',
@@ -132,6 +144,9 @@ const button = {
 };
 
 const link = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     color: '#0f172a',
     textDecoration: 'underline',
     wordBreak: 'break-all' as const,
