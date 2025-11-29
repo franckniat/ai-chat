@@ -10,12 +10,40 @@ import FormChat from "./form-chat";
 import { DefaultChatTransport } from "ai";
 import { PromptInputMessage } from "../ai-elements/prompt-input";
 
+export const models = [
+    {
+        id: "gemini-2.0-flash-exp",
+        name: "Gemini 2.0 Flash",
+        chef: "Google",
+        chefSlug: "google",
+        providers: ["google", "google-vertex"],
+    },
+    {
+        id: "gemini-1.5-pro",
+        name: "Gemini 1.5 Pro",
+        chef: "Google",
+        chefSlug: "google",
+        providers: ["google", "google-vertex"],
+    },
+    {
+        id: "gemini-1.5-flash",
+        name: "Gemini 1.5 Flash",
+        chef: "Google",
+        chefSlug: "google",
+        providers: ["google", "google-vertex"],
+    },
+];
+
 export default function ChatProvider({ children }: { children: ReactNode }) {
     const router = useRouter();
     const [chatId, setChatId] = useState<string | null>(null);
     const [isCreatingChat, setIsCreatingChat] = useState(false);
+    const [useWebSearch, setUseWebSearch] = useState<boolean>(false);
+    const [selectedModel, setSelectedModel] = useState<string>("gemini-2.0-flash-exp");
+    const selectedModelData = models.find((model) => model.id === selectedModel);
     const [input, setInput] = useState("");
 
+    const [model, setModel] = useState<string>(models[0].id);
     const {
         regenerate: originalRegenerate,
         messages,
@@ -73,6 +101,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
             {
                 body: {
                     chatId: chatId,
+                    webSearch: useWebSearch,
                 },
             }
         );
@@ -96,7 +125,14 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
     return (
         <ChatContext.Provider
             value={{
+                selectedModel,
+                setSelectedModel,
+                selectedModelData,
+                useWebSearch,
+                setUseWebSearch,
+                setModel,
                 messages,
+                model,
                 input,
                 handleSubmit,
                 handleInputChange,
