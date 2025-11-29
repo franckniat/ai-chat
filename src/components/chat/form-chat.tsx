@@ -6,23 +6,35 @@ import {
     PromptInputActionMenu,
     PromptInputActionMenuContent,
     PromptInputActionMenuTrigger,
-    //PromptInputAttachment,
-    //PromptInputAttachments,
+    PromptInputAttachment,
+    PromptInputAttachments,
     PromptInputBody,
-    //PromptInputButton,
+    PromptInputButton,
     type PromptInputMessage,
-    //PromptInputSelect,
-    //PromptInputSelectContent,
-    //PromptInputSelectItem,
-    //PromptInputSelectTrigger,
-    //PromptInputSelectValue,
-    //PromptInputSpeechButton,
     PromptInputSubmit,
     PromptInputTextarea,
     PromptInputFooter,
     PromptInputTools,
+    PromptInputHeader,
 } from "@/components/ai-elements/prompt-input";
+import {
+    ModelSelector,
+    ModelSelectorContent,
+    ModelSelectorEmpty,
+    ModelSelectorGroup,
+    ModelSelectorInput,
+    ModelSelectorItem,
+    ModelSelectorList,
+    ModelSelectorLogo,
+    ModelSelectorLogoGroup,
+    ModelSelectorName,
+    ModelSelectorTrigger,
+} from "@/components/ai-elements/model-selector";
 import { useSidebar } from "../ui/sidebar";
+import { CheckIcon, GlobeIcon } from "lucide-react";
+import { useChatContext } from "./chat-context";
+import { Button } from "../ui/button";
+import { models } from "./chat-provider";
 
 interface FormChatProps {
     isLoading?: boolean;
@@ -33,29 +45,27 @@ interface FormChatProps {
     name?: string;
 }
 
-export default function FormChat({
-    input,
-    handleInputChange,
-    handleSubmit,
-}: FormChatProps) {
+export default function FormChat({ input, handleInputChange, handleSubmit }: FormChatProps) {
     const { state, isMobile } = useSidebar();
 
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+    const [open, setOpen] = React.useState(false);
+    const chefs = Array.from(new Set(models.map((model) => model.chef)));
+    const { useWebSearch, setUseWebSearch,selectedModel, setSelectedModel, selectedModelData } = useChatContext();
 
     return (
         <div
             className={`fixed bottom-0 z-20 ${isMobile ? "w-full left-0" : ""} ${state === "expanded" ? "w-[calc(100%-16rem)]" : "w-[calc(100%-3rem)]"} bg-background/90 backdrop-blur-md`}
         >
             <div
-                className="max-w-[800px] mx-0 sm:mx-auto sm:px-3
-            md:py-5 md:px-3"
+                className="max-w-[800px] mx-0 sm:mx-auto sm:px-3 md:py-5 md:px-3"
             >
                 <PromptInput onSubmit={handleSubmit} className="mt-4" globalDrop multiple>
-                    {/* <PromptInputHeader>
+                    <PromptInputHeader>
                         <PromptInputAttachments>
                             {(attachment) => <PromptInputAttachment data={attachment} />}
                         </PromptInputAttachments>
-                    </PromptInputHeader> */}
+                    </PromptInputHeader>
                     <PromptInputBody>
                         <PromptInputTextarea
                             onChange={(e) => handleInputChange?.(e)}
@@ -71,36 +81,78 @@ export default function FormChat({
                                     <PromptInputActionAddAttachments />
                                 </PromptInputActionMenuContent>
                             </PromptInputActionMenu>
-                            {/* <PromptInputButton
+                            <PromptInputButton
                                 onClick={() => setUseWebSearch(!useWebSearch)}
                                 variant={useWebSearch ? "default" : "ghost"}
                             >
                                 <GlobeIcon size={16} />
                                 <span>Search</span>
-                            </PromptInputButton> */}
-                            {/* <PromptInputSelect
-                                onValueChange={(value) => {
-                                    setModel(value);
-                                }}
-                                value={model}
-                            >
-                                <PromptInputSelectTrigger>
-                                    <PromptInputSelectValue />
-                                </PromptInputSelectTrigger>
-                                <PromptInputSelectContent>
-                                    {models.map((model) => (
-                                        <PromptInputSelectItem key={model.id} value={model.id}>
-                                            {model.name}
-                                        </PromptInputSelectItem>
-                                    ))}
-                                </PromptInputSelectContent>
-                            </PromptInputSelect> */}
+                            </PromptInputButton>
+                            <ModelSelector onOpenChange={setOpen} open={open}>
+                                <ModelSelectorTrigger asChild>
+                                    <Button className="justify-between" variant="outline">
+                                        {selectedModelData?.chefSlug && (
+                                            <ModelSelectorLogo
+                                                provider={selectedModelData.chefSlug}
+                                            />
+                                        )}
+                                        {selectedModelData?.name && (
+                                            <ModelSelectorName>
+                                                {selectedModelData.name}
+                                            </ModelSelectorName>
+                                        )}
+                                    </Button>
+                                </ModelSelectorTrigger>
+                                <ModelSelectorContent>
+                                    <ModelSelectorInput placeholder="Search models..." />
+                                    <ModelSelectorList>
+                                        <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
+                                        {chefs.map((chef) => (
+                                            <ModelSelectorGroup heading={chef} key={chef}>
+                                                {models
+                                                    .filter((model) => model.chef === chef)
+                                                    .map((model) => (
+                                                        <ModelSelectorItem
+                                                            key={model.id}
+                                                            onSelect={() => {
+                                                                setSelectedModel(model.id);
+                                                                setOpen(false);
+                                                            }}
+                                                            value={model.id}
+                                                        >
+                                                            <ModelSelectorLogo
+                                                                provider={model.chefSlug}
+                                                            />
+                                                            <ModelSelectorName>
+                                                                {model.name}
+                                                            </ModelSelectorName>
+                                                            <ModelSelectorLogoGroup>
+                                                                {model.providers.map((provider) => (
+                                                                    <ModelSelectorLogo
+                                                                        key={provider}
+                                                                        provider={provider}
+                                                                    />
+                                                                ))}
+                                                            </ModelSelectorLogoGroup>
+                                                            {selectedModel === model.id ? (
+                                                                <CheckIcon className="ml-auto size-4" />
+                                                            ) : (
+                                                                <div className="ml-auto size-4" />
+                                                            )}
+                                                        </ModelSelectorItem>
+                                                    ))}
+                                            </ModelSelectorGroup>
+                                        ))}
+                                    </ModelSelectorList>
+                                </ModelSelectorContent>
+                            </ModelSelector>
                         </PromptInputTools>
-                        <PromptInputSubmit disabled={!input}  />
+                        <PromptInputSubmit disabled={!input} />
                     </PromptInputFooter>
                 </PromptInput>
                 <p className="text-[8px] sm:text-xs text-center mt-3 text-foreground/50">
-                    Please verify the information provided by the AI, as it may sometimes be incorrect.
+                    Please verify the information provided by the AI, as it may sometimes be
+                    incorrect.
                 </p>
             </div>
         </div>

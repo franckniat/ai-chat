@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     // Sauvegarder le message de l'utilisateur
     await saveMessage(currentChatId, "user", userMessage);
 
-    const model = google('gemini-2.5-flash');
+    const model = google('gemini-2.5-pro');
 
     const stream = createUIMessageStream({
         execute: ({ writer }) => {
@@ -79,7 +79,7 @@ export async function POST(req: Request) {
                     : [{ role: 'user' as const, content: userMessage }],
                 system: "Your name is niato ai and you are a helpful assistant. Always be kind and helpful.",
                 temperature: 1,
-                maxOutputTokens: 1000, // Limite de tokens pour la réponse (environ 750 mots)
+                //maxOutputTokens: 1000, // Limite de tokens pour la réponse (environ 750 mots)
                 onFinish: async ({ text }) => {
                     await saveMessage(currentChatId, "assistant", text);
 
@@ -101,7 +101,7 @@ export async function POST(req: Request) {
                 },
             });
 
-            writer.merge(result.toUIMessageStream({sendSources: true}));
+            writer.merge(result.toUIMessageStream({sendSources: true, sendReasoning: true,}));
         },
     });
 
