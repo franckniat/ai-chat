@@ -9,7 +9,7 @@ export default function FeatureCard({ icon, title, description }: { icon: React.
                 </div>
                 <CardTitle className="text-xl">{title}</CardTitle>
             </CardHeader>
-            <CardContent >
+            <CardContent className="text-center" >
                 <p className="text-muted-foreground leading-relaxed">
                     {description}
                 </p>

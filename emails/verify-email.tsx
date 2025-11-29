@@ -15,11 +15,15 @@ import {
 
 interface VerifyEmailProps {
     name?: string | null
-    email: string
-    verifyUrl: string
+    email?: string
+    verifyUrl?: string
 }
 
-export const VerifyEmail: React.FC<Readonly<VerifyEmailProps>> = ({ name, email, verifyUrl }) => {
+export const VerifyEmail: React.FC<Readonly<VerifyEmailProps>> = ({ 
+    name = "John Doe", 
+    email = "john@example.com", 
+    verifyUrl = "https://example.com/verify?token=abc123" 
+}) => {
     return (
         <Html>
             <Head>
@@ -100,6 +104,9 @@ const contentSection = {
 };
 
 const h1 = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     fontSize: '24px',
     fontWeight: 'bold',
     margin: '0 0 16px',
@@ -132,6 +139,9 @@ const button = {
 };
 
 const link = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     color: '#0f172a',
     textDecoration: 'underline',
     wordBreak: 'break-all' as const,
