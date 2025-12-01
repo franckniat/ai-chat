@@ -1,0 +1,55 @@
+name: Build on PR  # Nom du workflow, visible dans les checks
+
+on:
+  pull_request:  # Trigger sur événements PR
+    types: [opened, synchronize, reopened]  # À l'ouverture, mise à jour, ou réouverture
+    branches: [main]  # Seulement pour PR vers main (adapte si autre branche)
+
+jobs:
+  build:  # Job principal
+    runs-on: ubuntu-latest  # Runner gratuit GitHub (Linux)
+
+    steps:
+      - name: Checkout code  # Étape 1: Clone le repo (inclut la branche de la PR)
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js  # Étape 2: Setup env (ex. pour Node; adapte si Python, etc.)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'  # Version de Node, adapte
+
+      - name: Install dependencies  # Étape 3: Installe deps
+        run: pnpm install  # Ou yarn install, pip install, etc.
+
+      - name: Run build  # Étape 4: Lance le build
+        run: pnpm build  # Adapte à ta commande de build (ex. yarn build, make build)
+
+      # Optionnel: Poste un commentaire dans la PR avec résultats (gratuit, via action)
+      - name: Comment on PR if build fails
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const buildLog = fs.readFileSync('build.log', 'utf8');
+            const errorSnippet = buildLog.split('\n').slice(-20).join('\n');  // Dernières 20 lignes pour le snippet
+            
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            
+            const body = `
+            ⚠️ **Build failed!**  
+            Voici un extrait des erreurs récentes :  
+            \`\`\`  
+            ${errorSnippet}  
+            \`\`\`  
+            
+            - Vérifie les logs complets dans l'artifact "build-logs" téléchargeable ici : ${runUrl}  
+            - Assigne-toi ou discute pour fixer ça !  
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
