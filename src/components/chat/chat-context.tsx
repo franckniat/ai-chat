@@ -14,7 +14,7 @@ export interface ChatContextType {
     setUseWebSearch: (value: boolean) => void;
     selectedModel: string;
     setSelectedModel: (model: string) => void;
-    selectedModelData: typeof models[0] | undefined;
+    selectedModelData: (typeof models)[0] | undefined;
     handleSubmit: (message: PromptInputMessage) => void;
     handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
     status: "streaming" | "submitted" | "ready" | "error";

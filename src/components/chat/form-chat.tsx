@@ -31,10 +31,11 @@ import {
     ModelSelectorTrigger,
 } from "@/components/ai-elements/model-selector";
 import { useSidebar } from "../ui/sidebar";
-import { CheckIcon, GlobeIcon } from "lucide-react";
+import { CheckIcon, GlobeIcon, Square, BrainIcon } from "lucide-react";
 import { useChatContext } from "./chat-context";
 import { Button } from "../ui/button";
 import { models } from "./chat-provider";
+import { Badge } from "../ui/badge";
 
 interface FormChatProps {
     isLoading?: boolean;
@@ -45,13 +46,15 @@ interface FormChatProps {
     name?: string;
 }
 
-export default function FormChat({ input, handleInputChange, handleSubmit }: FormChatProps) {
+export default function FormChat({ input, handleInputChange, handleSubmit, isLoading, stop }: FormChatProps) {
     const { state, isMobile } = useSidebar();
 
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
     const [open, setOpen] = React.useState(false);
     const chefs = Array.from(new Set(models.map((model) => model.chef)));
-    const { useWebSearch, setUseWebSearch,selectedModel, setSelectedModel, selectedModelData } = useChatContext();
+    const { useWebSearch, setUseWebSearch, selectedModel, setSelectedModel, selectedModelData, status } = useChatContext();
+
+    const isStreaming = status === "streaming" || status === "submitted";
 
     return (
         <div
@@ -71,6 +74,7 @@ export default function FormChat({ input, handleInputChange, handleSubmit }: For
                             onChange={(e) => handleInputChange?.(e)}
                             ref={textareaRef}
                             value={input}
+                            placeholder="Ask a question..."
                         />
                     </PromptInputBody>
                     <PromptInputFooter>
@@ -90,7 +94,7 @@ export default function FormChat({ input, handleInputChange, handleSubmit }: For
                             </PromptInputButton>
                             <ModelSelector onOpenChange={setOpen} open={open}>
                                 <ModelSelectorTrigger asChild>
-                                    <Button className="justify-between" variant="outline">
+                                    <Button className="justify-between gap-2" variant="outline">
                                         {selectedModelData?.chefSlug && (
                                             <ModelSelectorLogo
                                                 provider={selectedModelData.chefSlug}
@@ -100,6 +104,9 @@ export default function FormChat({ input, handleInputChange, handleSubmit }: For
                                             <ModelSelectorName>
                                                 {selectedModelData.name}
                                             </ModelSelectorName>
+                                        )}
+                                        {selectedModelData?.isReasoning && (
+                                            <BrainIcon className="size-3 text-purple-500" />
                                         )}
                                     </Button>
                                 </ModelSelectorTrigger>
@@ -126,6 +133,12 @@ export default function FormChat({ input, handleInputChange, handleSubmit }: For
                                                             <ModelSelectorName>
                                                                 {model.name}
                                                             </ModelSelectorName>
+                                                            {model.isReasoning && (
+                                                                <Badge variant="secondary" className="text-xs px-1 py-0">
+                                                                    <BrainIcon className="size-3 mr-1" />
+                                                                    Reasoning
+                                                                </Badge>
+                                                            )}
                                                             <ModelSelectorLogoGroup>
                                                                 {model.providers.map((provider) => (
                                                                     <ModelSelectorLogo
@@ -147,12 +160,26 @@ export default function FormChat({ input, handleInputChange, handleSubmit }: For
                                 </ModelSelectorContent>
                             </ModelSelector>
                         </PromptInputTools>
-                        <PromptInputSubmit disabled={!input} />
+
+                        {/* Stop or Submit button */}
+                        {isStreaming ? (
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={stop}
+                                className="gap-1"
+                            >
+                                <Square className="size-3 fill-current" />
+                                Stop
+                            </Button>
+                        ) : (
+                            <PromptInputSubmit disabled={!input || isLoading} />
+                        )}
                     </PromptInputFooter>
                 </PromptInput>
                 <p className="text-[8px] sm:text-xs text-center mt-3 text-foreground/50">
-                    Please verify the information provided by the AI, as it may sometimes be
-                    incorrect.
+                    Please verify the information provided by the AI, as it may sometimes be incorrect.
                 </p>
             </div>
         </div>
