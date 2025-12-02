@@ -32,6 +32,7 @@ export function AppSidebar({ chatList, ...props }: AppSidebarProps) {
     const data = {
         navMain:
             chatList?.map((chat) => ({
+                id: chat.id,
                 title: chat.title,
                 url: `/chat/${chat.id}`,
             })) ?? [],
