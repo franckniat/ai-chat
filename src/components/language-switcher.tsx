@@ -25,8 +25,8 @@ export function LanguageSwitcher() {
                 <SelectValue placeholder="Lang" />
             </SelectTrigger>
             <SelectContent>
-                <SelectItem value="en">EN</SelectItem>
-                <SelectItem value="fr">FR</SelectItem>
+                <SelectItem value="en">En</SelectItem>
+                <SelectItem value="fr">Fr</SelectItem>
             </SelectContent>
         </Select>
     );

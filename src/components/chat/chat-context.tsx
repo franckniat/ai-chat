@@ -3,10 +3,18 @@
 import { type UIMessage } from "ai";
 import { createContext, useContext } from "react";
 import { PromptInputMessage } from "../ai-elements/prompt-input";
+import { models } from "./chat-provider";
 
 export interface ChatContextType {
     messages: UIMessage[];
     input: string;
+    model: string;
+    setModel: (model: string) => void;
+    useWebSearch: boolean;
+    setUseWebSearch: (value: boolean) => void;
+    selectedModel: string;
+    setSelectedModel: (model: string) => void;
+    selectedModelData: (typeof models)[0] | undefined;
     handleSubmit: (message: PromptInputMessage) => void;
     handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
     status: "streaming" | "submitted" | "ready" | "error";

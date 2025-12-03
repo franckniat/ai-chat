@@ -102,4 +102,3 @@ export const titlePrompt = `\n
     - ensure it is not more than 80 characters long
     - the title should be a summary of the user's message
     - do not use quotes or colons`
-

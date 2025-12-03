@@ -1,0 +1,77 @@
+name: Build on PR  # Nom du workflow, visible dans les checks
+
+on:
+  pull_request:  # Trigger sur événements PR
+    types: [opened, synchronize, reopened]  # À l'ouverture, mise à jour, ou réouverture
+    # Toutes les branches
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm prisma generate
+
+      - name: Restore Next.js cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.[jt]s', '**/*.[jt]sx') }}
+          restore-keys: |
+            nextjs-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-
+
+      - name: Build Next.js
+        run: pnpm next build
+      
+      # Amélioration du commentaire : Plus détaillé avec snippet d'erreur et lien
+      - name: Comment on PR with details if failed
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const buildLog = fs.readFileSync('build.log', 'utf8');
+            const errorSnippet = buildLog.split('\n').slice(-20).join('\n');  // Dernières 20 lignes pour le snippet
+            
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            
+            const body = `
+            ⚠️ **Build failed!**  
+            Voici un extrait des erreurs récentes :  
+            \`\`\`  
+            ${errorSnippet}  
+            \`\`\`  
+            
+            - Vérifie les logs complets dans l'artifact "build-logs" téléchargeable ici : ${runUrl}  
+            - Assigne-toi ou discute pour fixer ça !  
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
