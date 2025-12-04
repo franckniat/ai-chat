@@ -1,33 +1,49 @@
-"use client";
+'use client';
 
-import { useLocale } from "next-intl";
-import { usePathname, useRouter } from "@/i18n/routing";
+import { useLocale } from 'next-intl';
+import { Button } from '@/components/ui/button';
+import { Languages } from 'lucide-react';
+import { changeLocale, type Locale } from '@/lib/locale-utils';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+const languages = {
+  en: 'English',
+  fr: 'Français',
+} as const;
 
 export function LanguageSwitcher() {
-    const locale = useLocale();
-    const router = useRouter();
-    const pathname = usePathname();
+  const currentLocale = useLocale() as Locale;
 
-    const handleChange = (value: string) => {
-        router.replace(pathname, { locale: value });
-    };
+  const handleLanguageChange = (locale: Locale) => {
+    if (locale !== currentLocale) {
+      changeLocale(locale);
+    }
+  };
 
-    return (
-        <Select value={locale} onValueChange={handleChange}>
-            <SelectTrigger className="w-[70px] h-8 border-none bg-transparent focus:ring-0 focus:ring-offset-0">
-                <SelectValue placeholder="Lang" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="en">En</SelectItem>
-                <SelectItem value="fr">Fr</SelectItem>
-            </SelectContent>
-        </Select>
-    );
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <Languages className="size-5" />
+          <span className="sr-only">Change language</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {Object.entries(languages).map(([locale, label]) => (
+          <DropdownMenuItem
+            key={locale}
+            onClick={() => handleLanguageChange(locale as Locale)}
+            className={currentLocale === locale ? 'bg-accent' : ''}
+          >
+            {label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }
