@@ -29,19 +29,19 @@ export default function HomePage() {
 
     return (
         <div className="flex flex-col min-h-screen">
-            {/* 
+            {/*
               -----------------------------------------------------------------------
               HERO SECTION
               -----------------------------------------------------------------------
-              The entry point of the page. Uses a large typography and a gradient 
-              effect on the text to grab attention. Includes a "New Feature" badge 
+              The entry point of the page. Uses a large typography and a gradient
+              effect on the text to grab attention. Includes a "New Feature" badge
               and primary action buttons.
             */}
             <section className="px-4 py-10 md:py-20 lg:py-32">
                 <div className="max-w-[1280px] mx-auto px-4 text-center">
                     <div className="flex flex-col items-center gap-6">
                         {/* New Feature Announcement Badge */}
-                        <Link href="/chat?model=gpt-4o-mini&source=home">
+                        <Link href="/chat?model=gemini-3.1&source=home">
                             <Badge
                                 variant="outline"
                                 className="px-4 py-2 text-sm rounded-full backdrop-blur-sm"
@@ -92,7 +92,7 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* 
+            {/*
               -----------------------------------------------------------------------
               FEATURES SECTION
               -----------------------------------------------------------------------
@@ -145,7 +145,7 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* 
+            {/*
               -----------------------------------------------------------------------
               TESTIMONIALS SECTION
               -----------------------------------------------------------------------
@@ -179,7 +179,7 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* 
+            {/*
               -----------------------------------------------------------------------
               FAQ SECTION
               -----------------------------------------------------------------------
@@ -207,7 +207,7 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* 
+            {/*
               -----------------------------------------------------------------------
               CTA SECTION
               -----------------------------------------------------------------------
@@ -233,5 +233,5 @@ export default function HomePage() {
                 </MagicCard>
             </section>
         </div>
-    );  
+    );
 }
