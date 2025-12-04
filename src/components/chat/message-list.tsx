@@ -29,7 +29,7 @@ export default function MessageList() {
     return (
         <div className="relative pb-24 h-full">
             <div className="space-y-3 md:space-y-5 max-w-[800px] mx-auto px-3 h-full">
-                <div className="flex flex-col h-full">
+                <div className="flex flex-col h-full mb-10">
                     <Conversation className="relative max-h-[100vh-320px] h-full">
                         <ConversationContent>
                             {messages.length === 0 && !isLoading ? (

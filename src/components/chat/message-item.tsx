@@ -8,7 +8,7 @@ import {
     MessageAction,
 } from "@/components/ai-elements/message";
 import { Fragment, memo } from "react";
-import { RefreshCcwIcon, CopyIcon, Copy } from "lucide-react";
+import { RefreshCcwIcon, CopyIcon, Copy, Loader } from "lucide-react";
 import { type UIMessage } from "ai";
 import { useChatContext } from "./chat-context";
 import { Reasoning, ReasoningContent, ReasoningTrigger } from "@/components/ai-elements/reasoning";
@@ -18,13 +18,14 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { customVscDarkPlus } from '@/lib/syntax-theme';
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { customVscDarkPlus } from "@/lib/syntax-theme";
 
 // Composant mémorisé pour chaque message
 export const MessageItem = memo(({ message }: { message: UIMessage }) => {
     const { regenerate, status } = useChatContext();
     const isStreaming = status === "streaming";
+    const isSubmitted = status === "submitted";
     const isCurrentMessageStreaming = isStreaming && message.role === "assistant";
 
     // Collecter toutes les parties de reasoning
@@ -42,7 +43,7 @@ export const MessageItem = memo(({ message }: { message: UIMessage }) => {
             <div className="flex-1 space-y-2 w-full">
                 <Fragment key={message.id}>
                     {/* Afficher le reasoning si présent */}
-                    {hasReasoning && (
+                    {hasReasoning && isSubmitted && (
                         <Reasoning
                             isStreaming={isCurrentMessageStreaming}
                             defaultOpen={isCurrentMessageStreaming}
@@ -59,6 +60,14 @@ export const MessageItem = memo(({ message }: { message: UIMessage }) => {
                             </ReasoningContent>
                         </Reasoning>
                     )}
+
+                    {message.parts
+                        .filter((part) => part.type === "source-document")
+                        .map((part) => (
+                            <span key={`source-${part.filename}`}>
+                                [<span>{part.title ?? `Document ${part.filename}`}</span>]
+                            </span>
+                        ))}
 
                     {/* Afficher les sources si présentes */}
                     {hasSources && !isCurrentMessageStreaming && (
