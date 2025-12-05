@@ -58,7 +58,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
     const [chatId, setChatId] = useState<string | null>(null);
     const [isCreatingChat, setIsCreatingChat] = useState(false);
     const [useWebSearch, setUseWebSearch] = useState<boolean>(false);
-    const [selectedModel, setSelectedModel] = useState<string>("gemini-2.0-flash-exp");
+    const [selectedModel, setSelectedModel] = useState<string>("gemini-2.0-flash");
     const selectedModelData = models.find((model) => model.id === selectedModel);
     const [input, setInput] = useState("");
     const [model, setModel] = useState<string>(models[0].id);

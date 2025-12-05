@@ -106,19 +106,19 @@ export function NavMain({
                     </div>
                     {state === "expanded" &&
                         filteredItems.map((item) => (
-                            <SidebarMenuItem key={item.title} className="flex items-center justify-between gap-3">
+                            <SidebarMenuItem key={item.title} className="flex items-center justify-between gap-1">
                                 <SidebarMenuButton
                                     tooltip={item.title}
                                     isActive={pathname === item.url}
                                     title={item.title}
-                                    className="cursor-pointer flex justify-between gap-3 items-center"
+                                    className="cursor-pointer flex justify-between gap-1 items-center group"
                                     onClick={() => router.push(item.url)}
                                 >
                                     <span className="line-clamp-1">{item.title}</span>
                                 </SidebarMenuButton>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant={"ghost"} size={"icon"} className="z-10">
+                                        <Button variant={"ghost"} size={"icon-sm"} className="z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <Ellipsis size={16} />
                                         </Button>
                                     </DropdownMenuTrigger>
