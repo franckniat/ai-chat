@@ -43,7 +43,7 @@ const mainFeatures: Feature[] = [
         imageAlt: "AI Chat conversation demo",
         highlights: [
             "Context-aware responses that remember your conversation",
-            "Multiple AI models to choose from (GPT-4, Gemini, Claude)",
+            "Multiple AI models to choose from (DeepSeek, Llama 4, Qwen)",
             "Real-time streaming for instant feedback",
             "Support for follow-up questions and clarifications",
         ],

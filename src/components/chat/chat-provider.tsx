@@ -12,36 +12,36 @@ import { PromptInputMessage } from "../ai-elements/prompt-input";
 
 export const models = [
     {
-        id: "gemini-2.0-flash-lite",
-        name: "Gemini 2.0 Flash Lite",
-        chef: "Google",
-        chefSlug: "google",
-        providers: ["google", "google-vertex"],
+        id: "openai/gpt-4o-mini",
+        name: "GPT-4o Mini",
+        chef: "OpenAI",
+        chefSlug: "openai",
+        providers: ["openai"],
         isReasoning: false,
     },
     {
-        id: "gemini-2.0-flash",
-        name: "Gemini 2.0 Flash",
-        chef: "Google",
-        chefSlug: "google",
-        providers: ["google", "google-vertex"],
+        id: "deepseek/deepseek-chat",
+        name: "DeepSeek V3",
+        chef: "DeepSeek",
+        chefSlug: "deepseek",
+        providers: ["deepseek"],
         isReasoning: false,
     },
     {
-        id: "gemini-2.5-pro",
-        name: "Gemini 2.5 Pro (Reasoning)",
-        chef: "Google",
-        chefSlug: "google",
-        providers: ["google", "google-vertex"],
+        id: "deepseek/deepseek-r1",
+        name: "DeepSeek R1",
+        chef: "DeepSeek",
+        chefSlug: "deepseek",
+        providers: ["deepseek"],
         isReasoning: true,
     },
     {
-        id: "gemini-2.5-flash",
-        name: "Gemini 2.5 Flash (Reasoning)",
-        chef: "Google",
-        chefSlug: "google",
-        providers: ["google", "google-vertex"],
-        isReasoning: true,
+        id: "meta-llama/llama-3.3-70b-instruct",
+        name: "Llama 3.3 70B",
+        chef: "Meta",
+        chefSlug: "meta",
+        providers: ["meta"],
+        isReasoning: false,
     },
 ];
 
@@ -58,10 +58,11 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
     const [chatId, setChatId] = useState<string | null>(null);
     const [isCreatingChat, setIsCreatingChat] = useState(false);
     const [useWebSearch, setUseWebSearch] = useState<boolean>(false);
-    const [selectedModel, setSelectedModel] = useState<string>("gemini-2.0-flash");
+    const [selectedModel, setSelectedModel] = useState<string>("deepseek/deepseek-chat");
     const selectedModelData = models.find((model) => model.id === selectedModel);
     const [input, setInput] = useState("");
     const [model, setModel] = useState<string>(models[0].id);
+    const [selectedPersonality, setSelectedPersonality] = useState<string>("default");
 
     const {
         regenerate: originalRegenerate,
@@ -149,11 +150,12 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
                     chatId: chatId,
                     modelId: selectedModel,
                     webSearch: useWebSearch,
+                    personality: selectedPersonality,
                 },
             }
         );
         setInput("");
-    }, [chatId, input, selectedModel, useWebSearch, sendMessage]);
+    }, [chatId, input, selectedModel, useWebSearch, selectedPersonality, sendMessage]);
 
     // Wrapper pour regenerate qui inclut le chatId et le modèle
     const regenerate = useCallback(() => {
@@ -162,12 +164,13 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
                 body: {
                     chatId: chatId,
                     modelId: selectedModel,
+                    personality: selectedPersonality,
                 },
             });
         } else {
             originalRegenerate();
         }
-    }, [chatId, selectedModel, originalRegenerate]);
+    }, [chatId, selectedModel, selectedPersonality, originalRegenerate]);
 
     return (
         <ChatContext.Provider
@@ -192,6 +195,8 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
                 isCreatingChat,
                 setIsCreatingChat,
                 error,
+                selectedPersonality,
+                setSelectedPersonality,
             }}
         >
             <div className="relative flex flex-col h-full w-full">
@@ -208,3 +213,4 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
         </ChatContext.Provider>
     );
 }
+

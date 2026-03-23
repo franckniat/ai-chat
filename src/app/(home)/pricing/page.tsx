@@ -57,7 +57,7 @@ const plans: PricingPlan[] = [
         yearlyPrice: 0,
         icon: <MessageSquare className="size-6" />,
         features: [
-            { text: "Full access to standard models (Gemini / GPT-family)", included: true },
+            { text: "Full access to standard models (DeepSeek / Llama / Qwen)", included: true },
             { text: "Free, unlimited usage for core features", included: true },
             { text: "Limited access to advanced models (quota-based)", included: true },
             { text: "Basic chat history and export", included: true },

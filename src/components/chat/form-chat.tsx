@@ -30,12 +30,20 @@ import {
     ModelSelectorName,
     ModelSelectorTrigger,
 } from "@/components/ai-elements/model-selector";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { useSidebar } from "../ui/sidebar";
-import { CheckIcon, GlobeIcon, Square, BrainIcon } from "lucide-react";
+import { CheckIcon, GlobeIcon, Square, BrainIcon, UserIcon } from "lucide-react";
 import { useChatContext } from "./chat-context";
 import { Button } from "../ui/button";
 import { models } from "./chat-provider";
 import { Badge } from "../ui/badge";
+import { personalities } from "@/lib/personalities";
 
 interface FormChatProps {
     isLoading?: boolean;
@@ -52,9 +60,11 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
     const [open, setOpen] = React.useState(false);
     const chefs = Array.from(new Set(models.map((model) => model.chef)));
-    const { useWebSearch, setUseWebSearch, selectedModel, setSelectedModel, selectedModelData, status } = useChatContext();
+    const { useWebSearch, setUseWebSearch, selectedModel, setSelectedModel, selectedModelData, status, selectedPersonality, setSelectedPersonality } = useChatContext();
 
     const isStreaming = status === "streaming" || status === "submitted";
+
+    const currentPersonality = personalities.find((p) => p.id === selectedPersonality) || personalities[0];
 
     return (
         <div
@@ -92,6 +102,27 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
                                 <GlobeIcon size={16} />
                                 <span>Search</span>
                             </PromptInputButton>
+
+                            {/* Personality Selector */}
+                            <Select value={selectedPersonality} onValueChange={setSelectedPersonality}>
+                                <SelectTrigger className="h-8 w-auto gap-1.5 border-none shadow-none text-xs px-2 hover:bg-accent">
+                                    <span className="text-base leading-none">{currentPersonality.icon}</span>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {personalities.map((p) => (
+                                        <SelectItem key={p.id} value={p.id}>
+                                            <span className="flex items-center gap-2">
+                                                <span className="text-base leading-none">{p.icon}</span>
+                                                <span>{p.name}</span>
+                                                <span className="text-muted-foreground text-xs hidden sm:inline">— {p.description}</span>
+                                            </span>
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+
+                            {/* Model Selector */}
                             <ModelSelector onOpenChange={setOpen} open={open}>
                                 <ModelSelectorTrigger asChild>
                                     <Button className="justify-between gap-2" variant="outline">
@@ -185,3 +216,4 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
         </div>
     );
 }
+

@@ -26,6 +26,8 @@ export interface ChatContextType {
     isCreatingChat: boolean;
     setIsCreatingChat: (value: boolean) => void;
     error: undefined | Error;
+    selectedPersonality: string;
+    setSelectedPersonality: (personality: string) => void;
 }
 
 export const ChatContext = createContext<ChatContextType | null>(null);
@@ -37,3 +39,4 @@ export function useChatContext() {
     }
     return context;
 }
+

@@ -38,13 +38,13 @@ export default function HomePage() {
                 <div className="max-w-[1280px] mx-auto px-4 text-center">
                     <div className="flex flex-col items-center gap-6">
                         {/* New Feature Announcement Badge */}
-                        <Link href="/chat?model=gemini-3.1&source=home">
+                        <Link href="/chat">
                             <Badge
                                 variant="outline"
                                 className="px-4 py-2 text-sm rounded-full backdrop-blur-sm"
                             >
                                 <span className="mr-2">🚀</span>
-                                New: Chat with Gemini 3.1 for free
+                                New: Chat with DeepSeek, Llama 4 & more for free
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Badge>
                         </Link>
@@ -113,7 +113,7 @@ export default function HomePage() {
                         <FeatureCard
                             icon={<Bot className="h-10 w-10 text-primary" />}
                             title="Multi-Model Support"
-                            description="Access GPT-4, Claude 3, and Gemini Pro all in one unified interface."
+                            description="Access DeepSeek, Llama 4, Qwen, and more — all in one unified interface."
                         />
                         <FeatureCard
                             icon={<Zap className="h-10 w-10 text-primary" />}

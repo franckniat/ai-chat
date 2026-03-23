@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import {
     streamText,
     convertToModelMessages,
@@ -10,35 +10,38 @@ import {
 import { createDbChat, saveMessage, titlePrompt, updateChatTitle } from "@/lib/chat-store";
 import type { Message } from "@niato-ai/prisma-client";
 import { getMessagesByChatId } from "@/data/message";
+import { getPersonalityById } from "@/lib/personalities";
 
-const google = createGoogleGenerativeAI({
-    apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+const openrouter = createOpenRouter({
+    apiKey: process.env.OPENROUTER_API_KEY,
 });
 
 export const maxDuration = 60;
 
-// Configuration des modèles
+// Configuration des modèles fiables via OpenRouter
 const modelConfigs = {
-    // Modèles standards
-    "gemini-2.0-flash-lite": {
-        model: google('gemini-2.0-flash-lite'),
+    "openai/gpt-4o-mini": {
+        model: openrouter.chat('openai/gpt-4o-mini'),
         isReasoning: false,
     },
-    "gemini-2.0-flash": {
-        model: google('gemini-2.0-flash'),
+    "deepseek/deepseek-chat": {
+        model: openrouter.chat('deepseek/deepseek-chat'),
         isReasoning: false,
     },
-    "gemini-2.5-pro": {
-        model: google('gemini-2.5-pro'),
+    "deepseek/deepseek-r1": {
+        model: openrouter.chat('deepseek/deepseek-r1'),
         isReasoning: true,
     },
-    "gemini-2.5-flash": {
-        model: google('gemini-2.5-flash'),
-        isReasoning: true,
+    "meta-llama/llama-3.3-70b-instruct": {
+        model: openrouter.chat('meta-llama/llama-3.3-70b-instruct'),
+        isReasoning: false,
     },
 } as const;
 
 type ModelId = keyof typeof modelConfigs;
+
+const DEFAULT_MODEL: ModelId = "deepseek/deepseek-chat";
+const TITLE_MODEL: ModelId = "openai/gpt-4o-mini";
 
 export async function POST(req: Request) {
     const session = await auth.api.getSession({
@@ -52,11 +55,13 @@ export async function POST(req: Request) {
     const {
         messages,
         chatId: receivedChatId,
-        modelId = "gemini-2.5-flash",
+        modelId = DEFAULT_MODEL,
+        personality = "default",
     }: {
         messages: UIMessage[];
         chatId: string | null;
         modelId?: string;
+        personality?: string;
     } = await req.json();
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
@@ -98,19 +103,20 @@ export async function POST(req: Request) {
             })),
             { role: 'user' as const, content: userMessage }
         ]
-        : convertToModelMessages(messages);
+        : await convertToModelMessages(messages);
 
     // Sélectionner le modèle
     const selectedModelId = modelId as ModelId;
-    const modelConfig = modelConfigs[selectedModelId] || modelConfigs["gemini-2.0-flash"];
+    const modelConfig = modelConfigs[selectedModelId] || modelConfigs[DEFAULT_MODEL];
+
+    // Récupérer la personnalité
+    const selectedPersonality = getPersonalityById(personality);
 
     const result = streamText({
         model: modelConfig.model,
         messages: contextMessages,
-        system: `Your name is niato ai and you are a helpful assistant.
-            Always be kind, helpful, and provide accurate information.
-            When reasoning through complex problems, explain your thought process step by step.
-            Current date: ${new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`,
+        system: `${selectedPersonality.systemPrompt}
+Current date: ${new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`,
         temperature: 0.7,
         onFinish: async ({ text }) => {
             console.log("onFinish called - chatId:", currentChatId, "isNewChat:", isNewChat);
@@ -126,7 +132,7 @@ export async function POST(req: Request) {
 
                     try {
                         const titleResult = await generateText({
-                            model: google('gemini-2.0-flash'),
+                            model: openrouter(TITLE_MODEL),
                             system: titlePrompt,
                             prompt: userMessage.substring(0, 500),
                         });
