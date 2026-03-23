@@ -8,7 +8,7 @@ import {
     type UIMessage,
 } from "ai";
 import { createDbChat, saveMessage, titlePrompt, updateChatTitle } from "@/lib/chat-store";
-import type { Message } from "@niato-ai/prisma-client";
+import type { Message } from "@/generated/prisma/client";
 import { getMessagesByChatId } from "@/data/message";
 import { getPersonalityById } from "@/lib/personalities";
 

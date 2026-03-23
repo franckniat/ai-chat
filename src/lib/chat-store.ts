@@ -1,6 +1,6 @@
 import prisma from "@/lib/db";
 import { type UIMessage, generateId } from 'ai';
-import { Message as PrismaMessage } from "@niato-ai/prisma-client";
+import { Message as PrismaMessage } from "@/generated/prisma/client";
 
 export interface ChatWithMessages {
     id: string;

@@ -17,7 +17,7 @@ import {
     useSidebar,
 } from '@/components/ui/sidebar'
 import Link from 'next/link'
-import { Chat } from '@niato-ai/prisma-client'
+import { Chat } from '@/generated/prisma/client'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
 import { buttonVariants } from '../ui/button'
 import { cn } from '@/lib/utils'
