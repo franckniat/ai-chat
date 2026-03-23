@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { PrismaPlugin } from '@prisma/nextjs-monorepo-workaround-plugin';
 
 const nextConfig: NextConfig = {
     env: {
@@ -19,17 +18,6 @@ const nextConfig: NextConfig = {
         ALGOLIA_APP_ID: process.env.ALGOLIA_APP_ID,
         ALGOLIA_SEARCH_API_KEY: process.env.ALGOLIA_SEARCH_API_KEY,
         ALGOLIA_ADMIN_API_KEY: process.env.ALGOLIA_ADMIN_API_KEY,
-    },
-    turbopack: {
-        rules: {
-            // Add your turbopack rules here
-        }
-    },
-    webpack: (config, { isServer }) => {
-        if (isServer) {
-            config.plugins = [...config.plugins, new PrismaPlugin()];
-        }
-        return config;
     },
 };
 
