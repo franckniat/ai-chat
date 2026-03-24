@@ -15,7 +15,9 @@ import { Reasoning, ReasoningContent, ReasoningTrigger } from "@/components/ai-e
 import { Sources, SourcesTrigger, SourcesContent, Source } from "@/components/ai-elements/sources";
 import Image from "next/image";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 import rehypeRaw from "rehype-raw";
+import rehypeKatex from "rehype-katex";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -25,7 +27,6 @@ import { customVscDarkPlus } from "@/lib/syntax-theme";
 export const MessageItem = memo(({ message }: { message: UIMessage }) => {
     const { regenerate, status } = useChatContext();
     const isStreaming = status === "streaming";
-    const isSubmitted = status === "submitted";
     const isCurrentMessageStreaming = isStreaming && message.role === "assistant";
 
     // Collecter toutes les parties de reasoning
@@ -37,16 +38,18 @@ export const MessageItem = memo(({ message }: { message: UIMessage }) => {
         (part) => part.type === "source-url" || part.type === "source-document"
     );
     const hasSources = sourceParts.length > 0;
+    const lastPart = message.parts.at(-1);
+    const isReasoningStreaming = isCurrentMessageStreaming && lastPart?.type === "reasoning";
 
     return (
         <div key={message.id}>
             <div className="flex-1 space-y-2 w-full">
                 <Fragment key={message.id}>
                     {/* Afficher le reasoning si présent */}
-                    {hasReasoning && isSubmitted && (
+                    {hasReasoning && (
                         <Reasoning
-                            isStreaming={isCurrentMessageStreaming}
-                            defaultOpen={isCurrentMessageStreaming}
+                            isStreaming={isReasoningStreaming}
+                            defaultOpen={isReasoningStreaming}
                         >
                             <ReasoningTrigger />
                             <ReasoningContent>
@@ -109,8 +112,8 @@ export const MessageItem = memo(({ message }: { message: UIMessage }) => {
                                             <MessageContent>
                                                 <MessageResponse
                                                     isAnimating={isCurrentMessageStreaming}
-                                                    rehypePlugins={[rehypeRaw]}
-                                                    remarkPlugins={[remarkGfm]}
+                                                    rehypePlugins={[rehypeRaw, rehypeKatex]}
+                                                    remarkPlugins={[remarkGfm, remarkMath]}
                                                     components={{
                                                         code: ({ className, style, ...props }) => {
                                                             let language;

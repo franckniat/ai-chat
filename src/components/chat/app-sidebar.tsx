@@ -35,6 +35,7 @@ export function AppSidebar({ chatList, ...props }: AppSidebarProps) {
                 id: chat.id,
                 title: chat.title,
                 url: `/chat/${chat.id}`,
+                updatedAt: chat.updatedAt,
             })) ?? [],
         navSecondary: [
             {
@@ -83,7 +84,6 @@ export function AppSidebar({ chatList, ...props }: AppSidebarProps) {
             </SidebarHeader>
             <SidebarContent>
                 <NavMain items={data.navMain} />
-                <NavSecondary items={data.navSecondary} className="mt-auto" />
             </SidebarContent>
             <SidebarFooter>
                 <NavUser />

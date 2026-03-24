@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "AI Elements: Check Updates",
+			"type": "shell",
+			"command": "pnpm outdated",
+			"isBackground": false,
+			"group": "build"
+		}
+	]
+}

@@ -2,7 +2,9 @@
 import React, { memo } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
 import rehypeRaw from 'rehype-raw'
+import rehypeKatex from 'rehype-katex'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { Button } from '@/components/ui/button'
 import { Copy } from 'lucide-react'
@@ -24,8 +26,8 @@ const MessageFormatter: React.FC<MessageFormatterProps> = memo(({ content }) => 
     return (
         <div>
             <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw]}
+                remarkPlugins={[remarkGfm, remarkMath]}
+                rehypePlugins={[rehypeRaw, rehypeKatex]}
                 components={{
                     p: ({ node, ...props }) => (
                         <p

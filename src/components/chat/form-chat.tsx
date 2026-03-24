@@ -30,6 +30,7 @@ import {
     ModelSelectorName,
     ModelSelectorTrigger,
 } from "@/components/ai-elements/model-selector";
+import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 import {
     Select,
     SelectContent,
@@ -38,7 +39,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useSidebar } from "../ui/sidebar";
-import { CheckIcon, GlobeIcon, Square, BrainIcon, UserIcon } from "lucide-react";
+import { CheckIcon, GlobeIcon, Square, BrainIcon } from "lucide-react";
 import { useChatContext } from "./chat-context";
 import { Button } from "../ui/button";
 import { models } from "./chat-provider";
@@ -64,16 +65,71 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
 
     const isStreaming = status === "streaming" || status === "submitted";
 
-    const currentPersonality = personalities.find((p) => p.id === selectedPersonality) || personalities[0];
+    const suggestionByPersonality: Record<string, string[]> = {
+        default: [
+            "Summarize the key points of this topic in 5 bullets",
+            "Create a simple step-by-step action plan",
+            "Explain this like I'm new to the subject",
+        ],
+        developer: [
+            "Help me debug this issue step by step",
+            "Refactor this code to be cleaner and safer",
+            "Write a concise commit message for my changes",
+        ],
+        creative: [
+            "Give me 5 original ideas for this project",
+            "Rewrite this with a more vivid tone",
+            "Brainstorm a catchy title and subtitle",
+        ],
+        tutor: [
+            "Teach me this concept with a simple example",
+            "Quiz me with 5 short questions",
+            "Explain the difference between these two terms",
+        ],
+        analyst: [
+            "Compare options with pros and cons",
+            "Analyze risks and suggest mitigations",
+            "Turn this into a decision matrix",
+        ],
+        translator: [
+            "Translate this into French and keep the same tone",
+            "Improve this text for clarity and natural flow",
+            "Rewrite this for an international audience",
+        ],
+    };
+
+    const quickSuggestions = suggestionByPersonality[selectedPersonality] || suggestionByPersonality.default;
+
+    const handleSuggestionClick = React.useCallback((suggestion: string) => {
+        const textarea = textareaRef.current;
+        if (!textarea) return;
+
+        const setValue = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value")?.set;
+        setValue?.call(textarea, suggestion);
+        textarea.dispatchEvent(new Event("input", { bubbles: true }));
+        textarea.focus();
+    }, []);
 
     return (
         <div
-            className={`fixed bottom-0 z-20 ${isMobile ? "w-full left-0" : ""} ${state === "expanded" ? "w-[calc(100%-16rem)]" : "w-[calc(100%-3rem)]"} bg-background/90 backdrop-blur-md`}
+            className={`fixed bottom-0 z-20 ${isMobile ? "left-0 w-full" : ""} ${state === "expanded" ? "w-[calc(100%-16rem)]" : "w-[calc(100%-3rem)]"} border-t bg-background/80 backdrop-blur-sm`}
         >
             <div
-                className="max-w-[800px] mx-0 sm:mx-auto sm:px-3 md:py-5 md:px-3"
+                className="mx-0 max-w-[760px] p-2 sm:mx-auto"
             >
-                <PromptInput onSubmit={handleSubmit} className="mt-4" globalDrop multiple>
+                {!isStreaming && !input?.trim() && (
+                    <Suggestions className="mb-2 px-1">
+                        {quickSuggestions.map((suggestion) => (
+                            <Suggestion
+                                key={suggestion}
+                                className="h-7 bg-background text-[11px]"
+                                onClick={handleSuggestionClick}
+                                suggestion={suggestion}
+                            />
+                        ))}
+                    </Suggestions>
+                )}
+                <PromptInput onSubmit={handleSubmit} className="mt-2" globalDrop multiple>
                     <PromptInputHeader>
                         <PromptInputAttachments>
                             {(attachment) => <PromptInputAttachment data={attachment} />}
@@ -105,8 +161,7 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
 
                             {/* Personality Selector */}
                             <Select value={selectedPersonality} onValueChange={setSelectedPersonality}>
-                                <SelectTrigger className="h-8 w-auto gap-1.5 border-none shadow-none text-xs px-2 hover:bg-accent">
-                                    <span className="text-base leading-none">{currentPersonality.icon}</span>
+                                <SelectTrigger className="h-7 w-auto gap-1.5 border-none px-1.5 text-[11px] shadow-none hover:bg-accent">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -115,7 +170,6 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
                                             <span className="flex items-center gap-2">
                                                 <span className="text-base leading-none">{p.icon}</span>
                                                 <span>{p.name}</span>
-                                                <span className="text-muted-foreground text-xs hidden sm:inline">— {p.description}</span>
                                             </span>
                                         </SelectItem>
                                     ))}
@@ -125,7 +179,7 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
                             {/* Model Selector */}
                             <ModelSelector onOpenChange={setOpen} open={open}>
                                 <ModelSelectorTrigger asChild>
-                                    <Button className="justify-between gap-2" variant="outline">
+                                    <Button className="h-8 justify-between gap-2 px-2.5 text-xs" variant="outline">
                                         {selectedModelData?.chefSlug && (
                                             <ModelSelectorLogo
                                                 provider={selectedModelData.chefSlug}
@@ -197,9 +251,8 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
                             <Button
                                 type="button"
                                 variant="destructive"
-                                size="sm"
                                 onClick={stop}
-                                className="gap-1"
+                                className="h-8 gap-1 px-2 text-xs"
                             >
                                 <Square className="size-3 fill-current" />
                                 Stop
@@ -209,7 +262,7 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
                         )}
                     </PromptInputFooter>
                 </PromptInput>
-                <p className="text-[8px] sm:text-xs text-center mt-3 text-foreground/50">
+                <p className="mt-2 text-center text-[8px] text-foreground/50 sm:text-[10px]">
                     Please verify the information provided by the AI, as it may sometimes be incorrect.
                 </p>
             </div>
