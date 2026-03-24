@@ -26,13 +26,13 @@ export const submitSupportRequest = actionClient
 
             return {
                 success: true,
-                message: "Votre demande a été envoyée avec succès. Nous vous répondrons dans les plus brefs délais.",
+                message: "Your request has been sent successfully. We will get back to you as soon as possible.",
             };
         } catch (error) {
             console.error("Support request error:", error);
             return {
                 success: false,
-                message: "Une erreur est survenue lors de l'envoi de votre demande. Veuillez réessayer.",
+                message: "An error occurred while sending your request. Please try again.",
             };
         }
     });

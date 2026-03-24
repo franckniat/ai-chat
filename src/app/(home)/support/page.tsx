@@ -59,13 +59,13 @@ export default function SupportPage() {
             } else {
                 setSubmitStatus({
                     type: 'error',
-                    message: result?.data?.message || 'Une erreur est survenue',
+                    message: result?.data?.message || 'An error occurred',
                 })
             }
         } catch {
             setSubmitStatus({
                 type: 'error',
-                message: 'Une erreur est survenue lors de l\'envoi',
+                message: 'An error occurred while sending your request',
             })
         } finally {
             setIsSubmitting(false)
@@ -76,9 +76,9 @@ export default function SupportPage() {
         <div className="min-h-screen py-8 px-4">
             <div className="max-w-2xl mx-auto">
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold mb-4">Centre d&apos;assistance</h1>
+                    <h1 className="text-4xl font-bold mb-4">Support Center</h1>
                     <p className="text-muted-foreground text-lg">
-                        Besoin d&apos;aide ? Envoyez-nous votre demande ou signalez un problème.
+                        Need help? Send us your request or report an issue.
                     </p>
                 </div>
 
@@ -107,19 +107,19 @@ export default function SupportPage() {
                                 name="type"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Type de demande</FormLabel>
+                                        <FormLabel>Request Type</FormLabel>
                                         <Select
                                             onValueChange={field.onChange}
                                             defaultValue={field.value}
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Sélectionnez un type" />
+                                                    <SelectValue placeholder="Select a type" />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="request">Demande d&apos;assistance</SelectItem>
-                                                <SelectItem value="report">Signalement</SelectItem>
+                                                <SelectItem value="request">Support Request</SelectItem>
+                                                <SelectItem value="report">Issue Report</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -132,9 +132,9 @@ export default function SupportPage() {
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Nom complet</FormLabel>
+                                        <FormLabel>Full Name</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Jean Dupont" {...field} />
+                                            <Input placeholder="John Doe" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -164,10 +164,10 @@ export default function SupportPage() {
                                 name="subject"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Sujet</FormLabel>
+                                        <FormLabel>Subject</FormLabel>
                                         <FormControl>
                                             <Input
-                                                placeholder="Décrivez brièvement votre demande"
+                                                placeholder="Briefly describe your request"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -184,7 +184,7 @@ export default function SupportPage() {
                                         <FormLabel>Message</FormLabel>
                                         <FormControl>
                                             <Textarea
-                                                placeholder="Décrivez votre demande en détail..."
+                                                placeholder="Describe your request in detail..."
                                                 className="min-h-[150px] resize-none"
                                                 {...field}
                                             />
@@ -203,12 +203,12 @@ export default function SupportPage() {
                                 {isSubmitting ? (
                                     <>
                                         <Loader2 className="mr-2 size-4 animate-spin" />
-                                        Envoi en cours...
+                                        Sending...
                                     </>
                                 ) : (
                                     <>
                                         <Send className="mr-2 size-4" />
-                                        Envoyer la demande
+                                        Send Request
                                     </>
                                 )}
                             </Button>
@@ -218,7 +218,7 @@ export default function SupportPage() {
 
                 <div className="mt-8 text-center text-sm text-muted-foreground">
                     <p>
-                        Nous nous efforçons de répondre à toutes les demandes dans les 24-48 heures.
+                        We aim to respond to all requests within 24-48 hours.
                     </p>
                 </div>
             </div>

@@ -1,4 +1,5 @@
 
+import type { Metadata } from 'next'
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -24,6 +25,16 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+    title: 'niato ai features',
+    description:
+        'Explore niato ai features: intelligent chat, advanced reasoning, document analysis, image generation, and coding assistance.',
+    keywords: ['niato ai', 'ai features', 'reasoning ai', 'ai code assistant'],
+    alternates: {
+        canonical: '/products',
+    },
+}
 
 interface Feature {
     title: string;

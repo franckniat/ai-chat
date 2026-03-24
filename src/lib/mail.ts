@@ -53,7 +53,7 @@ export const sendSupportNotification = async (data: {
     try {
         await resend.emails.send({
             from: "Niato AI Support <support@ai.franckniat.site>",
-            to: process.env.SUPPORT_EMAIL || "lekeumoruissel@gmail.com",
+            to: process.env.SUPPORT_EMAIL || "contact@franckniat.site",
             replyTo: data.email,
             subject: `[${data.type === "request" ? "Demande" : "Signalement"}] ${data.subject}`,
             react: SupportNotification({

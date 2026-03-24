@@ -129,7 +129,7 @@ export const MessageItem = memo(({ message }: { message: UIMessage }) => {
                                                             return isInline ? (
                                                                 <code
                                                                     className={
-                                                                        "text-xs sm:text-sm text-primary p-0.5 bg-foreground/5 rounded-sm"
+                                                                        "text-xs sm:text-sm text-primary p-0.5 bg-foreground/5 rounded-sm font-mono"
                                                                     }
                                                                 >
                                                                     {props.children}
@@ -171,10 +171,10 @@ export const MessageItem = memo(({ message }: { message: UIMessage }) => {
                                                                             style={
                                                                                 customVscDarkPlus
                                                                             }
-                                                                            className="antialiased text-sm tracking-wide [&_code]:!font-mono"
+                                                                            className="antialiased text-sm tracking-wide [&_code]:!font-mono w-full"
                                                                             customStyle={{
                                                                                 fontFamily:
-                                                                                    'var(--font-jetbrains-mono), "JetBrains Mono", "Fira Code", Consolas, monospace !important',
+                                                                                    'var(--font-mono), "JetBrains Mono", "Fira Code", Consolas, monospace !important',
                                                                                 fontSize:
                                                                                     "0.875rem",
                                                                                 lineHeight: "1.5",
@@ -189,7 +189,7 @@ export const MessageItem = memo(({ message }: { message: UIMessage }) => {
                                                                                         'var(--font-jetbrains-mono), "JetBrains Mono", "Fira Code", Consolas, monospace !important',
                                                                                 },
                                                                             }}
-                                                                            showLineNumbers={false}
+                                                                            showLineNumbers={true}
                                                                             wrapLines={true}
                                                                             wrapLongLines={true}
                                                                         >

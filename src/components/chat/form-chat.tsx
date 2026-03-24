@@ -45,6 +45,7 @@ import { Button } from "../ui/button";
 import { models } from "./chat-provider";
 import { Badge } from "../ui/badge";
 import { personalities } from "@/lib/personalities";
+import type { FreeModelCategory } from "@/lib/free-models";
 
 interface FormChatProps {
     isLoading?: boolean;
@@ -60,7 +61,7 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
 
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
     const [open, setOpen] = React.useState(false);
-    const chefs = Array.from(new Set(models.map((model) => model.chef)));
+    const categories: FreeModelCategory[] = ["Elite", "Solide", "Leger"];
     const { useWebSearch, setUseWebSearch, selectedModel, setSelectedModel, selectedModelData, status, selectedPersonality, setSelectedPersonality } = useChatContext();
 
     const isStreaming = status === "streaming" || status === "submitted";
@@ -199,10 +200,10 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
                                     <ModelSelectorInput placeholder="Search models..." />
                                     <ModelSelectorList>
                                         <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
-                                        {chefs.map((chef) => (
-                                            <ModelSelectorGroup heading={chef} key={chef}>
+                                        {categories.map((category) => (
+                                            <ModelSelectorGroup heading={category} key={category}>
                                                 {models
-                                                    .filter((model) => model.chef === chef)
+                                                    .filter((model) => model.category === category)
                                                     .map((model) => (
                                                         <ModelSelectorItem
                                                             key={model.id}
@@ -224,6 +225,9 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
                                                                     Reasoning
                                                                 </Badge>
                                                             )}
+                                                            <Badge variant="outline" className="text-[10px] px-1 py-0">
+                                                                Pop #{model.popularityRank} · Perf #{model.performanceRank}
+                                                            </Badge>
                                                             <ModelSelectorLogoGroup>
                                                                 {model.providers.map((provider) => (
                                                                     <ModelSelectorLogo

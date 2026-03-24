@@ -1,4 +1,5 @@
 
+import type { Metadata } from 'next'
 import { Badge } from '@/components/ui/badge'
 import {  buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -9,6 +10,16 @@ import FeatureCard from '@/components/ui/FeatureCard'
 import FaqItem from '@/components/ui/FaqItem'
 import { TestimonialCard } from '@/components/ui/TestimonialCard'
 import { MagicCard } from '@/components/ui/magic-card'
+
+export const metadata: Metadata = {
+    title: 'niato ai | Multi-model AI platform',
+    description:
+        'Discover niato ai, the multi-model AI platform to boost productivity, ship code faster, and create without friction.',
+    keywords: ['niato ai', 'ai platform', 'ai chat', 'ai assistant', 'multi-model ai'],
+    alternates: {
+        canonical: '/',
+    },
+}
 
 /**
  * ==============================================================================

@@ -74,7 +74,7 @@ export default function Navbar() {
         }
     }, [])
     const { data: session } = useSession()
-    
+
     const handleLogout = async () => {
         try {
             await signOut();
@@ -88,7 +88,7 @@ export default function Navbar() {
                 <div className="flex items-center justify-between h-[65px]">
                     <Link href="/" className="flex items-center gap-2 lg:gap-3">
                         <Sparkles className="size-4" />
-                        <span className=" text-base lg:text-lg font-bold">niato ai .</span>
+                        <span className=" text-base lg:text-lg font-bold font-mono">niato ai .</span>
                     </Link>
                     <div className="hidden items-center gap-2 md:flex">
                         {navLinks.map((link) => (

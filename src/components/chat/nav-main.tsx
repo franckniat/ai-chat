@@ -125,7 +125,8 @@ export function NavMain({
     return (
         <SidebarGroup>
             <SidebarGroupContent className="flex min-h-0 flex-1 flex-col gap-2">
-                <div className={cn("px-2 pt-1", state === "collapsed" && "sr-only")}>
+                <div className={cn("px-2 pt-1 flex items-center gap-3", state === "collapsed" && "sr-only")}>
+                    <MessageSquareText className="mt-0.5 size-4 text-sidebar-foreground/60" />
                     <p className="text-sidebar-foreground/70 text-xs font-medium uppercase tracking-wider">
                         Conversations
                     </p>
@@ -146,11 +147,10 @@ export function NavMain({
                                 }
 
                                 return (
-                                    <div key={sectionKey} className="space-y-1">
+                                    <div key={sectionKey} className="space-y-2 pt-3">
                                         <p className="text-sidebar-foreground/60 px-2 pb-1 text-[11px] font-medium uppercase tracking-wider">
                                             {CHAT_SECTIONS[sectionKey as keyof typeof CHAT_SECTIONS]}
                                         </p>
-
                                         <SidebarMenu>
                                             {sectionItems.map((item) => (
                                                 <SidebarMenuItem key={item.id} className="group/item">
@@ -161,7 +161,6 @@ export function NavMain({
                                                         className="h-11 cursor-pointer items-start rounded-lg border border-transparent py-2 data-[active=true]:border-sidebar-border/60 data-[active=true]:bg-sidebar-accent/70"
                                                         onClick={() => router.push(item.url)}
                                                     >
-                                                        <MessageSquareText className="mt-0.5 size-4 text-sidebar-foreground/60" />
                                                         <div className="min-w-0 flex-1">
                                                             <p className="line-clamp-1 text-sm leading-tight">
                                                                 {item.title}

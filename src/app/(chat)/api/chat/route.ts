@@ -11,6 +11,7 @@ import { createDbChat, saveMessage, titlePrompt, updateChatTitle } from "@/lib/c
 import type { Message } from "@/generated/prisma/client";
 import { getMessagesByChatId } from "@/data/message";
 import { getPersonalityById } from "@/lib/personalities";
+import { FREE_MODEL_IDS } from "@/lib/free-models";
 
 const openrouter = createOpenRouter({
     apiKey: process.env.OPENROUTER_API_KEY,
@@ -18,30 +19,25 @@ const openrouter = createOpenRouter({
 
 export const maxDuration = 60;
 
-// Configuration des modèles fiables via OpenRouter
-const modelConfigs = {
-    "openai/gpt-4o-mini": {
-        model: openrouter.chat('openai/gpt-4o-mini'),
-        isReasoning: false,
-    },
-    "deepseek/deepseek-chat": {
-        model: openrouter.chat('deepseek/deepseek-chat'),
-        isReasoning: false,
-    },
-    "deepseek/deepseek-r1": {
-        model: openrouter.chat('deepseek/deepseek-r1'),
-        isReasoning: true,
-    },
-    "meta-llama/llama-3.3-70b-instruct": {
-        model: openrouter.chat('meta-llama/llama-3.3-70b-instruct'),
-        isReasoning: false,
-    },
-} as const;
+const reasoningModelIds = new Set<string>([
+    "liquid/lfm-2.5-1.2b-thinking:free",
+]);
 
-type ModelId = keyof typeof modelConfigs;
+const modelConfigs: Record<string, { model: ReturnType<typeof openrouter.chat>; isReasoning: boolean }> =
+    Object.fromEntries(
+        FREE_MODEL_IDS.map((modelId) => [
+            modelId,
+            {
+                model: openrouter.chat(modelId),
+                isReasoning: reasoningModelIds.has(modelId),
+            },
+        ])
+    );
 
-const DEFAULT_MODEL: ModelId = "deepseek/deepseek-chat";
-const TITLE_MODEL: ModelId = "openai/gpt-4o-mini";
+type ModelId = string;
+
+const DEFAULT_MODEL: ModelId = FREE_MODEL_IDS[0];
+const TITLE_MODEL = "openai/gpt-4o-mini";
 
 export async function POST(req: Request) {
     const session = await auth.api.getSession({
@@ -132,7 +128,7 @@ Current date: ${new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 
 
                     try {
                         const titleResult = await generateText({
-                            model: openrouter(TITLE_MODEL),
+                            model: openrouter.chat(TITLE_MODEL),
                             system: titlePrompt,
                             prompt: userMessage.substring(0, 500),
                         });

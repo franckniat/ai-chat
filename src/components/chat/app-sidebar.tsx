@@ -56,7 +56,7 @@ export function AppSidebar({ chatList, ...props }: AppSidebarProps) {
                         >
                             <Link href="/">
                                 <Sparkles className="h-5 w-5" />
-                                <span className="text-base font-semibold">niato ai.</span>
+                                <span className="text-base font-semibold font-mono">niato ai.</span>
                             </Link>
                         </SidebarMenuButton>
                         {state === 'expanded' && (
