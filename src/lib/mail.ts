@@ -13,7 +13,7 @@ export const sendVerificationEMail = async (email: string, url: string) => {
         error: "Utilisateur non trouvé !"
     };
     await resend.emails.send({
-        from: "Niato AI <donot-reply@ai.franckniat.site>",
+        from: "Niato AI <donot-reply@ai.franckniat.me>",
         to: email,
         subject: "Vérification de votre adresse email",
         react: VerifyEmail({
@@ -31,7 +31,7 @@ export const sendResetPasswordEMail = async (email: string, url: string) => {
         error: "Utilisateur non trouvé !"
     };
     await resend.emails.send({
-        from: "Niato AI <donot-reply@ai.franckniat.site>",
+        from: "Niato AI <donot-reply@ai.franckniat.me>",
         to: email,
         subject: "Réinitialisation de votre mot de passe",
         react: ResetPasswordConfirmation({
@@ -52,8 +52,8 @@ export const sendSupportNotification = async (data: {
 }) => {
     try {
         await resend.emails.send({
-            from: "Niato AI Support <support@ai.franckniat.site>",
-            to: process.env.SUPPORT_EMAIL || "contact@franckniat.site",
+            from: "Niato AI Support <support@ai.franckniat.me>",
+            to: process.env.SUPPORT_EMAIL as string,
             replyTo: data.email,
             subject: `[${data.type === "request" ? "Demande" : "Signalement"}] ${data.subject}`,
             react: SupportNotification({
