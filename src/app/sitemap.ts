@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-const siteUrl = process.env.BETTER_AUTH_URL || 'https://ai.franckniat.site'
+const siteUrl = process.env.BETTER_AUTH_URL || 'https://ai.franckniat.me'
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const now = new Date()

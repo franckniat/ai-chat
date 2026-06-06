@@ -7,6 +7,7 @@ import prisma from "@/lib/db";
 
 export const auth = betterAuth({
     appName: "niato ai",
+    baseURL: process.env.BETTER_AUTH_URL,
     database: prismaAdapter(prisma, {
         provider: "postgresql",
     }),
@@ -19,15 +20,13 @@ export const auth = betterAuth({
     },
     socialProviders: {
         google: {
-            prompt: "select_account", 
+            prompt: "select_account",
             clientId: process.env.GOOGLE_CLIENT_ID as string,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-            redirectURI: `${process.env.BETTER_AUTH_URL}/api/auth/callback/google`,
         },
         github:{
             clientId: process.env.GITHUB_CLIENT_ID as string,
             clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
-            redirectURI: `${process.env.BETTER_AUTH_URL}/api/auth/callback/github`,
         },
     },
     emailVerification: {
