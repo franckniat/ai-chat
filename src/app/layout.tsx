@@ -5,7 +5,7 @@ import './globals.css'
 import 'katex/dist/katex.min.css'
 import { Analytics } from '@vercel/analytics/next'
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://niato.ai'
+const siteUrl = process.env.BETTER_AUTH_URL || 'https://ai.franckniat.me'
 
 const spaceGrotesk = Space_Grotesk({
     variable: '--font-space-grotesk',
