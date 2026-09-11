@@ -11,6 +11,12 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { PromptInputMessage } from "../ai-elements/prompt-input";
 import { GOOGLE_MODELS } from "@/lib/google-models";
 import {
+    buildClarifiedPrompt,
+    type ClarifyAnswer,
+    type ClarifyingQuestion,
+} from "@/lib/clarify";
+import { ClarifyPanel } from "./clarify-panel";
+import {
     readPreferredModel,
     readPreferredPersonality,
     writePreferredModel,
@@ -53,6 +59,13 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
     const [chatId, setChatId] = useState<string | null>(null);
     const [isCreatingChat, setIsCreatingChat] = useState(false);
     const [useWebSearch, setUseWebSearch] = useState<boolean>(false);
+    // Mode « questions d'abord » et questionnaire en cours.
+    const [clarifyMode, setClarifyMode] = useState(false);
+    const [isClarifying, setIsClarifying] = useState(false);
+    const [pendingClarification, setPendingClarification] = useState<{
+        prompt: string;
+        questions: ClarifyingQuestion[];
+    } | null>(null);
     // Initialiseurs paresseux : localStorage n'existe pas au rendu serveur, et
     // `useState(fn)` n'appelle `fn` qu'au premier rendu client.
     const [selectedModel, setSelectedModelState] = useState<string>(models[0].id);
@@ -196,33 +209,90 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
         setInput(e.target.value);
     }, []);
 
-    const handleSubmit = useCallback((message: PromptInputMessage) => {
-        fallbackAttemptsRef.current = 0;
-
-        if (!chatId) {
-            setIsCreatingChat(true);
-        }
-        const hasText = Boolean(message.text);
-        const hasAttachments = Boolean(message.files?.length);
-        if (!(hasText || hasAttachments)) {
-            return;
-        }
-        sendMessage(
-            {
-                text: input,
-                files: message.files,
-            },
-            {
-                body: {
-                    chatId: chatId,
-                    modelId: selectedModel,
-                    webSearch: useWebSearch,
-                    personality: selectedPersonality,
-                },
+    /** Envoi effectif vers /api/chat, une fois le texte final connu. */
+    const dispatch = useCallback(
+        (text: string, files?: PromptInputMessage["files"]) => {
+            fallbackAttemptsRef.current = 0;
+            if (!chatId) {
+                setIsCreatingChat(true);
             }
-        );
-        setInput("");
-    }, [chatId, input, selectedModel, useWebSearch, selectedPersonality, sendMessage]);
+            sendMessage(
+                { text, files },
+                {
+                    body: {
+                        chatId,
+                        modelId: selectedModel,
+                        personality: selectedPersonality,
+                    },
+                }
+            );
+        },
+        [chatId, selectedModel, selectedPersonality, sendMessage]
+    );
+
+    const handleSubmit = useCallback(
+        async (message: PromptInputMessage) => {
+            const text = input;
+            const files = message.files;
+            const hasText = Boolean(text.trim());
+            const hasAttachments = Boolean(files?.length);
+            if (!(hasText || hasAttachments)) {
+                return;
+            }
+
+            setInput("");
+
+            // Mode « questions d'abord » : on demande un questionnaire court
+            // avant de repondre. Une piece jointe rend l'exercice inutile —
+            // le fichier porte deja le contexte — et le modele peut estimer
+            // qu'aucune question n'est utile, auquel cas on envoie directement.
+            if (clarifyMode && hasText && !hasAttachments) {
+                setIsClarifying(true);
+                try {
+                    const response = await fetch("/api/chat/clarify", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ prompt: text }),
+                    });
+                    const payload = (await response.json()) as {
+                        questions?: ClarifyingQuestion[];
+                    };
+
+                    if (payload.questions?.length) {
+                        setPendingClarification({ prompt: text, questions: payload.questions });
+                        return;
+                    }
+                } catch {
+                    // Le mode est une aide, pas une dependance : en cas
+                    // d'echec on envoie la demande telle quelle.
+                } finally {
+                    setIsClarifying(false);
+                }
+            }
+
+            dispatch(text, files);
+        },
+        [clarifyMode, dispatch, input]
+    );
+
+    /** Replie les reponses dans le prompt et envoie. */
+    const submitClarification = useCallback(
+        (answers: ClarifyAnswer[]) => {
+            if (!pendingClarification) return;
+            const enriched = buildClarifiedPrompt(pendingClarification.prompt, answers);
+            setPendingClarification(null);
+            dispatch(enriched);
+        },
+        [dispatch, pendingClarification]
+    );
+
+    /** Abandonne les questions et envoie la demande initiale. */
+    const cancelClarification = useCallback(() => {
+        if (!pendingClarification) return;
+        const original = pendingClarification.prompt;
+        setPendingClarification(null);
+        dispatch(original);
+    }, [dispatch, pendingClarification]);
 
     // Wrapper pour regenerate qui inclut le chatId et le modèle
     const regenerate = useCallback(() => {
@@ -266,12 +336,24 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
                 error,
                 selectedPersonality,
                 setSelectedPersonality,
+                clarifyMode,
+                setClarifyMode,
+                isClarifying,
             }}
         >
             {/* `min-h-0` laisse la zone de messages retrecir et defiler ;
                 le composeur reste colle en bas sans `position: fixed`. */}
             <div className="flex min-h-0 w-full flex-1 flex-col">
                 <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+                {pendingClarification && (
+                    <div className="mx-auto w-full max-w-3xl shrink-0 px-4">
+                        <ClarifyPanel
+                            questions={pendingClarification.questions}
+                            onSubmit={submitClarification}
+                            onCancel={cancelClarification}
+                        />
+                    </div>
+                )}
                 <FormChat
                     name="prompt"
                     input={input}

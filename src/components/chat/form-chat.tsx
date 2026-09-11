@@ -38,7 +38,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { CheckIcon, GlobeIcon, Square, BrainIcon } from "lucide-react";
+import { CheckIcon, GlobeIcon, ListChecks, Square, BrainIcon } from "lucide-react";
 import { useChatContext } from "./chat-context";
 import { Button } from "../ui/button";
 import { models } from "./chat-provider";
@@ -60,7 +60,7 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
     const [open, setOpen] = React.useState(false);
     const categories: ModelCategory[] = ["Budget", "Balanced", "Advanced"];
-    const { useWebSearch, setUseWebSearch, selectedModel, setSelectedModel, selectedModelData, status, selectedPersonality, setSelectedPersonality } = useChatContext();
+    const { useWebSearch, setUseWebSearch, selectedModel, setSelectedModel, selectedModelData, status, selectedPersonality, setSelectedPersonality, clarifyMode, setClarifyMode, isClarifying } = useChatContext();
 
     const isStreaming = status === "streaming" || status === "submitted";
 
@@ -139,6 +139,19 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
                             >
                                 <GlobeIcon size={15} />
                                 <span>Search</span>
+                            </PromptInputButton>
+
+                            {/* Mode « questions d'abord » : l'IA clarifie la
+                                demande avant de repondre. */}
+                            <PromptInputButton
+                                onClick={() => setClarifyMode(!clarifyMode)}
+                                variant={clarifyMode ? "default" : "ghost"}
+                                disabled={isClarifying}
+                                className="h-8 rounded-full px-2.5 text-xs"
+                                title="Let the assistant ask a few questions before answering"
+                            >
+                                <ListChecks size={15} />
+                                <span>{isClarifying ? "Thinking…" : "Ask first"}</span>
                             </PromptInputButton>
 
                             {/* Personality Selector */}

@@ -15,7 +15,7 @@ export interface ChatContextType {
     selectedModel: string;
     setSelectedModel: (model: string) => void;
     selectedModelData: (typeof models)[0] | undefined;
-    handleSubmit: (message: PromptInputMessage) => void;
+    handleSubmit: (message: PromptInputMessage) => void | Promise<void>;
     handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
     status: "streaming" | "submitted" | "ready" | "error";
     stop: () => void;
@@ -28,6 +28,11 @@ export interface ChatContextType {
     error: undefined | Error;
     selectedPersonality: string;
     setSelectedPersonality: (personality: string) => void;
+    /** Mode « questions d'abord » : l'IA clarifie avant de repondre. */
+    clarifyMode: boolean;
+    setClarifyMode: (value: boolean) => void;
+    /** Vrai pendant la generation du questionnaire. */
+    isClarifying: boolean;
 }
 
 export const ChatContext = createContext<ChatContextType | null>(null);
