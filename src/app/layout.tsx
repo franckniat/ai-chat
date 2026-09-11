@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Geist, JetBrains_Mono, Space_Grotesk } from 'next/font/google'
+import { JetBrains_Mono, Sora, Space_Grotesk } from 'next/font/google'
 import { Providers } from '@/providers'
 import './globals.css'
 import 'katex/dist/katex.min.css'
@@ -11,7 +11,7 @@ const siteUrl = process.env.BETTER_AUTH_URL || 'https://ai.franckniat.me'
  * Trois roles typographiques distincts, exposes en variables CSS et mappes
  * dans `globals.css` (@theme inline) :
  *
- * - texte/UI  -> Geist          : lecture longue des reponses, labels, boutons
+ * - texte/UI  -> Sora           : lecture longue des reponses, labels, boutons
  * - display   -> Space Grotesk  : wordmark et titres
  * - code      -> JetBrains Mono : blocs et inline code
  *
@@ -19,8 +19,8 @@ const siteUrl = process.env.BETTER_AUTH_URL || 'https://ai.franckniat.me'
  * variables pour que Tailwind reste la seule source de verite (`font-sans`,
  * `font-display`, `font-mono`).
  */
-const geist = Geist({
-    variable: '--font-geist',
+const sora = Sora({
+    variable: '--font-sora',
     subsets: ['latin'],
     display: 'swap',
 })
@@ -113,7 +113,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body
-                className={`${geist.variable} ${spaceGrotesk.variable} ${jetBrainsMono.variable} font-sans text-pretty antialiased`}
+                className={`${sora.variable} ${spaceGrotesk.variable} ${jetBrainsMono.variable} font-sans text-pretty antialiased`}
             >
                 <script
                     type="application/ld+json"

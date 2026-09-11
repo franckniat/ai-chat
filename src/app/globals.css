@@ -13,11 +13,24 @@
     --color-background: var(--background);
     --color-foreground: var(--foreground);
 
-    /* Trois roles distincts. `font-sans` ne doit jamais pointer sur une mono :
-       c'est ce qui rendait tout le texte de l'app en monospace. */
-    --font-sans: var(--font-geist), ui-sans-serif, system-ui, -apple-system,
+    /*
+      Trois roles distincts. `font-sans` ne doit jamais pointer sur une mono :
+      c'est ce qui rendait tout le texte de l'app en monospace.
+
+      `inline` est indispensable ici. next/font declare `--font-sora` et ses
+      voisines sur le <body> via className, pas sur :root. Un `@theme` normal
+      emettrait `--font-sans: var(--font-sora)` AU NIVEAU DE :root, ou
+      `--font-sora` n'existe pas : la propriete devient invalide a la
+      resolution et toute la page retombe sur ui-sans-serif. `inline` recopie
+      la valeur dans les utilitaires generes, ou le `var()` se resout bien
+      dans le contexte de l'element.
+
+      Corollaire : `var(--font-display)` ne peut pas etre utilise dans une
+      regle ecrite a la main — voir le `@apply` sur h1/h2/h3 plus bas.
+    */
+    --font-sans: var(--font-sora), ui-sans-serif, system-ui, -apple-system,
         "Segoe UI", Roboto, sans-serif;
-    --font-display: var(--font-space-grotesk), var(--font-geist), ui-sans-serif,
+    --font-display: var(--font-space-grotesk), var(--font-sora), ui-sans-serif,
         system-ui, sans-serif;
     --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono",
         "Fira Code", Consolas, monospace;
@@ -171,11 +184,14 @@
         @apply bg-background text-foreground;
     }
 
-    /* Les titres portent la police display ; le corps reste en Inter. */
+    /* Les titres portent la police display ; le corps reste en `font-sans`.
+       `@apply` et non `font-family: var(--font-display)` : avec `@theme
+       inline` la variable n'est pas emise, donc la forme `var()` resolvait
+       dans le vide et les titres heritaient silencieusement de font-sans. */
     h1,
     h2,
     h3 {
-        font-family: var(--font-display);
+        @apply font-display;
         letter-spacing: -0.02em;
         text-wrap: balance;
     }
@@ -193,12 +209,8 @@
     kbd,
     samp,
     pre {
-        font-family: var(--font-mono);
+        @apply font-mono;
     }
-}
-
-@utility font-display {
-    font-family: var(--font-display);
 }
 
 /*

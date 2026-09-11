@@ -22,7 +22,8 @@ import {
 import { signOut } from '@/lib/auth-client';
 import { useSession } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
-import { Menu, Moon, Sparkles, SquareArrowOutUpRight, Sun } from 'lucide-react'
+import { siteConfig } from '@/lib/site'
+import { Github, Menu, Moon, Sparkles, SquareArrowOutUpRight, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -109,10 +110,24 @@ export default function Navbar() {
                             </Link>
                         ))}
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                        {/* Masque sous md : le menu mobile reprend le lien avec
+                            un libelle, plus lisible qu'une icone seule. */}
+                        <Button variant="ghost" size="icon" asChild className="hidden md:inline-flex">
+                            <a
+                                href={siteConfig.githubUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <Github className="size-4" />
+                                <span className="sr-only">View the source on GitHub</span>
+                            </a>
+                        </Button>
+
                         <Button
                             className="relative"
                             variant={'ghost'}
+                            size="icon"
                             onClick={() => {
                                 setTheme(theme === 'dark' ? 'light' : 'dark')
                             }}
@@ -199,6 +214,16 @@ export default function Navbar() {
                                             </Link>
                                         </SheetClose>
                                     ))}
+
+                                    <a
+                                        href={siteConfig.githubUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="hover:bg-accent flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium transition-colors"
+                                    >
+                                        <Github className="size-4" aria-hidden="true" />
+                                        Source on GitHub
+                                    </a>
                                 </div>
                                 <div className="mt-auto flex flex-col gap-2 border-t p-4">
                                     {session ? (

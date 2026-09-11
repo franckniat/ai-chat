@@ -15,7 +15,19 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
     return (
         <>
             <Navbar />
-            <Spotlight className="-top-40 left-0 md:-top-20 md:left-60" fill="var(--primary)" />
+            {/* Le Spotlight est purement decoratif mais etait en `absolute`
+                directement sur <body> : il depassait de quelques pixels a
+                droite et rendait toute la page scrollable horizontalement.
+                Ce conteneur le rogne sans rien changer a son rendu. */}
+            <div
+                aria-hidden="true"
+                className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+            >
+                <Spotlight
+                    className="-top-40 left-0 md:-top-20 md:left-60"
+                    fill="var(--primary)"
+                />
+            </div>
             <main className="min-h-screen max-w-[1280px] mx-auto pt-[80px]">
                 {children}
             </main>

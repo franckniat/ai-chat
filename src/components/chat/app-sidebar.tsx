@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { PenLine, Sparkles } from 'lucide-react'
+import { Github, PenLine, Sparkles } from 'lucide-react'
 
 import { NavMain } from '@/components/chat/nav-main'
 import { NavUser } from '@/components/chat/nav-user'
@@ -20,6 +20,7 @@ import { Chat } from '@/generated/prisma/client'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
 import { buttonVariants } from '../ui/button'
 import { cn } from '@/lib/utils'
+import { siteConfig } from '@/lib/site'
 
 interface AppSidebarProps {
     props?: React.ComponentProps<typeof Sidebar>
@@ -80,6 +81,17 @@ export function AppSidebar({ chatList, ...props }: AppSidebarProps) {
                 <NavMain items={data.navMain} />
             </SidebarContent>
             <SidebarFooter>
+                {state === 'expanded' && (
+                    <a
+                        href={siteConfig.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent flex items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-colors"
+                    >
+                        <Github className="size-3.5" aria-hidden="true" />
+                        Source on GitHub
+                    </a>
+                )}
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

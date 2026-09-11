@@ -180,7 +180,7 @@ export const MessageItem = memo(({ message }: { message: UIMessage }) => {
                                                                             className="antialiased text-sm tracking-wide w-full"
                                                                             customStyle={{
                                                                                 fontFamily:
-                                                                                    "var(--font-mono)",
+                                                                                    "var(--font-jetbrains-mono), ui-monospace, monospace",
                                                                                 fontSize:
                                                                                     "0.875rem",
                                                                                 lineHeight: "1.6",
@@ -192,7 +192,7 @@ export const MessageItem = memo(({ message }: { message: UIMessage }) => {
                                                                             codeTagProps={{
                                                                                 style: {
                                                                                     fontFamily:
-                                                                                        "var(--font-mono)",
+                                                                                        "var(--font-jetbrains-mono), ui-monospace, monospace",
                                                                                 },
                                                                             }}
                                                                             showLineNumbers={true}
