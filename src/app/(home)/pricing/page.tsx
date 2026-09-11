@@ -255,7 +255,7 @@ export default function PricingPage() {
                         <AccordionItem value="faq-3">
                             <AccordionTrigger>How do I get Enterprise pricing?</AccordionTrigger>
                             <AccordionContent>
-                                Enterprise pricing is custom — click "Contact Sales" to describe your project, expected volume, and any compliance or data residency needs. We will reply with a proposal and options (including local payment and invoicing options).
+                                Enterprise pricing is custom — click &ldquo;Contact Sales&rdquo; to describe your project, expected volume, and any compliance or data residency needs. We will reply with a proposal and options (including local payment and invoicing options).
                             </AccordionContent>
                         </AccordionItem>
 

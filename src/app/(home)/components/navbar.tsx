@@ -11,17 +11,47 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu'
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetClose,
+    SheetTrigger,
+} from '@/components/ui/sheet'
 import { signOut } from '@/lib/auth-client';
 import { useSession } from '@/lib/auth-client'
-import { Moon, Sparkles, SquareArrowOutUpRight, Sun } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Menu, Moon, Sparkles, SquareArrowOutUpRight, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect } from 'react'
+import { useState, useSyncExternalStore } from 'react'
+
+/**
+ * Position de defilement lue via `useSyncExternalStore` : c'est le primitif
+ * prevu pour s'abonner a une source exterieure a React. Un `useEffect` qui
+ * appelle `setState` des le montage declenche un rendu en cascade — ce que
+ * `react-hooks/set-state-in-effect` signale.
+ */
+function subscribeToScroll(onChange: () => void) {
+    window.addEventListener('scroll', onChange, { passive: true })
+    return () => window.removeEventListener('scroll', onChange)
+}
+
+const getIsScrolled = () => window.scrollY > 30
+// Le serveur ne defile pas : l'etat initial est toujours « en haut ».
+const getServerIsScrolled = () => false
 
 export default function Navbar() {
     const { theme, setTheme } = useTheme()
     const pathname = usePathname()
+    const scrolled = useSyncExternalStore(
+        subscribeToScroll,
+        getIsScrolled,
+        getServerIsScrolled,
+    )
+    const [mobileOpen, setMobileOpen] = useState(false)
     const navLinks = [
         {
             href: '/',
@@ -45,34 +75,6 @@ export default function Navbar() {
         },
     ]
 
-    useEffect(() => {
-        const navbar = document.querySelector('.navbar')
-        const handleScroll = () => {
-            if (window.scrollY > 30) {
-                navbar?.classList.add(
-                    'border',
-                    'border-foreground/20',
-                    'shadow-lg',
-                    'bg-background/60',
-                    'backdrop-blur-lg',
-                )
-            } else {
-                navbar?.classList.remove(
-                    'border',
-                    'border-foreground/20',
-                    'shadow-lg',
-                    'bg-background/60',
-                    'backdrop-blur-lg',
-                )
-            }
-        }
-        if (navbar) {
-            window.addEventListener('scroll', handleScroll)
-            return () => {
-                window.removeEventListener('scroll', handleScroll)
-            }
-        }
-    }, [])
     const { data: session } = useSession()
 
     const handleLogout = async () => {
@@ -83,12 +85,18 @@ export default function Navbar() {
         }
     }
     return (
-        <nav className="navbar fixed top-3 z-50 lg:min-w-[900px] w-full max-w-[1000px] md:min-w-[600px] left-1/2 -translate-x-1/2 rounded-xl">
+        <nav
+            className={cn(
+                'navbar fixed top-3 z-50 left-1/2 w-[calc(100%-1.5rem)] max-w-[1000px] -translate-x-1/2 rounded-xl transition-all md:min-w-[600px] lg:min-w-[900px]',
+                scrolled &&
+                    'border border-foreground/20 bg-background/60 shadow-lg backdrop-blur-lg',
+            )}
+        >
             <div className="max-w-[1280px] mx-auto px-3">
                 <div className="flex items-center justify-between h-[65px]">
                     <Link href="/" className="flex items-center gap-2 lg:gap-3">
                         <Sparkles className="size-4" />
-                        <span className=" text-base lg:text-lg font-bold font-mono">niato ai .</span>
+                        <span className=" text-base lg:text-lg font-bold font-display">niato ai .</span>
                     </Link>
                     <div className="hidden items-center gap-2 md:flex">
                         {navLinks.map((link) => (
@@ -111,6 +119,7 @@ export default function Navbar() {
                         >
                             <Sun className="size-4 dark:scale-0 scale-100 rotate-0 dark:rotate-12 transition-all absolute" />
                             <Moon className="size-4 dark:scale-100 scale-0 dark:rotate-0 rotate-12 transition-all" />
+                            <span className="sr-only">Toggle theme</span>
                         </Button>
                         {session ? (
                             <DropdownMenu>
@@ -148,12 +157,84 @@ export default function Navbar() {
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         ) : (
-                            <Link href={'/login'}>
-                                <Button size={'sm'} className="hidden md:block text-sm">
+                            <Link href={'/login'} className="hidden md:block">
+                                <Button size={'sm'} className="text-sm">
                                     Get Started
                                 </Button>
                             </Link>
                         )}
+
+                        {/* Navigation mobile : sans elle, un visiteur non connecte
+                            n'a ni liens ni moyen de s'inscrire sous 768px. */}
+                        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+                            <SheetTrigger asChild>
+                                <Button variant="ghost" size="icon" className="md:hidden">
+                                    <Menu className="size-5" />
+                                    <span className="sr-only">Open menu</span>
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side="right" className="w-[min(20rem,85vw)]">
+                                <SheetHeader>
+                                    <SheetTitle className="flex items-center gap-2 font-display">
+                                        <Sparkles className="size-4" />
+                                        niato ai .
+                                    </SheetTitle>
+                                </SheetHeader>
+                                {/* `SheetClose asChild` ferme le panneau au clic :
+                                    Radix ne le fait pas pour un lien, et un
+                                    useEffect sur `pathname` declencherait un
+                                    setState en cascade a chaque navigation. */}
+                                <div className="flex flex-col gap-1 px-4">
+                                    {navLinks.map((link) => (
+                                        <SheetClose asChild key={link.href}>
+                                            <Link
+                                                href={link.href}
+                                                className={cn(
+                                                    'rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent',
+                                                    link.active &&
+                                                        'bg-accent text-accent-foreground',
+                                                )}
+                                            >
+                                                {link.label}
+                                            </Link>
+                                        </SheetClose>
+                                    ))}
+                                </div>
+                                <div className="mt-auto flex flex-col gap-2 border-t p-4">
+                                    {session ? (
+                                        <>
+                                            <SheetClose asChild>
+                                                <Link href="/chat">
+                                                    <Button className="w-full">Go to chat</Button>
+                                                </Link>
+                                            </SheetClose>
+                                            <Button
+                                                variant="outline"
+                                                className="w-full"
+                                                onClick={handleLogout}
+                                            >
+                                                Logout
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <SheetClose asChild>
+                                                <Link href="/login">
+                                                    <Button className="w-full">Get Started</Button>
+                                                </Link>
+                                            </SheetClose>
+                                            <SheetClose asChild>
+                                                <Link href="/register">
+                                                    <Button variant="outline" className="w-full">
+                                                        Create an account
+                                                    </Button>
+                                                </Link>
+                                            </SheetClose>
+                                        </>
+                                    )}
+                                </div>
+                            </SheetContent>
+                        </Sheet>
                     </div>
                 </div>
             </div>
