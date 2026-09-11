@@ -58,7 +58,7 @@ describe("HomePage — structure accessible", () => {
     test("les titres de features sont de vrais titres, pas des div", () => {
         render(<HomePage />);
 
-        for (const feature of ["Multi-Model Support", "Chat History"]) {
+        for (const feature of ["Several models", "Searchable history"]) {
             expect(
                 screen.getByRole("heading", { name: feature }),
             ).toBeInTheDocument();
@@ -69,10 +69,10 @@ describe("HomePage — structure accessible", () => {
         render(<HomePage />);
 
         expect(
-            screen.getByRole("heading", { name: /is there a free plan/i }),
+            screen.getByRole("heading", { name: /is it really free/i }),
         ).toBeInTheDocument();
         expect(
-            screen.getByRole("heading", { name: /can i cancel anytime/i }),
+            screen.getByRole("heading", { name: /are my conversations kept/i }),
         ).toBeInTheDocument();
     });
 

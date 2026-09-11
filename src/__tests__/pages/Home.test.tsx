@@ -2,6 +2,8 @@ import { describe, expect, test, beforeEach, vi } from "vitest";
 import { render, screen, cleanup, within } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import HomePage from "../../app/(home)/page";
+import { FREE_MODELS } from "@/lib/free-models";
+import { personalities } from "@/lib/personalities";
 
 /**
  * Ces tests portent sur ce que la page *fait* : les titres qu'elle annonce et
@@ -38,26 +40,26 @@ describe("HomePage", () => {
 
         const headings = screen.getAllByRole("heading", { level: 1 });
         expect(headings).toHaveLength(1);
-        expect(headings[0]).toHaveTextContent(/unlock the power of/i);
-        expect(headings[0]).toHaveTextContent(/ai intelligence/i);
+        expect(headings[0]).toHaveTextContent(/many models/i);
+        expect(headings[0]).toHaveTextContent(/one window/i);
     });
 
     test("presente la proposition de valeur", () => {
         render(<HomePage />);
 
         expect(
-            screen.getByText(/experience the next generation of ai chat/i),
+            screen.getByText(/switch models mid-conversation/i),
         ).toBeInTheDocument();
     });
 
     test("envoie les deux CTA principaux vers le chat et la tarification", () => {
         render(<HomePage />);
 
-        expect(screen.getByRole("link", { name: /start chatting/i })).toHaveAttribute(
+        expect(screen.getByRole("link", { name: /open the chat/i })).toHaveAttribute(
             "href",
             "/chat",
         );
-        expect(screen.getByRole("link", { name: /view pricing/i })).toHaveAttribute(
+        expect(screen.getByRole("link", { name: /view plans/i })).toHaveAttribute(
             "href",
             "/pricing",
         );
@@ -66,7 +68,7 @@ describe("HomePage", () => {
     test("le bandeau d'annonce mene au chat", () => {
         render(<HomePage />);
 
-        const banner = screen.getByRole("link", { name: /new: chat with deepseek/i });
+        const banner = screen.getByRole("link", { name: /free models, no credit card/i });
         expect(banner).toHaveAttribute("href", "/chat");
     });
 
@@ -74,7 +76,7 @@ describe("HomePage", () => {
         render(<HomePage />);
 
         expect(
-            screen.getByRole("link", { name: /get started for free/i }),
+            screen.getByRole("link", { name: /get started/i }),
         ).toHaveAttribute("href", "/chat");
     });
 
@@ -92,10 +94,10 @@ describe("HomePage", () => {
         render(<HomePage />);
 
         for (const title of [
-            /why choose niato ai/i,
-            /loved by thousands/i,
+            /what niato ai does/i,
+            /available models/i,
             /frequently asked questions/i,
-            /ready to supercharge your productivity/i,
+            /there is nothing to pay/i,
         ]) {
             expect(screen.getByRole("heading", { name: title })).toBeInTheDocument();
         }
@@ -105,27 +107,41 @@ describe("HomePage", () => {
         render(<HomePage />);
 
         for (const feature of [
-            "Multi-Model Support",
-            "Lightning Fast",
-            "Secure & Private",
-            "Smart Context",
-            "Chat History",
-            "Code Highlighting",
+            "Several models",
+            "Automatic failover",
+            "Searchable history",
+            "Code and formulas",
+            "Protected account",
         ]) {
-            expect(screen.getByText(feature)).toBeInTheDocument();
+            expect(screen.getByRole("heading", { name: feature })).toBeInTheDocument();
         }
+
+        // Le titre est genere depuis `personalities`, pas ecrit en dur.
+        expect(
+            screen.getByRole("heading", { name: `${personalities.length} tones` }),
+        ).toBeInTheDocument();
     });
 
-    test("affiche trois temoignages, chacun avec un auteur et un role", () => {
+    test("la vitrine liste exactement les modeles reellement configures", () => {
         render(<HomePage />);
 
-        for (const [name, role] of [
-            ["Sarah Chen", "Software Engineer"],
-            ["Alex Rivera", "Content Creator"],
-            ["Jordan Smith", "Product Manager"],
-        ]) {
-            expect(screen.getByText(name)).toBeInTheDocument();
-            expect(screen.getByText(role)).toBeInTheDocument();
+        // La section remplace d'anciens temoignages inventes. Elle est generee
+        // depuis FREE_MODELS : ce test echoue si la page reintroduit du
+        // contenu ecrit en dur qui ne correspond plus aux modeles configures.
+        const showcased = FREE_MODELS.filter((m) => m.chefSlug !== "openrouter");
+
+        const section = screen
+            .getByRole("heading", { name: /available models/i })
+            .closest("section");
+        expect(section).not.toBeNull();
+
+        const items = within(section as HTMLElement).getAllByRole("listitem");
+        expect(items).toHaveLength(showcased.length);
+
+        for (const model of showcased) {
+            expect(
+                within(section as HTMLElement).getByText(model.name),
+            ).toBeInTheDocument();
         }
     });
 

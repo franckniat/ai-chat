@@ -56,15 +56,18 @@ const plans: PricingPlan[] = [
         monthlyPrice: 0,
         yearlyPrice: 0,
         icon: <MessageSquare className="size-6" />,
+        // Aligne sur lib/free-models.ts et sur ce que la route /api/chat fait
+        // reellement. L'ancienne liste citait DeepSeek / Llama / Qwen — absents
+        // de l'application — et de la generation d'images, qui n'existe pas.
         features: [
-            { text: "Full access to standard models (DeepSeek / Llama / Qwen)", included: true },
-            { text: "Free, unlimited usage for core features", included: true },
-            { text: "Limited access to advanced models (quota-based)", included: true },
-            { text: "Basic chat history and export", included: true },
-            { text: "Community support and docs", included: true },
-            { text: "Image generation (very limited / trial)", included: false },
-            { text: "Enterprise integrations", included: false },
-            { text: "SLA / priority support", included: false },
+            { text: "Every model in the catalogue, none held back", included: true },
+            { text: "Automatic failover when a model is rate-limited", included: true },
+            { text: "Searchable conversation history", included: true },
+            { text: "Selectable answer tones", included: true },
+            { text: "Code highlighting and LaTeX math", included: true },
+            { text: "Community support via the contact form", included: true },
+            { text: "Contractual guarantees and SLA", included: false },
+            { text: "Private or on-premise deployment", included: false },
         ],
         cta: "Start for Free",
         ctaLink: "/register",
@@ -77,40 +80,16 @@ const plans: PricingPlan[] = [
         icon: <Building2 className="size-6" />,
         features: [
             { text: "Everything in Free", included: true },
-            { text: "Custom integration & API access", included: true, highlight: true },
-            { text: "Advanced models & reasoning at scale", included: true, highlight: true },
-            { text: "Unlimited image generation options", included: true, highlight: true },
-            { text: "Dedicated account manager & SLA", included: true },
-            { text: "Onboarding and custom fine-tuning", included: true },
-            { text: "Data residency & privacy options", included: true },
-            { text: "24/7 priority support", included: true },
+            { text: "Private or on-premise deployment", included: true, highlight: true },
+            { text: "Paid model tiers on your own provider account", included: true, highlight: true },
+            { text: "Data residency options", included: true, highlight: true },
+            { text: "Named contact and agreed response times", included: true },
+            { text: "Onboarding support", included: true },
+            { text: "Invoicing and local payment options", included: true },
         ],
         cta: "Contact Sales",
         ctaLink: "/support?subject=enterprise",
         enterprise: true,
-    },
-];
-
-const faqs = [
-    {
-        question: "Can I switch plans at any time?",
-        answer: "Yes! You can upgrade or downgrade your plan at any time. When upgrading, you'll get immediate access to new features. When downgrading, the change takes effect at the end of your billing period.",
-    },
-    {
-        question: "What payment methods do you accept?",
-        answer: "We accept Mobile Money (MTN, Orange Money), bank transfers, and major credit/debit cards. All payments are processed securely.",
-    },
-    {
-        question: "Is there a free trial for Premium?",
-        answer: "While we don't offer a traditional free trial, our Free plan lets you explore the platform with limited access to advanced features. This way, you can experience the value before upgrading.",
-    },
-    {
-        question: "What happens when I reach my message limit?",
-        answer: "On the Free plan, you'll need to wait until the next day for your limit to reset, or upgrade to Premium for higher limits. We'll notify you when you're approaching your limit.",
-    },
-    {
-        question: "How does Enterprise pricing work?",
-        answer: "Enterprise plans are customized based on your organization's needs. Contact our sales team to discuss your requirements and get a personalized quote.",
     },
 ];
 
@@ -234,28 +213,28 @@ export default function PricingPage() {
                 <div className="max-w-3xl mx-auto">
                     <div className="text-center mb-8">
                         <h2 className="text-3xl font-bold mb-2">Frequently Asked Questions</h2>
-                        <p className="text-muted-foreground">Answers about Free usage, limits and how to contact us for Enterprise work.</p>
+                        <p className="text-muted-foreground">What the free plan covers, how model limits behave, and when Enterprise is worth a conversation.</p>
                     </div>
 
                     <Accordion type="single" collapsible className="w-full">
                         <AccordionItem value="faq-1">
                             <AccordionTrigger>Is Free really free?</AccordionTrigger>
                             <AccordionContent>
-                                Yes — the Free plan is completely free to use for individuals, students and hobby projects. We offer core features and access to standard models without requiring payment details.
+                                Yes. No card to enter, no trial countdown, and no feature held back behind a paywall. The models in the catalogue are free models, so running them costs nothing.
                             </AccordionContent>
                         </AccordionItem>
 
                         <AccordionItem value="faq-2">
-                            <AccordionTrigger>Can I use advanced models on Free?</AccordionTrigger>
+                            <AccordionTrigger>Are there usage limits?</AccordionTrigger>
                             <AccordionContent>
-                                You have limited quota-based access to advanced models on Free. This lets you try advanced capabilities; for sustained high-volume use, contact us for Enterprise options.
+                                niato ai does not meter your messages. The models themselves have throughput limits set by their providers, shared across all users; when one is reached, the app restarts your reply on the next model instead of failing.
                             </AccordionContent>
                         </AccordionItem>
 
                         <AccordionItem value="faq-3">
                             <AccordionTrigger>How do I get Enterprise pricing?</AccordionTrigger>
                             <AccordionContent>
-                                Enterprise pricing is custom — click &ldquo;Contact Sales&rdquo; to describe your project, expected volume, and any compliance or data residency needs. We will reply with a proposal and options (including local payment and invoicing options).
+                                Enterprise is not a feature tier — it is a contract. Click &ldquo;Contact Sales&rdquo; to describe your deployment, expected volume and any compliance or data residency needs, and we will reply with a proposal.
                             </AccordionContent>
                         </AccordionItem>
 
@@ -269,7 +248,7 @@ export default function PricingPage() {
                         <AccordionItem value="faq-5">
                             <AccordionTrigger>How do you protect my data?</AccordionTrigger>
                             <AccordionContent>
-                                We offer configurable data retention, encryption in transit and at rest, and optional private deployments for Enterprise customers. Tell us your requirements and we will include them in the proposal.
+                                Traffic to niato ai runs over HTTPS, and your conversations are readable only from your own account. Configurable retention, storage-level encryption and private deployment are part of what an Enterprise agreement can cover — tell us your requirements and we will put them in the proposal.
                             </AccordionContent>
                         </AccordionItem>
                     </Accordion>

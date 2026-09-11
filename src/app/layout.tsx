@@ -52,9 +52,12 @@ export const metadata: Metadata = {
         'ai chat',
         'ai assistant',
         'multi-model ai',
-        'deepseek',
-        'llama',
-        'qwen',
+        // Les mots-cles doivent correspondre aux modeles reellement proposes
+        // (voir lib/free-models.ts) ; deepseek / llama / qwen n'en font pas
+        // partie et referencaient la page sur une offre inexistante.
+        'openrouter',
+        'free ai models',
+        'nemotron',
     ],
     alternates: {
         canonical: '/',

@@ -20,7 +20,8 @@ export default function TermsPage() {
                             <h2 className="text-xl font-semibold mb-2">Your data is secure</h2>
                             <p className="text-muted-foreground">
                                 We are committed to protecting your privacy and handling your data with the utmost care.
-                                Your personal information is encrypted and stored securely.
+                                Your conversations are readable only from your own account, and
+                                all traffic to niato ai is encrypted in transit.
                             </p>
                         </div>
                     </div>
@@ -166,7 +167,11 @@ export default function TermsPage() {
                             <div className="grid md:grid-cols-2 gap-4 mt-4">
                                 <div className="bg-card border rounded-lg p-4">
                                     <h4 className="font-semibold text-foreground mb-2">🔒 Encryption</h4>
-                                    <p className="text-sm">All data is encrypted in transit (HTTPS) and at rest</p>
+                                    {/* Le chiffrement au repos depend de l'hebergeur de la
+                                        base et n'est pas configure par l'application : il
+                                        n'est donc pas promis ici. Le transit en HTTPS, lui,
+                                        est effectif. */}
+                                    <p className="text-sm">All traffic is encrypted in transit over HTTPS</p>
                                 </div>
                                 <div className="bg-card border rounded-lg p-4">
                                     <h4 className="font-semibold text-foreground mb-2">🛡️ Protection</h4>

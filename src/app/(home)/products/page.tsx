@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next'
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -11,295 +10,294 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
-    Sparkles,
-    MessageSquare,
-    Image as ImageIcon,
-    Brain,
-    FileText,
-    Code2,
-    Zap,
-    Globe,
-    Shield,
     ArrowRight,
+    Brain,
     CheckCircle2,
+    Code2,
+    History,
+    type LucideIcon,
+    MessageSquare,
+    Repeat2,
+    Sparkles,
+    Sigma,
+    Palette,
+    LogIn,
+    MoonStar,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
+import { FREE_MODELS } from "@/lib/free-models";
+import { personalities } from "@/lib/personalities";
 
 export const metadata: Metadata = {
     title: 'niato ai features',
     description:
-        'Explore niato ai features: intelligent chat, advanced reasoning, document analysis, image generation, and coding assistance.',
-    keywords: ['niato ai', 'ai features', 'reasoning ai', 'ai code assistant'],
+        'What niato ai can do: several free models behind one composer, visible reasoning, rendered code and math, a searchable history, and selectable answer tones.',
+    keywords: ['niato ai', 'ai features', 'reasoning ai', 'openrouter', 'free ai models'],
     alternates: {
         canonical: '/products',
     },
 }
 
+const modelCount = FREE_MODELS.filter((model) => model.chefSlug !== "openrouter").length;
+const reasoningCount = FREE_MODELS.filter((model) => model.isReasoning).length;
+
 interface Feature {
     title: string;
     description: string;
-    image: string;
-    imageAlt: string;
+    icon: LucideIcon;
     highlights: string[];
     reverse?: boolean;
 }
 
+/**
+ * Chaque entree correspond a du code existant.
+ *
+ * La version precedente annoncait de la generation d'images, de l'analyse de
+ * documents et un acces API : aucun des trois n'existe. Elle citait aussi
+ * DeepSeek, Llama 4 et Qwen, absents de lib/free-models.ts, et affichait aux
+ * visiteurs un texte de chantier (« Add image: /images/features/... ») a la
+ * place d'illustrations jamais ajoutees.
+ */
 const mainFeatures: Feature[] = [
     {
-        title: "Intelligent Conversations",
+        title: "One composer, several models",
         description:
-            "Engage in natural, context-aware conversations with our advanced AI models. Whether you need help brainstorming, researching, or problem-solving, Niato AI understands your intent and provides thoughtful, relevant responses.",
-        image: "/images/features/chat-demo.png",
-        imageAlt: "AI Chat conversation demo",
+            `Pick among ${modelCount} free models without leaving the conversation. The selector sits under the composer, and your choice applies to the next message — the thread is never reset.`,
+        icon: MessageSquare,
         highlights: [
-            "Context-aware responses that remember your conversation",
-            "Multiple AI models to choose from (DeepSeek, Llama 4, Qwen)",
-            "Real-time streaming for instant feedback",
-            "Support for follow-up questions and clarifications",
+            "Models grouped by capability: Elite, Solide, Leger",
+            "Switch mid-conversation, history is preserved",
+            "An automatic routing mode picks an available model for you",
+            "Replies stream token by token",
         ],
     },
     {
-        title: "Advanced Reasoning",
+        title: "Failover instead of errors",
         description:
-            "Tackle complex problems with AI models that think step-by-step. Our reasoning models break down difficult questions, show their thought process, and arrive at well-reasoned conclusions.",
-        image: "/images/features/reasoning-demo.png",
-        imageAlt: "AI Reasoning demonstration",
+            "Free models share throughput limits, and hitting one normally ends the request. niato ai catches the rate limit, moves to the next model in the list and restarts the answer, telling you what it switched to.",
+        icon: Repeat2,
         highlights: [
-            "Step-by-step problem solving",
-            "Transparent thought process visualization",
-            "Mathematical and logical reasoning",
-            "Complex analysis and decision support",
+            "Rate limits are detected and handled automatically",
+            "Up to two fallbacks before giving up",
+            "A notification names the model that took over",
         ],
         reverse: true,
     },
     {
-        title: "Image Generation",
+        title: "Reasoning you can open",
         description:
-            "Bring your ideas to life with AI-powered image generation. Create stunning visuals, illustrations, and artwork from simple text descriptions. Perfect for designers, marketers, and creative professionals.",
-        image: "/images/features/image-gen-demo.png",
-        imageAlt: "AI Image generation demo",
+            reasoningCount > 0
+                ? "Reasoning models expose the steps they went through before answering. The trace streams live in a panel you can fold away once you have read it."
+                : "When a reasoning model is selected, the steps it went through before answering stream into a panel you can fold away.",
+        icon: Brain,
         highlights: [
-            "Generate images from text descriptions",
-            "Multiple styles and artistic directions",
-            "High-resolution outputs",
-            "Edit and refine generated images",
+            "Thought process streamed as it is produced",
+            "Collapsible panel, kept out of the way by default",
+            "Sources are listed separately from the answer",
         ],
     },
     {
-        title: "Document Analysis",
+        title: "Code and math, properly rendered",
         description:
-            "Upload documents and let AI extract insights, summarize content, and answer questions about your files. Support for PDFs, Word documents, and more.",
-        image: "/images/features/document-demo.png",
-        imageAlt: "Document analysis demo",
+            "Answers are rendered as Markdown: fenced code gets syntax highlighting and a copy button, LaTeX is typeset with KaTeX, and tables keep their structure.",
+        icon: Code2,
         highlights: [
-            "PDF and document parsing",
-            "Intelligent summarization",
-            "Q&A over your documents",
-            "Extract key information automatically",
+            "Syntax highlighting with per-block copy",
+            "Inline and display math via KaTeX",
+            "GitHub-flavoured Markdown: tables, task lists, strikethrough",
+            "Generated HTML is sanitised before rendering",
         ],
         reverse: true,
     },
     {
-        title: "Code Assistant",
+        title: "A history you can actually search",
         description:
-            "Get help writing, debugging, and understanding code. Our AI understands dozens of programming languages and can help you become a more productive developer.",
-        image: "/images/features/code-demo.png",
-        imageAlt: "Code assistant demo",
+            "Every conversation is saved to your account and grouped by date in the sidebar. Search matches conversation titles and the content of the messages themselves.",
+        icon: History,
         highlights: [
-            "Code generation and completion",
-            "Bug detection and fixes",
-            "Code explanation and documentation",
-            "Support for 50+ programming languages",
+            "Grouped as Today, Yesterday and Older",
+            "Full-text search across titles and messages",
+            "Ctrl+K opens the search palette",
+            "Deleting a conversation can be undone",
         ],
     },
 ];
 
 const capabilities = [
     {
-        icon: <MessageSquare className="size-6" />,
-        title: "Natural Language",
-        description: "Communicate naturally, just like talking to a human expert",
+        icon: <Sparkles className="size-6" />,
+        title: `${personalities.length} answer tones`,
+        description: "Change how the assistant replies without rewriting your instructions",
     },
     {
-        icon: <Brain className="size-6" />,
-        title: "Deep Understanding",
-        description: "AI that truly understands context and nuance",
+        icon: <Sigma className="size-6" />,
+        title: "LaTeX math",
+        description: "Formulas typeset inline and as display blocks",
     },
     {
-        icon: <Zap className="size-6" />,
-        title: "Lightning Fast",
-        description: "Get responses in real-time with streaming technology",
+        icon: <Palette className="size-6" />,
+        title: "Light and dark",
+        description: "Follows your system theme, or pick one explicitly",
     },
     {
-        icon: <Globe className="size-6" />,
-        title: "Multilingual",
-        description: "Communicate in multiple languages seamlessly",
+        icon: <LogIn className="size-6" />,
+        title: "Email, Google, GitHub",
+        description: "Sign in the way you prefer, with email verification",
     },
     {
-        icon: <Shield className="size-6" />,
-        title: "Secure & Private",
-        description: "Your conversations are encrypted and protected",
+        icon: <MoonStar className="size-6" />,
+        title: "Auto-named threads",
+        description: "Each new conversation gets a title from your first message",
     },
     {
         icon: <Code2 className="size-6" />,
-        title: "Developer Friendly",
-        description: "API access for custom integrations",
+        title: "Open source",
+        description: "The whole application is MIT licensed and readable",
     },
 ];
 
 export default function ProductsPage() {
     return (
-        <div className="flex flex-col min-h-screen">
-            {/* Hero Section */}
+        <div className="flex min-h-screen flex-col">
+            {/* Hero */}
             <section className="px-4 py-16 md:py-24">
-                <div className="max-w-[1280px] mx-auto text-center">
+                <div className="mx-auto max-w-[1280px] text-center">
                     <Badge
                         variant="outline"
-                        className="px-4 py-2 text-sm rounded-full backdrop-blur-sm mb-6"
+                        className="mb-6 rounded-full px-4 py-2 text-sm backdrop-blur-sm"
                     >
                         <Sparkles className="mr-2 size-4" />
-                        Discover our features
+                        What&apos;s inside
                     </Badge>
 
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight font-display mb-6">
-                        The future of AI,{" "}
+                    <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+                        Everything here{" "}
                         <span className="text-primary relative inline-block">
-                            at your fingertips
-                            <span className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-primary/0 via-primary to-primary/0 rounded-full opacity-50" />
+                            actually ships
+                            <span className="from-primary/0 via-primary to-primary/0 absolute -bottom-2 left-0 h-1 w-full rounded-full bg-gradient-to-r opacity-50" />
                         </span>
                     </h1>
 
-                    <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10">
-                        Explore the powerful capabilities of Niato AI. From intelligent
-                        conversations to image generation, discover how AI can transform the
-                        way you work and create.
+                    <p className="text-muted-foreground mx-auto mb-10 max-w-3xl text-lg md:text-xl">
+                        No roadmap items, no coming-soon badges. Every capability below is in
+                        the application today and you can try it for free.
                     </p>
 
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
                         <Link
                             href="/chat"
                             className={cn(
                                 buttonVariants({ size: "lg" }),
-                                "px-8 text-lg h-12 rounded-full shadow-lg hover:shadow-primary/25"
+                                "hover:shadow-primary/25 h-12 rounded-full px-8 text-lg shadow-lg",
                             )}
                         >
-                            Try it Now
+                            Try it now
                             <ArrowRight className="ml-2 size-5" />
                         </Link>
                         <Link
                             href="/pricing"
                             className={cn(
                                 buttonVariants({ variant: "outline", size: "lg" }),
-                                "px-8 text-lg h-12 rounded-full"
+                                "h-12 rounded-full px-8 text-lg",
                             )}
                         >
-                            View Pricing
+                            View plans
                         </Link>
                     </div>
                 </div>
             </section>
 
-            {/* Main Features with Images */}
+            {/* Main features */}
             <section className="px-4 py-16">
-                <div className="max-w-[1280px] mx-auto space-y-24 md:space-y-32">
-                    {mainFeatures.map((feature, index) => (
-                        <div
-                            key={index}
-                            className={cn(
-                                "grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center",
-                                feature.reverse && "lg:[&>*:first-child]:order-2"
-                            )}
-                        >
-                            {/* Content */}
-                            <div className="space-y-6">
-                                <Badge variant="secondary" className="px-3 py-1">
-                                    Feature {index + 1}
-                                </Badge>
-                                <h2 className="text-3xl md:text-4xl font-bold">
-                                    {feature.title}
-                                </h2>
-                                <p className="text-lg text-muted-foreground leading-relaxed">
-                                    {feature.description}
-                                </p>
-                                <ul className="space-y-3">
-                                    {feature.highlights.map((highlight, i) => (
-                                        <li key={i} className="flex items-start gap-3">
-                                            <CheckCircle2 className="size-5 text-primary shrink-0 mt-0.5" />
-                                            <span>{highlight}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                                <Link
-                                    href="/chat"
-                                    className={cn(
-                                        buttonVariants({ variant: "outline" }),
-                                        "rounded-full mt-4"
-                                    )}
-                                >
-                                    Try this feature
-                                    <ArrowRight className="ml-2 size-4" />
-                                </Link>
-                            </div>
+                <div className="mx-auto max-w-[1280px] space-y-24 md:space-y-32">
+                    {mainFeatures.map((feature, index) => {
+                        const Icon = feature.icon;
+                        return (
+                            <div
+                                key={feature.title}
+                                className={cn(
+                                    "grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16",
+                                    feature.reverse && "lg:[&>*:first-child]:order-2",
+                                )}
+                            >
+                                <div className="space-y-6">
+                                    <Badge variant="secondary" className="px-3 py-1">
+                                        Feature {index + 1}
+                                    </Badge>
+                                    <h2 className="text-3xl font-bold md:text-4xl">
+                                        {feature.title}
+                                    </h2>
+                                    <p className="text-muted-foreground text-lg leading-relaxed">
+                                        {feature.description}
+                                    </p>
+                                    <ul className="space-y-3">
+                                        {feature.highlights.map((highlight) => (
+                                            <li key={highlight} className="flex items-start gap-3">
+                                                <CheckCircle2 className="text-primary mt-0.5 size-5 shrink-0" />
+                                                <span>{highlight}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <Link
+                                        href="/chat"
+                                        className={cn(
+                                            buttonVariants({ variant: "outline" }),
+                                            "mt-4 rounded-full",
+                                        )}
+                                    >
+                                        Try this feature
+                                        <ArrowRight className="ml-2 size-4" />
+                                    </Link>
+                                </div>
 
-                            {/* Image */}
-                            <div className="relative">
-                                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border bg-muted/50 shadow-2xl">
-                                    {/* Placeholder for demo image */}
-                                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10">
-                                        <div className="text-center p-8">
-                                            <div className="mx-auto w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-                                                {index === 0 && <MessageSquare className="size-8 text-primary" />}
-                                                {index === 1 && <Brain className="size-8 text-primary" />}
-                                                {index === 2 && <ImageIcon className="size-8 text-primary" />}
-                                                {index === 3 && <FileText className="size-8 text-primary" />}
-                                                {index === 4 && <Code2 className="size-8 text-primary" />}
+                                {/* Visuel typographique plutot qu'un emplacement
+                                    d'image vide : les captures referencees
+                                    n'existaient pas dans /public. */}
+                                <div className="relative" aria-hidden="true">
+                                    <div className="bg-muted/40 relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border shadow-sm">
+                                        <div className="from-primary/5 to-primary/10 absolute inset-0 bg-gradient-to-br" />
+                                        <div className="relative flex flex-col items-center gap-4 p-8 text-center">
+                                            <div className="bg-primary/10 text-primary flex size-16 items-center justify-center rounded-2xl">
+                                                <Icon className="size-8" />
                                             </div>
-                                            <p className="text-sm text-muted-foreground">
-                                                {feature.imageAlt}
-                                            </p>
-                                            <p className="text-xs text-muted-foreground/60 mt-2">
-                                                Add image: {feature.image}
+                                            <p className="font-display text-2xl font-semibold">
+                                                {feature.title}
                                             </p>
                                         </div>
                                     </div>
-                                    {/* Uncomment when you have actual images */}
-                                    {/* <Image
-                                        src={feature.image}
-                                        alt={feature.imageAlt}
-                                        fill
-                                        className="object-cover"
-                                    /> */}
+                                    <div className="from-primary/20 to-primary/5 absolute -inset-4 -z-10 rounded-3xl bg-gradient-to-r opacity-50 blur-2xl" />
                                 </div>
-                                {/* Decorative elements */}
-                                <div className="absolute -z-10 -inset-4 bg-gradient-to-r from-primary/20 to-primary/5 rounded-3xl blur-2xl opacity-50" />
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </section>
 
-            {/* Capabilities Grid */}
-            <section className="px-4 py-20 bg-muted/30">
-                <div className="max-w-[1280px] mx-auto">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                            Built for excellence
+            {/* Capabilities */}
+            <section className="bg-muted/30 px-4 py-20">
+                <div className="mx-auto max-w-[1280px]">
+                    <div className="mb-12 text-center">
+                        <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+                            Smaller things that help
                         </h2>
-                        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                            Every feature is designed with performance, security, and user
-                            experience in mind
+                        <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
+                            Details that make daily use less tedious
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {capabilities.map((capability, index) => (
-                            <Card key={index} className="text-center hover:shadow-lg transition-shadow">
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        {capabilities.map((capability) => (
+                            <Card
+                                key={capability.title}
+                                className="text-center transition-shadow hover:shadow-lg"
+                            >
                                 <CardHeader>
-                                    <div className="mx-auto p-3 rounded-xl bg-primary/10 text-primary w-fit mb-2">
+                                    <div className="bg-primary/10 text-primary mx-auto mb-2 w-fit rounded-xl p-3">
                                         {capability.icon}
                                     </div>
-                                    <CardTitle className="text-lg">{capability.title}</CardTitle>
+                                    <CardTitle asChild className="text-lg">
+                                        <h3>{capability.title}</h3>
+                                    </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <CardDescription className="text-base">
@@ -312,38 +310,38 @@ export default function ProductsPage() {
                 </div>
             </section>
 
-            {/* CTA Section */}
+            {/* CTA */}
             <section className="px-4 py-20">
-                <div className="max-w-[1280px] mx-auto">
-                    <Card className="bg-primary text-primary-foreground overflow-hidden relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary/80" />
-                        <div className="relative p-8 md:p-12 text-center">
-                            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                                Ready to experience the power of AI?
+                <div className="mx-auto max-w-[1280px]">
+                    <Card className="bg-primary text-primary-foreground relative overflow-hidden">
+                        <div className="from-primary to-primary/80 absolute inset-0 bg-gradient-to-br" />
+                        <div className="relative p-8 text-center md:p-12">
+                            <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+                                Everything above is free
                             </h2>
-                            <p className="text-primary-foreground/80 text-lg mb-8 max-w-2xl mx-auto">
-                                Join thousands of users who are already transforming their
-                                productivity with Niato AI. Start for free today.
+                            <p className="text-primary-foreground/80 mx-auto mb-8 max-w-2xl text-lg">
+                                Create an account and start a conversation. No card, no trial
+                                countdown.
                             </p>
-                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
                                 <Link
                                     href="/register"
                                     className={cn(
                                         buttonVariants({ variant: "secondary", size: "lg" }),
-                                        "px-8 text-lg h-12 rounded-full"
+                                        "h-12 rounded-full px-8 text-lg",
                                     )}
                                 >
-                                    Get Started Free
+                                    Create an account
                                     <Sparkles className="ml-2 size-5" />
                                 </Link>
                                 <Link
                                     href="/support"
                                     className={cn(
                                         buttonVariants({ variant: "outline", size: "lg" }),
-                                        "px-8 text-lg h-12 rounded-full bg-transparent border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10"
+                                        "border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10 h-12 rounded-full bg-transparent px-8 text-lg",
                                     )}
                                 >
-                                    Contact Us
+                                    Contact us
                                 </Link>
                             </div>
                         </div>

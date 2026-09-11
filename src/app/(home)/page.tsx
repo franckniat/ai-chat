@@ -1,252 +1,248 @@
-
 import type { Metadata } from 'next'
 import { Badge } from '@/components/ui/badge'
-import {  buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { ArrowRight, Bot, Zap, Shield, Sparkles, MessageSquare, CheckCircle2 } from 'lucide-react'
+import {
+    ArrowRight,
+    Bot,
+    History,
+    Keyboard,
+    MessageSquare,
+    Repeat2,
+    ShieldCheck,
+    Sparkles,
+} from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 import FeatureCard from '@/components/ui/FeatureCard'
 import FaqItem from '@/components/ui/FaqItem'
-import { TestimonialCard } from '@/components/ui/TestimonialCard'
 import { MagicCard } from '@/components/ui/magic-card'
+import { FREE_MODELS } from '@/lib/free-models'
+import { personalities } from '@/lib/personalities'
 
 export const metadata: Metadata = {
-    title: 'niato ai | Multi-model AI platform',
+    title: 'niato ai | Free multi-model AI chat',
     description:
-        'Discover niato ai, the multi-model AI platform to boost productivity, ship code faster, and create without friction.',
-    keywords: ['niato ai', 'ai platform', 'ai chat', 'ai assistant', 'multi-model ai'],
+        'niato ai puts several free language models behind one chat window: streaming replies, a searchable history, and automatic failover when a model is rate-limited.',
+    keywords: ['niato ai', 'ai chat', 'multi-model ai', 'openrouter', 'free ai assistant'],
     alternates: {
         canonical: '/',
     },
 }
 
 /**
- * ==============================================================================
- * HOME PAGE COMPONENT
- * ==============================================================================
- * This is the main landing page for the application.
- * It is divided into several logical sections:
- * 1. Hero: Main value proposition and CTA.
- * 2. Features: Grid of key capabilities.
- * 3. Testimonials: Social proof.
- * 4. FAQ: Common questions.
- * 5. CTA: Final call to action.
- * ==============================================================================
+ * Landing page.
+ *
+ * The copy describes only what the application actually does (see
+ * lib/free-models.ts, lib/personalities.ts and the /api/chat route).
+ * Features that exist in the UI but are not wired server-side — web search,
+ * file attachments — are deliberately not advertised.
  */
 export default function HomePage() {
+    // The last entry of the list is OpenRouter's automatic routing, not a
+    // nameable model: it is excluded from the showcase.
+    const showcasedModels = FREE_MODELS.filter((model) => model.chefSlug !== 'openrouter')
+
     return (
-        <div className="flex flex-col min-h-screen">
-            {/*
-              -----------------------------------------------------------------------
-              HERO SECTION
-              -----------------------------------------------------------------------
-              The entry point of the page. Uses a large typography and a gradient
-              effect on the text to grab attention. Includes a "New Feature" badge
-              and primary action buttons.
-            */}
-            <section className="px-4 py-10 md:py-20 lg:py-32">
-                <div className="max-w-[1280px] mx-auto px-4 text-center">
+        <div className="flex flex-col">
+            {/* ---------------------------------------------------------------
+                HERO
+            --------------------------------------------------------------- */}
+            <section className="px-4 py-16 md:py-24 lg:py-32">
+                <div className="mx-auto max-w-3xl text-center">
                     <div className="flex flex-col items-center gap-6">
-                        {/* New Feature Announcement Badge */}
                         <Link href="/chat" className="max-w-full">
-                            {/* `Badge` est en `whitespace-nowrap` : sans autorisation
-                                de retour a la ligne, ce libelle depassait la largeur
-                                de l'ecran sous 400px et rendait toute la page
-                                scrollable horizontalement. */}
                             <Badge
                                 variant="outline"
                                 className="max-w-full whitespace-normal rounded-full px-4 py-2 text-center text-xs backdrop-blur-sm sm:text-sm"
                             >
-                                <span className="mr-2">🚀</span>
-                                New: Chat with DeepSeek, Llama 4 &amp; more for free
+                                <span className="mr-2">✨</span>
+                                {showcasedModels.length} free models, no credit card
                                 <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
                             </Badge>
                         </Link>
 
-                        {/* Main Headline with Gradient Effect */}
-                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight font-display">
-                            Unlock the power of <br className="hidden md:block" />
-                            <span className="text-primary relative inline-block mt-2">
-                                AI Intelligence
-                                <span className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-primary/0 via-primary to-primary/0 rounded-full opacity-50" />
+                        <h1 className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
+                            Many models.
+                            <br className="hidden md:block" />{' '}
+                            <span className="text-primary relative mt-2 inline-block">
+                                One window.
+                                <span className="from-primary/0 via-primary to-primary/0 absolute -bottom-2 left-0 h-1 w-full rounded-full bg-gradient-to-r opacity-50" />
                             </span>
                         </h1>
 
-                        {/* Subheadline */}
-                        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                            Experience the next generation of AI chat. Seamlessly switch between
-                            models, analyze documents, and boost your productivity with Niato AI.
+                        <p className="text-muted-foreground mx-auto max-w-2xl text-lg leading-relaxed md:text-xl">
+                            Ask a question, switch models mid-conversation, and find any thread
+                            again later. When a model is rate-limited, niato ai moves to the next
+                            one instead of failing on you.
                         </p>
 
-                        {/* Primary Call to Actions */}
-                        <div className="flex flex-col sm:flex-row items-center gap-4 mt-4 w-full sm:w-auto">
+                        <div className="mt-4 flex w-full flex-col items-center gap-4 sm:w-auto sm:flex-row">
                             <Link
                                 href="/chat"
                                 className={cn(
-                                    buttonVariants({ size: "lg" }),
-                                    "w-full sm:w-auto px-8 text-lg h-12 rounded-full shadow-lg hover:shadow-primary/25 transition-all"
+                                    buttonVariants({ size: 'lg' }),
+                                    'hover:shadow-primary/25 h-12 w-full rounded-full px-8 text-lg shadow-lg transition-all sm:w-auto',
                                 )}
                             >
-                                Start Chatting
+                                Open the chat
                                 <MessageSquare className="ml-2 h-5 w-5" />
                             </Link>
                             <Link
                                 href="/pricing"
                                 className={cn(
-                                    buttonVariants({ variant: "outline", size: "lg" }),
-                                    "w-full sm:w-auto px-8 text-lg h-12 rounded-full"
+                                    buttonVariants({ variant: 'outline', size: 'lg' }),
+                                    'h-12 w-full rounded-full px-8 text-lg sm:w-auto',
                                 )}
                             >
-                                View Pricing
+                                View plans
                             </Link>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/*
-              -----------------------------------------------------------------------
-              FEATURES SECTION
-              -----------------------------------------------------------------------
-              Highlights the core benefits of the application using a grid layout.
-              Each feature is represented by a card with an icon.
-            */}
-            <section className="py-20 bg-muted/30">
-                <div className="max-w-[1280px] mx-auto px-6">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                            Why choose Niato AI?
+            {/* ---------------------------------------------------------------
+                FEATURES
+            --------------------------------------------------------------- */}
+            <section className="bg-muted/30 py-20">
+                <div className="mx-auto max-w-[1280px] px-6">
+                    <div className="mb-16 text-center">
+                        <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+                            What niato ai does
                         </h2>
-                        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                            Built for developers, creators, and professionals who need reliable AI
-                            assistance.
+                        <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
+                            A plain chat interface built around open models you can use for free.
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                         <FeatureCard
-                            icon={<Bot className="h-10 w-10 text-primary" />}
-                            title="Multi-Model Support"
-                            description="Access DeepSeek, Llama 4, Qwen, and more — all in one unified interface."
+                            icon={<Bot className="text-primary h-10 w-10" />}
+                            title="Several models"
+                            description={`${showcasedModels.length} models reachable through OpenRouter, sorted by capability. Switch between them at any point, even mid-conversation.`}
                         />
                         <FeatureCard
-                            icon={<Zap className="h-10 w-10 text-primary" />}
-                            title="Lightning Fast"
-                            description="Optimized for speed with streaming responses and low latency edge computing."
+                            icon={<Repeat2 className="text-primary h-10 w-10" />}
+                            title="Automatic failover"
+                            description="When a free model hits its rate limit, the reply restarts on the next model in the list instead of returning an error."
                         />
                         <FeatureCard
-                            icon={<Shield className="h-10 w-10 text-primary" />}
-                            title="Secure & Private"
-                            description="Your data is encrypted. We prioritize your privacy and data security."
+                            icon={<History className="text-primary h-10 w-10" />}
+                            title="Searchable history"
+                            description="Conversations are saved, grouped by date, and searchable by title or by the content of their messages."
                         />
                         <FeatureCard
-                            icon={<Sparkles className="h-10 w-10 text-primary" />}
-                            title="Smart Context"
-                            description="Advanced context management allows for longer, more coherent conversations."
+                            icon={<Sparkles className="text-primary h-10 w-10" />}
+                            title={`${personalities.length} tones`}
+                            description="A selector changes how the assistant answers, from steady and factual to playful, without rewriting your instructions each time."
                         />
                         <FeatureCard
-                            icon={<MessageSquare className="h-10 w-10 text-primary" />}
-                            title="Chat History"
-                            description="Save, organize, and search through your past conversations effortlessly."
+                            icon={<Keyboard className="text-primary h-10 w-10" />}
+                            title="Code and formulas"
+                            description="Syntax highlighting, LaTeX math and Markdown tables are rendered directly inside the answers."
                         />
                         <FeatureCard
-                            icon={<CheckCircle2 className="h-10 w-10 text-primary" />}
-                            title="Code Highlighting"
-                            description="Beautiful syntax highlighting for over 100 programming languages."
+                            icon={<ShieldCheck className="text-primary h-10 w-10" />}
+                            title="Protected account"
+                            description="Sign in by email with verification, or through Google and GitHub. Your conversations are readable only from your own account."
                         />
                     </div>
                 </div>
             </section>
 
-            {/*
-              -----------------------------------------------------------------------
-              TESTIMONIALS SECTION
-              -----------------------------------------------------------------------
-              Displays user feedback to build trust. Uses a 3-column grid layout.
-            */}
+            {/* ---------------------------------------------------------------
+                AVAILABLE MODELS
+                Replaces the former testimonials section, whose three reviews
+                were invented. This list is generated from lib/free-models.ts,
+                so it stays accurate by construction.
+            --------------------------------------------------------------- */}
             <section className="py-20">
-                <div className="max-w-[1280px] mx-auto px-6">
-                    <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-                        Loved by thousands
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <TestimonialCard
-                            name="Sarah Chen"
-                            role="Software Engineer"
-                            content="Niato AI has completely transformed my workflow. The code generation is spot on and the multi-model support is a game changer."
-                            initials="SC"
-                        />
-                        <TestimonialCard
-                            name="Alex Rivera"
-                            role="Content Creator"
-                            content="I use it daily for brainstorming and drafting. The interface is so clean and the responses are incredibly fast."
-                            initials="AR"
-                        />
-                        <TestimonialCard
-                            name="Jordan Smith"
-                            role="Product Manager"
-                            content="The best AI wrapper I've used. It's simple, powerful, and the pricing is very reasonable for the value you get."
-                            initials="JS"
-                        />
+                <div className="mx-auto max-w-[1280px] px-6">
+                    <div className="mb-12 text-center">
+                        <h2 className="mb-4 text-3xl font-bold md:text-4xl">Available models</h2>
+                        <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
+                            All free, all reachable as soon as your account exists.
+                        </p>
                     </div>
+
+                    <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {showcasedModels.map((model) => (
+                            <li
+                                key={model.id}
+                                className="bg-card flex items-center justify-between gap-4 rounded-xl border p-4"
+                            >
+                                <div className="min-w-0">
+                                    <p className="truncate font-medium">{model.name}</p>
+                                    <p className="text-muted-foreground truncate text-sm">
+                                        {model.chef}
+                                    </p>
+                                </div>
+                                <Badge variant="secondary" className="shrink-0 text-xs">
+                                    {model.category}
+                                </Badge>
+                            </li>
+                        ))}
+                    </ul>
+
+                    <p className="text-muted-foreground mt-6 text-center text-sm">
+                        An automatic routing mode is available too: it picks a model that is up
+                        for you.
+                    </p>
                 </div>
             </section>
 
-            {/*
-              -----------------------------------------------------------------------
-              FAQ SECTION
-              -----------------------------------------------------------------------
-              Addresses common user questions.
-            */}
-            <section className="py-20 bg-muted/30">
-                <div className="max-w-[800px] mx-auto px-6">
-                    <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-                        Frequently Asked Questions
+            {/* ---------------------------------------------------------------
+                FAQ
+            --------------------------------------------------------------- */}
+            <section className="bg-muted/30 py-20">
+                <div className="mx-auto max-w-[800px] px-6">
+                    <h2 className="mb-12 text-center text-3xl font-bold md:text-4xl">
+                        Frequently asked questions
                     </h2>
                     <div className="space-y-4">
                         <FaqItem
-                            question="Is there a free plan?"
-                            answer="Yes! You can use our basic models for free forever. Upgrade only when you need access to premium models like GPT-4."
+                            question="Is it really free?"
+                            answer="Yes. Every model on offer is a free model — no credit card, no trial period. The Enterprise plan exists for organisations that need a contract, not to unlock features."
                         />
                         <FaqItem
-                            question="How does the credit system work?"
-                            answer="We use a simple pay-as-you-go system for premium models. You only pay for what you use, with no hidden monthly fees."
+                            question="What happens when a model is rate-limited?"
+                            answer="Free models share throughput limits. When one is reached, niato ai restarts the reply on the next model in the list and tells you it switched."
                         />
                         <FaqItem
-                            question="Can I cancel anytime?"
-                            answer="Absolutely. There are no long-term contracts. You can cancel your subscription at any time from your dashboard."
+                            question="Are my conversations kept?"
+                            answer="Yes, they are saved to your account so you can find and search them later. You can delete any conversation from the sidebar at any time."
+                        />
+                        <FaqItem
+                            question="Can I change model mid-conversation?"
+                            answer="Yes. The model selector sits under the composer, and the change applies to your next message without clearing the history."
                         />
                     </div>
                 </div>
             </section>
 
-            {/*
-              -----------------------------------------------------------------------
-              CTA SECTION
-              -----------------------------------------------------------------------
-              Final push to convert the visitor. Uses a distinct background style.
-            */}
-            <section className="py-20 px-6">
-                <MagicCard className="max-w-[1000px] mx-auto bg-primary/5 rounded-3xl p-8 md:p-16 text-center border border-primary/10">
-                    <h2 className="text-3xl md:text-5xl font-bold mb-6">
-                        Ready to supercharge your productivity?
+            {/* ---------------------------------------------------------------
+                CTA
+            --------------------------------------------------------------- */}
+            <section className="px-6 py-20">
+                <MagicCard className="bg-primary/5 border-primary/10 mx-auto max-w-[1000px] rounded-3xl border p-8 text-center md:p-16">
+                    <h2 className="mb-6 text-3xl font-bold md:text-5xl">
+                        Try it — there is nothing to pay
                     </h2>
-                    <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                        Join thousands of users who are already using Niato AI to work smarter, not
-                        harder.
+                    <p className="text-muted-foreground mx-auto mb-8 max-w-2xl text-lg">
+                        Create an account in a few seconds and start your first conversation.
                     </p>
                     <Link
                         href="/chat"
                         className={cn(
-                            buttonVariants({ size: "lg" }),
-                            "w-full sm:w-auto px-8 text-lg h-12 rounded-full shadow-lg hover:shadow-primary/25 transition-all"
+                            buttonVariants({ size: 'lg' }),
+                            'hover:shadow-primary/25 h-12 w-full rounded-full px-8 text-lg shadow-lg transition-all sm:w-auto',
                         )}
                     >
-                        Get Started for Free
+                        Get started
                     </Link>
                 </MagicCard>
             </section>
         </div>
-    );
+    )
 }
