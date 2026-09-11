@@ -129,7 +129,7 @@ export function SiteHeader() {
                         >
                             <Search className="size-4" />
                             <span className="hidden sm:inline">Search chats</span>
-                            <span className="text-muted-foreground/80 hidden rounded-sm border px-1.5 text-[11px] sm:inline">
+                            <span className="text-muted-foreground/80 hidden rounded-sm border px-1.5 text-xs sm:inline">
                                 Ctrl K
                             </span>
                         </Button>

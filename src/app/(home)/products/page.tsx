@@ -162,7 +162,7 @@ export default function ProductsPage() {
                         Discover our features
                     </Badge>
 
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight font-mono mb-6">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight font-display mb-6">
                         The future of AI,{" "}
                         <span className="text-primary relative inline-block">
                             at your fingertips

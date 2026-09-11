@@ -60,11 +60,30 @@ function getChatBucket(value: string | Date) {
     return "older" as const;
 }
 
+/**
+ * Une heure seule n'a de sens que pour aujourd'hui/hier : au-dela, « 14:32 »
+ * ne dit rien. On bascule sur la date des que la conversation sort de ces
+ * deux buckets.
+ */
 function formatChatTime(value: string | Date) {
+    const date = new Date(value);
+    const bucket = getChatBucket(date);
+
+    if (bucket === "older") {
+        return new Intl.DateTimeFormat("en", {
+            month: "short",
+            day: "numeric",
+            year:
+                date.getFullYear() === new Date().getFullYear()
+                    ? undefined
+                    : "numeric",
+        }).format(date);
+    }
+
     return new Intl.DateTimeFormat("en", {
         hour: "2-digit",
         minute: "2-digit",
-    }).format(new Date(value));
+    }).format(date);
 }
 
 export function NavMain({
@@ -148,7 +167,7 @@ export function NavMain({
 
                                 return (
                                     <div key={sectionKey} className="space-y-2 pt-3">
-                                        <p className="text-sidebar-foreground/60 px-2 pb-1 text-[11px] font-medium uppercase tracking-wider">
+                                        <p className="text-sidebar-foreground/60 px-2 pb-1 text-xs font-medium uppercase tracking-wider">
                                             {CHAT_SECTIONS[sectionKey as keyof typeof CHAT_SECTIONS]}
                                         </p>
                                         <SidebarMenu>
@@ -165,7 +184,7 @@ export function NavMain({
                                                             <p className="line-clamp-1 text-sm leading-tight">
                                                                 {item.title}
                                                             </p>
-                                                            <p className="text-sidebar-foreground/55 mt-1 text-[8px]">
+                                                            <p className="text-sidebar-foreground/55 mt-1 text-xs">
                                                                 {formatChatTime(item.updatedAt)}
                                                             </p>
                                                         </div>

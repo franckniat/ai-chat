@@ -1,10 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { HelpCircleIcon, PenLine, Sparkles } from 'lucide-react'
+import { PenLine, Sparkles } from 'lucide-react'
 
 import { NavMain } from '@/components/chat/nav-main'
-import { NavSecondary } from '@/components/chat/nav-secondary'
 import { NavUser } from '@/components/chat/nav-user'
 import {
     Sidebar,
@@ -29,6 +28,8 @@ interface AppSidebarProps {
 
 export function AppSidebar({ chatList, ...props }: AppSidebarProps) {
     const { state } = useSidebar()
+    // `navSecondary` construisait un lien « Get Help » vers /help — une route
+    // inexistante — et n'etait de toute facon jamais rendu.
     const data = {
         navMain:
             chatList?.map((chat) => ({
@@ -37,13 +38,6 @@ export function AppSidebar({ chatList, ...props }: AppSidebarProps) {
                 url: `/chat/${chat.id}`,
                 updatedAt: chat.updatedAt,
             })) ?? [],
-        navSecondary: [
-            {
-                title: 'Get Help',
-                url: '/help',
-                icon: HelpCircleIcon,
-            },
-        ],
     }
     return (
         <Sidebar collapsible="offcanvas" {...props} variant="floating">
@@ -56,7 +50,7 @@ export function AppSidebar({ chatList, ...props }: AppSidebarProps) {
                         >
                             <Link href="/">
                                 <Sparkles className="h-5 w-5" />
-                                <span className="text-base font-semibold font-mono">niato ai.</span>
+                                <span className="text-base font-semibold font-display">niato ai.</span>
                             </Link>
                         </SidebarMenuButton>
                         {state === 'expanded' && (

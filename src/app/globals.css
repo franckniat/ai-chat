@@ -12,8 +12,15 @@
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
-    --font-sans: var(--font-jetbrains-mono);
-    --font-mono: var(--font-jetbrains-mono);
+
+    /* Trois roles distincts. `font-sans` ne doit jamais pointer sur une mono :
+       c'est ce qui rendait tout le texte de l'app en monospace. */
+    --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+        "Segoe UI", Roboto, sans-serif;
+    --font-display: var(--font-space-grotesk), var(--font-inter), ui-sans-serif,
+        system-ui, sans-serif;
+    --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono",
+        "Fira Code", Consolas, monospace;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -62,73 +69,97 @@
     }
 }
 
+/*
+  Palette derivee d'une teinte unique en OKLCH.
+  Changer `--brand-hue` fait pivoter toute l'identite de maniere coherente
+  (265 = indigo, 250 = bleu, 200 = cyan, 160 = teal).
+
+  Les neutres portent une chroma residuelle (0.005 - 0.02) sur la meme teinte :
+  c'est ce qui distingue une interface dessinee d'un theme gris par defaut.
+*/
 :root {
+    --brand-hue: 265;
     --radius: 0.625rem;
+
+    --background: oklch(0.995 0.002 var(--brand-hue));
+    --foreground: oklch(0.16 0.012 var(--brand-hue));
     --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
+    --card-foreground: oklch(0.16 0.012 var(--brand-hue));
     --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.16 0.012 var(--brand-hue));
+
+    --primary: oklch(0.55 0.2 var(--brand-hue));
+    --primary-foreground: oklch(0.985 0.008 var(--brand-hue));
+    --secondary: oklch(0.965 0.01 var(--brand-hue));
+    --secondary-foreground: oklch(0.24 0.03 var(--brand-hue));
+    --muted: oklch(0.968 0.008 var(--brand-hue));
+    --muted-foreground: oklch(0.52 0.025 var(--brand-hue));
+    --accent: oklch(0.955 0.022 var(--brand-hue));
+    --accent-foreground: oklch(0.32 0.08 var(--brand-hue));
+
     --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
+    --border: oklch(0.915 0.01 var(--brand-hue));
+    --input: oklch(0.915 0.01 var(--brand-hue));
+    --ring: oklch(0.55 0.2 var(--brand-hue));
+
+    /* Graphiques : rotations autour de la teinte de marque plutot que
+       cinq couleurs sans rapport avec l'interface. */
+    --chart-1: oklch(0.55 0.2 var(--brand-hue));
+    --chart-2: oklch(0.62 0.16 calc(var(--brand-hue) - 55));
+    --chart-3: oklch(0.68 0.14 calc(var(--brand-hue) - 110));
+    --chart-4: oklch(0.6 0.19 calc(var(--brand-hue) + 55));
+    --chart-5: oklch(0.72 0.16 calc(var(--brand-hue) + 110));
+
+    --sidebar: oklch(0.978 0.006 var(--brand-hue));
+    --sidebar-foreground: oklch(0.16 0.012 var(--brand-hue));
+    --sidebar-primary: oklch(0.55 0.2 var(--brand-hue));
+    --sidebar-primary-foreground: oklch(0.985 0.008 var(--brand-hue));
+    --sidebar-accent: oklch(0.95 0.022 var(--brand-hue));
+    --sidebar-accent-foreground: oklch(0.32 0.08 var(--brand-hue));
+    --sidebar-border: oklch(0.915 0.01 var(--brand-hue));
+    --sidebar-ring: oklch(0.55 0.2 var(--brand-hue));
 }
 
+/*
+  En sombre, la couleur de marque monte en luminosite et baisse en chroma :
+  une teinte saturee sur fond sombre vibre et fatigue.
+*/
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
+    --background: oklch(0.155 0.012 var(--brand-hue));
+    --foreground: oklch(0.975 0.006 var(--brand-hue));
+    --card: oklch(0.202 0.016 var(--brand-hue));
+    --card-foreground: oklch(0.975 0.006 var(--brand-hue));
+    --popover: oklch(0.202 0.016 var(--brand-hue));
+    --popover-foreground: oklch(0.975 0.006 var(--brand-hue));
+
+    --primary: oklch(0.7 0.17 var(--brand-hue));
+    --primary-foreground: oklch(0.17 0.04 var(--brand-hue));
+    --secondary: oklch(0.268 0.02 var(--brand-hue));
+    --secondary-foreground: oklch(0.975 0.006 var(--brand-hue));
+    --muted: oklch(0.262 0.016 var(--brand-hue));
+    --muted-foreground: oklch(0.72 0.025 var(--brand-hue));
+    --accent: oklch(0.29 0.035 var(--brand-hue));
+    --accent-foreground: oklch(0.965 0.012 var(--brand-hue));
+
     --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+    --border: oklch(0.99 0.02 var(--brand-hue) / 12%);
+    --input: oklch(0.99 0.02 var(--brand-hue) / 16%);
+    --ring: oklch(0.7 0.17 var(--brand-hue));
+
+    --chart-1: oklch(0.7 0.17 var(--brand-hue));
+    --chart-2: oklch(0.74 0.14 calc(var(--brand-hue) - 55));
+    --chart-3: oklch(0.79 0.13 calc(var(--brand-hue) - 110));
+    --chart-4: oklch(0.72 0.17 calc(var(--brand-hue) + 55));
+    --chart-5: oklch(0.8 0.14 calc(var(--brand-hue) + 110));
+
+    --sidebar: oklch(0.185 0.014 var(--brand-hue));
+    --sidebar-foreground: oklch(0.975 0.006 var(--brand-hue));
+    --sidebar-primary: oklch(0.7 0.17 var(--brand-hue));
+    --sidebar-primary-foreground: oklch(0.17 0.04 var(--brand-hue));
+    --sidebar-accent: oklch(0.29 0.035 var(--brand-hue));
+    --sidebar-accent-foreground: oklch(0.965 0.012 var(--brand-hue));
+    --sidebar-border: oklch(0.99 0.02 var(--brand-hue) / 12%);
+    --sidebar-ring: oklch(0.7 0.17 var(--brand-hue));
 }
 
 @layer base {
@@ -139,41 +170,45 @@
     body {
         @apply bg-background text-foreground;
     }
+
+    /* Les titres portent la police display ; le corps reste en Inter. */
+    h1,
+    h2,
+    h3 {
+        font-family: var(--font-display);
+        letter-spacing: -0.02em;
+        text-wrap: balance;
+    }
+
+    p {
+        text-wrap: pretty;
+    }
+
+    /*
+      Une seule regle suffit maintenant que `--font-mono` designe reellement
+      JetBrains Mono. Elle remplace les ~40 lignes de `!important` qui
+      compensaient l'ancien mapping (`--font-sans` pointait sur la mono).
+    */
+    code,
+    kbd,
+    samp,
+    pre {
+        font-family: var(--font-mono);
+    }
 }
 
-/* Force la police JetBrains Mono sur tous les SyntaxHighlighter */
-.hljs,
-pre[class*="language-"],
-code[class*="language-"],
-.token,
-span[class*="token"] {
-    font-family: var(--font-jetbrains-mono), "JetBrains Mono", "Fira Code", Consolas, monospace !important;
+@utility font-display {
+    font-family: var(--font-display);
 }
 
-/* Style spécifique pour react-syntax-highlighter */
-pre code {
-    font-family: var(--font-jetbrains-mono), "JetBrains Mono", "Fira Code", Consolas, monospace !important;
-}
-
-/* Force sur tous les éléments enfants */
-.language-javascript *,
-.language-typescript *,
-.language-tsx *,
-.language-jsx *,
-.language-python *,
-.language-css *,
-.language-json *,
-.language-markdown *,
-.language-shell *,
-.language-bash *,
-.language-yaml *,
-.language-scss *,
-.language-sass *,
-.language-ruby *,
-.language-java *,
-.language-csharp *,
-.language-cpp *,
-.language-c,
-.language-html * {
-    font-family: var(--font-jetbrains-mono), "JetBrains Mono", "Fira Code", Consolas, monospace !important;
+/*
+  Prose des reponses de l'assistant.
+  15px / 1.7 et une mesure de ~68 caracteres : au-dela, l'oeil perd la ligne
+  en revenant a la marge gauche. `text-sm` (14px) etait trop petit pour de la
+  lecture continue.
+*/
+@utility prose-answer {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    max-width: 68ch;
 }

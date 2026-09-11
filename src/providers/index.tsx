@@ -12,7 +12,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 <Toaster richColors closeButton />
                 <ProgressProvider
                     height="3px"
-                    color="#525252"
+                    color="var(--primary)"
                     options={{ showSpinner: false }}
                     shallowRouting
                 >
