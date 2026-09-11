@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google'
+import { Geist, JetBrains_Mono, Space_Grotesk } from 'next/font/google'
 import { Providers } from '@/providers'
 import './globals.css'
 import 'katex/dist/katex.min.css'
@@ -11,16 +11,16 @@ const siteUrl = process.env.BETTER_AUTH_URL || 'https://ai.franckniat.me'
  * Trois roles typographiques distincts, exposes en variables CSS et mappes
  * dans `globals.css` (@theme inline) :
  *
- * - texte/UI  -> Inter          : lecture longue des reponses, labels, boutons
- * - display   -> Space Grotesk  : wordmark et titres de la landing uniquement
+ * - texte/UI  -> Geist          : lecture longue des reponses, labels, boutons
+ * - display   -> Space Grotesk  : wordmark et titres
  * - code      -> JetBrains Mono : blocs et inline code
  *
  * Aucune de ces polices n'est appliquee via `.className` : on passe par les
  * variables pour que Tailwind reste la seule source de verite (`font-sans`,
  * `font-display`, `font-mono`).
  */
-const inter = Inter({
-    variable: '--font-inter',
+const geist = Geist({
+    variable: '--font-geist',
     subsets: ['latin'],
     display: 'swap',
 })
@@ -110,7 +110,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body
-                className={`${inter.variable} ${spaceGrotesk.variable} ${jetBrainsMono.variable} font-sans text-pretty antialiased`}
+                className={`${geist.variable} ${spaceGrotesk.variable} ${jetBrainsMono.variable} font-sans text-pretty antialiased`}
             >
                 <script
                     type="application/ld+json"

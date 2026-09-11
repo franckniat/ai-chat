@@ -38,7 +38,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useSidebar } from "../ui/sidebar";
 import { CheckIcon, GlobeIcon, Square, BrainIcon } from "lucide-react";
 import { useChatContext } from "./chat-context";
 import { Button } from "../ui/button";
@@ -57,7 +56,6 @@ interface FormChatProps {
 }
 
 export default function FormChat({ input, handleInputChange, handleSubmit, isLoading, stop }: FormChatProps) {
-    const { state, isMobile } = useSidebar();
 
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
     const [open, setOpen] = React.useState(false);
@@ -112,25 +110,33 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
     }, []);
 
     return (
-        <div
-            className={`fixed bottom-0 z-20 ${isMobile ? "left-0 w-full" : ""} ${state === "expanded" ? "w-[calc(100%-16rem)]" : "w-[calc(100%-3rem)]"} border-t bg-background/80 backdrop-blur-sm`}
-        >
-            <div
-                className="mx-0 max-w-[760px] p-2 sm:mx-auto"
-            >
+        // Plus de `position: fixed` ni de largeur calculee a la main
+        // (`w-[calc(100%-16rem)]`, qui supposait la largeur exacte de la
+        // sidebar) : le composeur est un enfant du flex vertical de la page.
+        <div className="bg-background shrink-0">
+            <div className="mx-auto w-full max-w-3xl px-4 pb-3">
+                {/* `w-full flex-wrap` neutralise le `w-max flex-nowrap` par defaut
+                    de Suggestions : il place les puces dans un ScrollArea
+                    horizontal a barre masquee, donc la derniere etait coupee sans
+                    aucun indice qu'on pouvait defiler. */}
                 {!isStreaming && !input?.trim() && (
-                    <Suggestions className="mb-2 px-1">
+                    <Suggestions className="mb-2 w-full flex-wrap">
                         {quickSuggestions.map((suggestion) => (
                             <Suggestion
                                 key={suggestion}
-                                className="h-7 bg-background text-xs"
+                                className="text-muted-foreground hover:text-foreground h-7 rounded-full border-border/60 bg-transparent text-xs"
                                 onClick={handleSuggestionClick}
                                 suggestion={suggestion}
                             />
                         ))}
                     </Suggestions>
                 )}
-                <PromptInput onSubmit={handleSubmit} className="mt-2" globalDrop multiple>
+                <PromptInput
+                    onSubmit={handleSubmit}
+                    className="rounded-3xl border-border/70 shadow-sm transition-shadow focus-within:border-border focus-within:shadow-md"
+                    globalDrop
+                    multiple
+                >
                     <PromptInputHeader>
                         <PromptInputAttachments>
                             {(attachment) => <PromptInputAttachment data={attachment} />}
@@ -141,11 +147,12 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
                             onChange={(e) => handleInputChange?.(e)}
                             ref={textareaRef}
                             value={input}
-                            placeholder="Ask a question..."
+                            className="min-h-[52px] px-4 py-3.5 text-[15px] leading-relaxed"
+                            placeholder="Ask anything..."
                         />
                     </PromptInputBody>
-                    <PromptInputFooter>
-                        <PromptInputTools>
+                    <PromptInputFooter className="px-2 pb-2">
+                        <PromptInputTools className="gap-0.5">
                             <PromptInputActionMenu>
                                 <PromptInputActionMenuTrigger />
                                 <PromptInputActionMenuContent>
@@ -155,14 +162,15 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
                             <PromptInputButton
                                 onClick={() => setUseWebSearch(!useWebSearch)}
                                 variant={useWebSearch ? "default" : "ghost"}
+                                className="h-8 rounded-full px-2.5 text-xs"
                             >
-                                <GlobeIcon size={16} />
+                                <GlobeIcon size={15} />
                                 <span>Search</span>
                             </PromptInputButton>
 
                             {/* Personality Selector */}
                             <Select value={selectedPersonality} onValueChange={setSelectedPersonality}>
-                                <SelectTrigger className="h-7 w-auto gap-1.5 border-none px-1.5 text-xs shadow-none hover:bg-accent">
+                                <SelectTrigger className="hover:bg-accent h-8 w-auto gap-1.5 rounded-full border-none px-2.5 text-xs shadow-none">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -180,7 +188,10 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
                             {/* Model Selector */}
                             <ModelSelector onOpenChange={setOpen} open={open}>
                                 <ModelSelectorTrigger asChild>
-                                    <Button className="h-8 justify-between gap-2 px-2.5 text-xs" variant="outline">
+                                    <Button
+                                        className="h-8 justify-between gap-1.5 rounded-full border-none px-2.5 text-xs shadow-none"
+                                        variant="ghost"
+                                    >
                                         {selectedModelData?.chefSlug && (
                                             <ModelSelectorLogo
                                                 provider={selectedModelData.chefSlug}
@@ -250,23 +261,27 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
                             </ModelSelector>
                         </PromptInputTools>
 
-                        {/* Stop or Submit button */}
+                        {/* Bouton rond unique, qui bascule envoi <-> arret,
+                            comme dans les composeurs de Claude et ChatGPT. */}
                         {isStreaming ? (
                             <Button
                                 type="button"
-                                variant="destructive"
+                                size="icon"
                                 onClick={stop}
-                                className="h-8 gap-1 px-2 text-xs"
+                                className="size-8 shrink-0 rounded-full"
+                                aria-label="Stop generating"
                             >
                                 <Square className="size-3 fill-current" />
-                                Stop
                             </Button>
                         ) : (
-                            <PromptInputSubmit disabled={!input || isLoading} />
+                            <PromptInputSubmit
+                                className="size-8 shrink-0 rounded-full"
+                                disabled={!input?.trim() || isLoading}
+                            />
                         )}
                     </PromptInputFooter>
                 </PromptInput>
-                <p className="mt-2 text-center text-xs text-muted-foreground">
+                <p className="text-muted-foreground/70 mt-2 text-center text-xs">
                     Please verify the information provided by the AI, as it may sometimes be incorrect.
                 </p>
             </div>

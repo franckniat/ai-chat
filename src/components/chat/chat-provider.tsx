@@ -235,8 +235,10 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
                 setSelectedPersonality,
             }}
         >
-            <div className="relative flex flex-col h-full w-full">
-                <div className="flex-1 w-full">{children}</div>
+            {/* `min-h-0` laisse la zone de messages retrecir et defiler ;
+                le composeur reste colle en bas sans `position: fixed`. */}
+            <div className="flex min-h-0 w-full flex-1 flex-col">
+                <div className="flex min-h-0 flex-1 flex-col">{children}</div>
                 <FormChat
                     name="prompt"
                     input={input}

@@ -21,14 +21,17 @@ export default async function ChatLayout({
 	return (
 		<SidebarProvider>
 			<AppSidebar chatList={chatList} />
-			<SidebarInset >
+			{/*
+				`h-svh` + `overflow-hidden` fixent la hauteur de la coquille :
+				seule la liste de messages defile (voir message-list.tsx).
+				L'ancienne version empilait trois conteneurs scrollables — la
+				coquille, le wrapper `overflow-y-auto` et la conversation — d'ou
+				les deux barres de defilement superposees.
+			*/}
+			<SidebarInset className="h-svh overflow-hidden">
 				<SiteHeader />
-				<div className="flex flex-1 flex-col">
-					<div className="@container/main flex flex-1 flex-col gap-2">
-						<div className="flex flex-col gap-4 py-16 md:gap-6 md:py-20 px-3 md:px-6 overflow-y-auto">
-							{children}
-						</div>
-					</div>
+				<div className="@container/main flex min-h-0 flex-1 flex-col">
+					{children}
 				</div>
 			</SidebarInset>
 		</SidebarProvider>
