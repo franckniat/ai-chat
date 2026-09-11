@@ -26,6 +26,12 @@ function isRateLimitedError(error: unknown) {
     return /429|rate[- ]?limit|temporarily rate-limited|retry shortly/i.test(message);
 }
 
+/**
+ * Modele de repli en cas de saturation.
+ *
+ * Le catalogue est trie du moins cher au plus capable : on remonte donc d'un
+ * cran, jamais plus, pour qu'une saturation ne fasse pas grimper la facture.
+ */
 function getNextModelId(currentModelId: string) {
     const currentIndex = models.findIndex((model) => model.id === currentModelId);
     if (currentIndex === -1 || currentIndex >= models.length - 1) {

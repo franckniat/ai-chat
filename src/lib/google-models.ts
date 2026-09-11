@@ -1,4 +1,4 @@
-export type ModelCategory = "Elite" | "Solide" | "Leger";
+export type ModelCategory = "Budget" | "Balanced" | "Advanced";
 
 export interface RankedModel {
     /** Identifiant tel qu'attendu par l'API Gemini. */
@@ -11,106 +11,60 @@ export interface RankedModel {
     /**
      * Le modele expose-t-il sa chaine de raisonnement ?
      *
-     * Vrai uniquement pour les Gemini, pour lesquels la route active
-     * `thinkingConfig.includeThoughts`. Les Gemma ne produisent pas de
-     * « thoughts » : annoncer l'inverse afficherait un panneau vide.
+     * Vrai uniquement quand `thinkingBudget` est superieur a zero : sinon le
+     * panneau de raisonnement resterait vide.
      */
     isReasoning: boolean;
-    popularityRank: number;
-    performanceRank: number;
+    /**
+     * Budget de reflexion envoye a l'API.
+     *
+     * `undefined` : le modele rejette le parametre (Flash-Lite, Gemma) et ne
+     *               reflechit pas — c'est le cas le moins cher.
+     * `0`         : reflexion desactivee explicitement.
+     * `-1`        : budget dynamique, laisse au modele.
+     *
+     * Un budget fixe intermediaire ne sert a rien : mesure sur
+     * gemini-3.8-flash, `thinkingBudget: 512` produit 0 token de reflexion —
+     * sous le minimum du modele, la valeur se comporte comme zero — tandis que
+     * 4096 en produit 659. Il n'existe donc pas de reflexion « bon marche » :
+     * c'est ~104 tokens sans, ~770 avec.
+     */
+    thinkingBudget?: number;
+    /** 1 = le moins cher a l'usage. Sert a ordonner la bascule automatique. */
+    costRank: number;
     category: ModelCategory;
 }
 
 /**
- * Catalogue Google, restreint aux modeles du palier gratuit.
+ * Catalogue Google, choisi pour le rapport capacite / cout.
  *
- * Chaque identifiant a ete verifie contre l'API Gemini : les modeles Pro
- * (gemini-2.5-pro, gemini-pro-latest, gemini-3.1-pro-preview...) repondent
- * 429 « You exceeded your current quota, please check your plan and billing
- * details » et sont donc volontairement absents. `gemini-2.5-flash-lite`
- * repond 404 (« no longer available to new users ») et l'est aussi.
+ * Deux constats mesures contre l'API, a garder en tete avant d'y toucher :
  *
- * Pour verifier a nouveau apres une evolution de l'offre Google, une requete
- * `generateContent` avec `maxOutputTokens: 1` suffit a distinguer un modele
- * accessible d'un modele facture.
+ * 1. Les modeles Pro (gemini-2.5-pro, gemini-pro-latest, gemini-3.1-pro-*)
+ *    repondent 429 « check your plan and billing details » meme avec un
+ *    abonnement actif. Ils sont donc absents, et seraient de toute facon les
+ *    plus chers.
+ *
+ * 2. La reflexion coute tres cher. Sur gemini-3.8-flash, une question de
+ *    trois phrases produit 584 tokens de « thoughts » pour 103 tokens de
+ *    reponse — 700 au total contre 104 avec `thinkingBudget: 0`, soit 6,7x.
+ *    Les tokens de reflexion sont factures au tarif de sortie, le plus eleve.
+ *    Elle est donc coupee partout, sauf sur le seul palier « Advanced » ou
+ *    elle reste disponible a la demande, nom du modele a l'appui.
+ *
+ * L'ordre de la liste est l'ordre de repli automatique : du moins cher au
+ * plus capable, pour qu'une saturation ne fasse jamais grimper la facture.
  */
 export const GOOGLE_MODELS: RankedModel[] = [
-    {
-        id: "gemini-3.8-flash",
-        name: "Gemini 3.8 Flash",
-        chef: "Google",
-        chefSlug: "google",
-        providers: ["google"],
-        isReasoning: true,
-        popularityRank: 1,
-        performanceRank: 1,
-        category: "Elite",
-    },
-    {
-        id: "gemini-3.7-flash",
-        name: "Gemini 3.7 Flash",
-        chef: "Google",
-        chefSlug: "google",
-        providers: ["google"],
-        isReasoning: true,
-        popularityRank: 2,
-        performanceRank: 2,
-        category: "Elite",
-    },
-    {
-        id: "gemini-3.6-flash",
-        name: "Gemini 3.6 Flash",
-        chef: "Google",
-        chefSlug: "google",
-        providers: ["google"],
-        isReasoning: true,
-        popularityRank: 3,
-        performanceRank: 3,
-        category: "Elite",
-    },
-    {
-        id: "gemini-3.5-flash",
-        name: "Gemini 3.5 Flash",
-        chef: "Google",
-        chefSlug: "google",
-        providers: ["google"],
-        isReasoning: true,
-        popularityRank: 4,
-        performanceRank: 4,
-        category: "Solide",
-    },
-    {
-        id: "gemini-3-flash-preview",
-        name: "Gemini 3 Flash",
-        chef: "Google",
-        chefSlug: "google",
-        providers: ["google"],
-        isReasoning: true,
-        popularityRank: 5,
-        performanceRank: 5,
-        category: "Solide",
-    },
-    {
-        id: "gemini-2.5-flash",
-        name: "Gemini 2.5 Flash",
-        chef: "Google",
-        chefSlug: "google",
-        providers: ["google"],
-        isReasoning: true,
-        popularityRank: 6,
-        performanceRank: 6,
-        category: "Solide",
-    },
     {
         id: "gemini-3.5-flash-lite",
         name: "Gemini 3.5 Flash Lite",
         chef: "Google",
         chefSlug: "google",
         providers: ["google"],
-        isReasoning: true,
-        popularityRank: 7,
-        performanceRank: 7,
-        category: "Leger",
+        isReasoning: false,
+        costRank: 1,
+        category: "Budget",
     },
     {
         id: "gemini-3.1-flash-lite",
@@ -118,10 +72,9 @@ export const GOOGLE_MODELS: RankedModel[] = [
         chef: "Google",
         chefSlug: "google",
         providers: ["google"],
-        isReasoning: true,
-        popularityRank: 8,
-        performanceRank: 8,
-        category: "Leger",
+        isReasoning: false,
+        costRank: 2,
+        category: "Budget",
     },
     {
         id: "gemma-4-31b-it",
@@ -130,26 +83,55 @@ export const GOOGLE_MODELS: RankedModel[] = [
         chefSlug: "google",
         providers: ["google"],
         isReasoning: false,
-        popularityRank: 9,
-        performanceRank: 9,
-        category: "Leger",
+        costRank: 3,
+        category: "Budget",
     },
     {
-        id: "gemma-4-26b-a4b-it",
-        name: "Gemma 4 26B",
+        id: "gemini-2.5-flash",
+        name: "Gemini 2.5 Flash",
         chef: "Google",
         chefSlug: "google",
         providers: ["google"],
         isReasoning: false,
-        popularityRank: 10,
-        performanceRank: 10,
-        category: "Leger",
+        thinkingBudget: 0,
+        costRank: 4,
+        category: "Balanced",
+    },
+    {
+        id: "gemini-3.5-flash",
+        name: "Gemini 3.5 Flash",
+        chef: "Google",
+        chefSlug: "google",
+        providers: ["google"],
+        isReasoning: false,
+        thinkingBudget: 0,
+        costRank: 5,
+        category: "Balanced",
+    },
+    {
+        id: "gemini-3.8-flash",
+        name: "Gemini 3.8 Flash (Thinking)",
+        chef: "Google",
+        chefSlug: "google",
+        providers: ["google"],
+        // Seul modele du catalogue qui reflechit, et le seul dont le panneau
+        // de raisonnement affiche quelque chose. Son nom porte la mention
+        // « Thinking » pour que le surcout soit un choix conscient : environ
+        // sept fois le cout d'une reponse sans reflexion.
+        isReasoning: true,
+        thinkingBudget: -1,
+        costRank: 6,
+        category: "Advanced",
     },
 ];
 
 export const MODEL_IDS = GOOGLE_MODELS.map((model) => model.id);
 
+/** Le moins cher du catalogue : c'est lui qu'on sert par defaut. */
 export const DEFAULT_MODEL_ID = GOOGLE_MODELS[0].id;
+
+/** Modele utilise pour generer les titres de conversation. */
+export const TITLE_MODEL_ID = GOOGLE_MODELS[0].id;
 
 export function getModelById(id: string) {
     return GOOGLE_MODELS.find((model) => model.id === id);

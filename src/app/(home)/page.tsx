@@ -23,7 +23,7 @@ import { personalities } from '@/lib/personalities'
 export const metadata: Metadata = {
     title: 'niato ai | Free multi-model AI chat',
     description:
-        'niato ai puts the free Google Gemini models behind one chat window: streaming replies, a searchable history, and automatic failover when a model is rate-limited.',
+        'niato ai puts several Google Gemini models behind one chat window: streaming replies, a searchable history, and automatic failover when a model is busy. Free to use.',
     keywords: ['niato ai', 'ai chat', 'gemini', 'google ai', 'free ai assistant'],
     alternates: {
         canonical: '/',
@@ -55,7 +55,7 @@ export default function HomePage() {
                                 className="max-w-full whitespace-normal rounded-full px-4 py-2 text-center text-xs backdrop-blur-sm sm:text-sm"
                             >
                                 <span className="mr-2">✨</span>
-                                {showcasedModels.length} free models, no credit card
+                                {showcasedModels.length} models, free to use, no credit card
                                 <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
                             </Badge>
                         </Link>
@@ -118,7 +118,7 @@ export default function HomePage() {
                         <FeatureCard
                             icon={<Bot className="text-primary h-10 w-10" />}
                             title="Several models"
-                            description={`${showcasedModels.length} Google models on the free tier, sorted by capability. Switch between them at any point, even mid-conversation.`}
+                            description={`${showcasedModels.length} Google Gemini models, sorted from the most economical to the most capable. Switch between them at any point, even mid-conversation.`}
                         />
                         <FeatureCard
                             icon={<Repeat2 className="text-primary h-10 w-10" />}
@@ -160,7 +160,7 @@ export default function HomePage() {
                     <div className="mb-12 text-center">
                         <h2 className="mb-4 text-3xl font-bold md:text-4xl">Available models</h2>
                         <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
-                            All free, all reachable as soon as your account exists.
+                            All reachable as soon as your account exists, at no cost to you.
                         </p>
                     </div>
 
@@ -184,8 +184,8 @@ export default function HomePage() {
                     </ul>
 
                     <p className="text-muted-foreground mt-6 text-center text-sm">
-                        Every one of them runs on the Gemini API free tier — no billing account
-                        required.
+                        Sorted from the most economical to the most capable. The cheapest one is
+                        selected by default.
                     </p>
                 </div>
             </section>
@@ -201,11 +201,11 @@ export default function HomePage() {
                     <div className="space-y-4">
                         <FaqItem
                             question="Is it really free?"
-                            answer="Yes. Every model on offer is a free model — no credit card, no trial period. The Enterprise plan exists for organisations that need a contract, not to unlock features."
+                            answer="Yes, for you. There is no card to enter and no trial countdown. Model usage is paid for by the project, which is why the catalogue favours efficient models. The Enterprise plan exists for organisations that need a contract, not to unlock features."
                         />
                         <FaqItem
                             question="What happens when a model is rate-limited?"
-                            answer="Free models share throughput limits. When one is reached, niato ai restarts the reply on the next model in the list and tells you it switched."
+                            answer="Models have throughput limits set by their provider. When one is reached, niato ai restarts the reply on the next model in the list and tells you it switched."
                         />
                         <FaqItem
                             question="Are my conversations kept?"

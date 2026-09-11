@@ -59,7 +59,7 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
 
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
     const [open, setOpen] = React.useState(false);
-    const categories: ModelCategory[] = ["Elite", "Solide", "Leger"];
+    const categories: ModelCategory[] = ["Budget", "Balanced", "Advanced"];
     const { useWebSearch, setUseWebSearch, selectedModel, setSelectedModel, selectedModelData, status, selectedPersonality, setSelectedPersonality } = useChatContext();
 
     const isStreaming = status === "streaming" || status === "submitted";
@@ -236,8 +236,11 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
                                                                     Reasoning
                                                                 </Badge>
                                                             )}
+                                                            {/* Le classement est desormais un
+                                                                classement de cout : 1 = le moins
+                                                                cher a l'usage. */}
                                                             <Badge variant="outline" className="text-xs px-1 py-0">
-                                                                Pop #{model.popularityRank} · Perf #{model.performanceRank}
+                                                                Cost #{model.costRank}
                                                             </Badge>
                                                             <ModelSelectorLogoGroup>
                                                                 {model.providers.map((provider) => (

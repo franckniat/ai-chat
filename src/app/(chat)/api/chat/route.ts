@@ -12,15 +12,15 @@ import type { Message } from "@/generated/prisma/client";
 import { getMessagesByChatId } from "@/data/message";
 import { assertChatOwnership } from "@/lib/authz";
 import { getPersonalityById } from "@/lib/personalities";
-import { DEFAULT_MODEL_ID, getModelById, GOOGLE_MODELS } from "@/lib/google-models";
+import { DEFAULT_MODEL_ID, GOOGLE_MODELS, TITLE_MODEL_ID } from "@/lib/google-models";
 
 /**
  * Fournisseur Google direct, en remplacement d'OpenRouter.
  *
- * OpenRouter melangeait modeles gratuits et factures derriere une meme cle :
- * une selection erronee pouvait consommer du credit. Ici le catalogue est
- * restreint aux modeles du palier gratuit de l'API Gemini (voir
- * lib/google-models.ts), et un identifiant inconnu retombe sur le defaut.
+ * OpenRouter melangeait modeles gratuits et factures derriere une meme cle.
+ * Le catalogue est desormais restreint aux modeles Gemini les plus economes
+ * (voir lib/google-models.ts), et un identifiant inconnu retombe sur le
+ * defaut, qui est le moins cher de la liste.
  */
 const google = createGoogleGenerativeAI({
     apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
@@ -28,24 +28,49 @@ const google = createGoogleGenerativeAI({
 
 export const maxDuration = 60;
 
+/**
+ * Nombre de messages passes renvoyes au modele a chaque tour.
+ *
+ * 20 couvre une dizaine d'echanges, largement assez pour la continuite d'une
+ * conversation, tout en bornant le cout d'un fil long.
+ */
+const CONTEXT_MESSAGE_LIMIT = 20;
+
 const modelConfigs = Object.fromEntries(
     GOOGLE_MODELS.map((model) => [
         model.id,
         {
             model: google(model.id),
             isReasoning: model.isReasoning,
-            // `includeThoughts` demande a Gemini d'emettre sa chaine de
-            // raisonnement ; sans cela `sendReasoning` n'aurait rien a afficher.
-            providerOptions: model.isReasoning
-                ? { google: { thinkingConfig: { includeThoughts: true } } }
-                : undefined,
+            /**
+             * Budget de reflexion, quand le modele accepte le parametre.
+             *
+             * Mesure sur gemini-3.8-flash : une question de trois phrases
+             * produit 584 tokens de « thoughts » pour 103 tokens de reponse,
+             * soit 700 au total contre 104 sans reflexion. Ces tokens sont
+             * factures au tarif de sortie, d'ou un budget a zero partout sauf
+             * sur le seul modele qui l'expose explicitement.
+             *
+             * `includeThoughts` conditionne l'emission des « thoughts » : sans
+             * lui, le modele reflechit et facture mais n'envoie rien, donc le
+             * panneau de raisonnement reste vide.
+             */
+            providerOptions:
+                model.thinkingBudget === undefined
+                    ? undefined
+                    : {
+                          google: {
+                              thinkingConfig: {
+                                  thinkingBudget: model.thinkingBudget,
+                                  includeThoughts: model.thinkingBudget !== 0,
+                              },
+                          },
+                      },
         },
     ])
 );
 
 const DEFAULT_MODEL = DEFAULT_MODEL_ID;
-// Modele le plus leger du catalogue : generer un titre ne merite pas mieux.
-const TITLE_MODEL = GOOGLE_MODELS[GOOGLE_MODELS.length - 1].id;
 
 export async function POST(req: Request) {
     const session = await auth.api.getSession({
@@ -105,10 +130,16 @@ export async function POST(req: Request) {
     // Sauvegarder le message de l'utilisateur
     await saveMessage(currentChatId, "user", userMessage);
 
-    // Préparer les messages pour le modèle
-    const contextMessages = dbMessages.length > 0
+    // Préparer les messages pour le modèle.
+    //
+    // Fenêtre glissante : sans elle, toute la conversation était renvoyée à
+    // chaque tour, donc le coût d'un fil croissait de façon quadratique — au
+    // 40e message on repayait les 39 précédents. On garde les derniers
+    // échanges, suffisants pour la continuité d'un chat.
+    const windowed = dbMessages.slice(-CONTEXT_MESSAGE_LIMIT);
+    const contextMessages = windowed.length > 0
         ? [
-            ...dbMessages.map(msg => ({
+            ...windowed.map(msg => ({
                 role: msg.role as 'user' | 'assistant' | 'system',
                 content: msg.content
             })),
@@ -133,25 +164,25 @@ Current date: ${new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 
             try {
                 // Save the AI response
                 await saveMessage(currentChatId!, "assistant", text);
-                console.log("Assistant message saved");
 
                 // Generate title if it's a new chat
                 if (isNewChat && currentChatId && userMessage) {
-                    console.log("Generating title for new chat:", currentChatId);
-
                     try {
                         const titleResult = await generateText({
-                            model: google(TITLE_MODEL),
+                            // Un titre tient en quelques mots : borner la
+                            // sortie evite de payer une phrase entiere, et
+                            // `updateChatTitle` tronque de toute facon a 80.
+                            model: google(TITLE_MODEL_ID),
                             system: titlePrompt,
                             prompt: userMessage.substring(0, 500),
+                            maxOutputTokens: 32,
+                            temperature: 0.3,
                         });
 
                         const chatTitle = titleResult.text.trim().replace(/^["']|["']$/g, '').slice(0, 80);
-                        console.log("Generated title:", chatTitle);
 
                         if (chatTitle && chatTitle.length > 0) {
                             await updateChatTitle(currentChatId, chatTitle);
-                            console.log("Title updated successfully");
                         }
                     } catch (titleError) {
                         console.error("Error generating title:", titleError);

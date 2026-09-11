@@ -68,7 +68,7 @@ describe("HomePage", () => {
     test("le bandeau d'annonce mene au chat", () => {
         render(<HomePage />);
 
-        const banner = screen.getByRole("link", { name: /free models, no credit card/i });
+        const banner = screen.getByRole("link", { name: /models, free to use, no credit card/i });
         expect(banner).toHaveAttribute("href", "/chat");
     });
 
