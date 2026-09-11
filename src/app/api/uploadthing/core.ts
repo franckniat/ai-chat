@@ -1,14 +1,10 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
+import { getCurrentSession } from "@/lib/authz";
 
 const f = createUploadthing();
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
-
-// FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
-  // Define as many FileRoutes as you like, each with a unique routeSlug
   imageUploader: f({
     image: {
       /**
@@ -19,24 +15,19 @@ export const ourFileRouter = {
       maxFileCount: 1,
     },
   })
-    // Set permissions and file types for this FileRoute
-    .middleware(async ({ req }) => {
-      // This code runs on your server before upload
-      const user = await auth(req);
+    .middleware(async () => {
+      // Sans ce controle, la route accepte les uploads de n'importe qui sur
+      // Internet et remplit le quota UploadThing du projet.
+      const session = await getCurrentSession();
 
-      // If you throw, the user will not be able to upload
-      if (!user) throw new UploadThingError("Unauthorized");
+      if (!session?.user?.id) {
+        throw new UploadThingError("Unauthorized");
+      }
 
-      // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: user.id };
+      // Renvoye a `onUploadComplete` via `metadata`.
+      return { userId: session.user.id };
     })
-    .onUploadComplete(async ({ metadata, file }) => {
-      // This code RUNS ON YOUR SERVER after upload
-      console.log("Upload complete for userId:", metadata.userId);
-
-      console.log("file url", file.ufsUrl);
-
-      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
+    .onUploadComplete(async ({ metadata }) => {
       return { uploadedBy: metadata.userId };
     }),
 } satisfies FileRouter;

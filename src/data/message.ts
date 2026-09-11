@@ -1,18 +1,24 @@
 "use server";
 
 import prisma from "@/lib/db";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { assertChatOwnership, getCurrentSession } from "@/lib/authz";
 
 export const getMessagesByChatId = async (chatId: string) => {
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
+    const session = await getCurrentSession();
     if (!session) {
         return [];
     }
+
+    // Une session valide ne suffit pas : il faut que la conversation appartienne
+    // bien a cet utilisateur, sinon n'importe quel compte peut lire les messages
+    // d'un autre en passant son chatId.
+    const ownsChat = await assertChatOwnership(chatId, session.user.id);
+    if (!ownsChat) {
+        return [];
+    }
+
     return prisma.message.findMany({
-        where: { chatId },
+        where: { chatId, deleted: false },
         orderBy: { createdAt: "asc" },
     });
-}
+};
