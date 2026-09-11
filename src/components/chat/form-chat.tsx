@@ -43,7 +43,7 @@ import { useChatContext } from "./chat-context";
 import { Button } from "../ui/button";
 import { models } from "./chat-provider";
 import { Badge } from "../ui/badge";
-import { personalities } from "@/lib/personalities";
+import { getPersonalityById, personalities } from "@/lib/personalities";
 import type { ModelCategory } from "@/lib/google-models";
 
 interface FormChatProps {
@@ -64,40 +64,9 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
 
     const isStreaming = status === "streaming" || status === "submitted";
 
-    const suggestionByPersonality: Record<string, string[]> = {
-        default: [
-            "Summarize the key points of this topic in 5 bullets",
-            "Create a simple step-by-step action plan",
-            "Explain this like I'm new to the subject",
-        ],
-        developer: [
-            "Help me debug this issue step by step",
-            "Refactor this code to be cleaner and safer",
-            "Write a concise commit message for my changes",
-        ],
-        creative: [
-            "Give me 5 original ideas for this project",
-            "Rewrite this with a more vivid tone",
-            "Brainstorm a catchy title and subtitle",
-        ],
-        tutor: [
-            "Teach me this concept with a simple example",
-            "Quiz me with 5 short questions",
-            "Explain the difference between these two terms",
-        ],
-        analyst: [
-            "Compare options with pros and cons",
-            "Analyze risks and suggest mitigations",
-            "Turn this into a decision matrix",
-        ],
-        translator: [
-            "Translate this into French and keep the same tone",
-            "Improve this text for clarity and natural flow",
-            "Rewrite this for an international audience",
-        ],
-    };
-
-    const quickSuggestions = suggestionByPersonality[selectedPersonality] || suggestionByPersonality.default;
+    // Les amorces viennent de la personnalite elle-meme : plus de table
+    // parallele a garder synchronisee.
+    const quickSuggestions = getPersonalityById(selectedPersonality).suggestions;
 
     const handleSuggestionClick = React.useCallback((suggestion: string) => {
         const textarea = textareaRef.current;
@@ -136,6 +105,10 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
                     className="rounded-3xl border-border/70 shadow-sm transition-shadow focus-within:border-border focus-within:shadow-md"
                     globalDrop
                     multiple
+                    // Doit rester aligne sur SUPPORTED_ATTACHMENT_TYPES dans la
+                    // route : tout autre type y serait ignore en silence.
+                    accept="image/png,image/jpeg,image/webp,image/heic,image/heif,application/pdf"
+                    maxFileSize={10 * 1024 * 1024}
                 >
                     <PromptInputHeader>
                         <PromptInputAttachments>
