@@ -18,6 +18,8 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeRaw from "rehype-raw";
 import rehypeKatex from "rehype-katex";
+import rehypeSanitize from "rehype-sanitize";
+import { markdownSanitizeSchema } from "@/lib/markdown-sanitize";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -112,7 +114,11 @@ export const MessageItem = memo(({ message }: { message: UIMessage }) => {
                                             <MessageContent>
                                                 <MessageResponse
                                                     isAnimating={isCurrentMessageStreaming}
-                                                    rehypePlugins={[rehypeRaw, rehypeKatex]}
+                                                    rehypePlugins={[
+                                                        rehypeRaw,
+                                                        [rehypeSanitize, markdownSanitizeSchema],
+                                                        rehypeKatex,
+                                                    ]}
                                                     remarkPlugins={[remarkGfm, remarkMath]}
                                                     components={{
                                                         code: ({ className, style, ...props }) => {
@@ -171,13 +177,13 @@ export const MessageItem = memo(({ message }: { message: UIMessage }) => {
                                                                             style={
                                                                                 customVscDarkPlus
                                                                             }
-                                                                            className="antialiased text-sm tracking-wide [&_code]:!font-mono w-full"
+                                                                            className="antialiased text-sm tracking-wide w-full"
                                                                             customStyle={{
                                                                                 fontFamily:
-                                                                                    'var(--font-mono), "JetBrains Mono", "Fira Code", Consolas, monospace !important',
+                                                                                    "var(--font-mono)",
                                                                                 fontSize:
                                                                                     "0.875rem",
-                                                                                lineHeight: "1.5",
+                                                                                lineHeight: "1.6",
                                                                                 margin: 0,
                                                                                 padding: "1rem",
                                                                                 background:
@@ -186,7 +192,7 @@ export const MessageItem = memo(({ message }: { message: UIMessage }) => {
                                                                             codeTagProps={{
                                                                                 style: {
                                                                                     fontFamily:
-                                                                                        'var(--font-jetbrains-mono), "JetBrains Mono", "Fira Code", Consolas, monospace !important',
+                                                                                        "var(--font-mono)",
                                                                                 },
                                                                             }}
                                                                             showLineNumbers={true}

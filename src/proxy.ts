@@ -19,10 +19,15 @@ export async function proxy(request: NextRequest) {
 			},
 		},
 	);
-	const isAuthRoute = authRoutes.includes(request.nextUrl.pathname);
-	const isPasswordRoute = passwordRoutes.includes(request.nextUrl.pathname);
-	const isProtectedRoute = protectedRoutes.includes(request.nextUrl.pathname);
-	const isApiAuthRoute = apiAuthRoutes.some((route) => request.nextUrl.pathname.startsWith(route));
+	const { pathname } = request.nextUrl;
+	const isAuthRoute = authRoutes.includes(pathname);
+	const isPasswordRoute = passwordRoutes.includes(pathname);
+	// Comparaison par prefixe : `.includes()` en egalite stricte laissait
+	// `/chat/<id>` hors du perimetre protege.
+	const isProtectedRoute = protectedRoutes.some(
+		(route) => pathname === route || pathname.startsWith(`${route}/`),
+	);
+	const isApiAuthRoute = apiAuthRoutes.some((route) => pathname.startsWith(route));
 
 	if (!session) {
 		if (isAuthRoute || isPasswordRoute || isApiAuthRoute) {
@@ -31,7 +36,10 @@ export async function proxy(request: NextRequest) {
 	}
 
 	if (isProtectedRoute && !session?.user.emailVerified) {
-		return NextResponse.redirect(new URL("/login", request.url));
+		// On conserve la destination pour que le login y renvoie ensuite.
+		const loginUrl = new URL("/login", request.url);
+		loginUrl.searchParams.set("next", `${pathname}${request.nextUrl.search}`);
+		return NextResponse.redirect(loginUrl);
 	}
 
 	if (session && isAuthRoute) {
@@ -39,7 +47,6 @@ export async function proxy(request: NextRequest) {
 	}
 
 	return NextResponse.next();
-	//Todo: handle callback url
 }
 
 export const config = {

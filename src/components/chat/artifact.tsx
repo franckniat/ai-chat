@@ -70,10 +70,16 @@ export const Artifact: React.FC<ArtifactProps> = ({
                                 Copier
                             </Button>
                         </div>
+                        {/*
+                            `allow-scripts` + `allow-same-origin` annule le bac a sable :
+                            le script de l'iframe retrouve l'origine du parent et accede
+                            a ses cookies / son stockage. Le contenu venant du modele,
+                            on garde uniquement `allow-scripts`.
+                        */}
                         <iframe
                             srcDoc={content}
-                            className="w-full h-96 border rounded-b-md bg-white"
-                            sandbox="allow-scripts allow-same-origin"
+                            className="w-full h-96 border rounded-b-md bg-background"
+                            sandbox="allow-scripts"
                             title={title}
                         />
                     </div>

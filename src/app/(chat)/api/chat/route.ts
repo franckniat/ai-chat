@@ -10,6 +10,7 @@ import {
 import { createDbChat, saveMessage, titlePrompt, updateChatTitle } from "@/lib/chat-store";
 import type { Message } from "@/generated/prisma/client";
 import { getMessagesByChatId } from "@/data/message";
+import { assertChatOwnership } from "@/lib/authz";
 import { getPersonalityById } from "@/lib/personalities";
 import { FREE_MODEL_IDS } from "@/lib/free-models";
 
@@ -83,6 +84,13 @@ export async function POST(req: Request) {
         isNewChat = true;
         currentChatId = await createDbChat(session.user.id, "Nouvelle conversation");
     } else {
+        // Le chatId vient du client : sans cette vérification, n'importe quel
+        // compte authentifié pourrait lire et écrire dans la conversation d'un autre.
+        const ownsChat = await assertChatOwnership(currentChatId, session.user.id);
+        if (!ownsChat) {
+            return new Response("Not found", { status: 404 });
+        }
+
         // Récupérer les messages existants pour le contexte
         dbMessages = await getMessagesByChatId(currentChatId);
     }

@@ -17,7 +17,7 @@ export default async function ChatLayout({
 	if (!session) {
 		redirect("/login");
 	}
-	const chatList = await getUserChatList(session.user.id);
+	const chatList = await getUserChatList();
 	return (
 		<SidebarProvider>
 			<AppSidebar chatList={chatList} />

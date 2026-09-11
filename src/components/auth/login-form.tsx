@@ -12,6 +12,7 @@ import { Form, FormMessage, FormDescription, FormControl, FormField, FormItem, F
 import { useRouter, useSearchParams } from "next/navigation";
 import { signInGithub, signInGoogle } from "@/app/actions/auth";
 import { authClient } from "@/lib/auth-client";
+import { REDIRECT_PARAM, safeRedirect } from "@/lib/safe-redirect";
 import { toast } from "sonner";
 
 export function LoginForm({
@@ -41,9 +42,10 @@ export function LoginForm({
                     toast.success("Logged in", {
                         description: "You have been logged in.",
                     })
-                    toast.info("Please wait ...")
-                    const callbackUrl = params.get("callbackUrl") || "/chat";
-                    router.push(callbackUrl);
+                    // Les pages protegees redirigent vers `?next=...` : lire
+                    // `callbackUrl` renvoyait toujours l'utilisateur sur /chat et
+                    // lui faisait perdre la conversation qu'il visait.
+                    router.push(safeRedirect(params.get(REDIRECT_PARAM)));
                 },
                 onError: (error) => {
                     console.log(error)
