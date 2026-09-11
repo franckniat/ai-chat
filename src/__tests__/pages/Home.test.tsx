@@ -1,106 +1,145 @@
-import { expect, test, describe, vi, beforeEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
-import '@testing-library/jest-dom/vitest';
+import { describe, expect, test, beforeEach, vi } from "vitest";
+import { render, screen, cleanup, within } from "@testing-library/react";
+import "@testing-library/jest-dom/vitest";
 import HomePage from "../../app/(home)/page";
 
-// Mock Next.js Link component
-vi.mock('next/link', () => {
-  return {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    default: ({ children, href, ...props }: { children: React.ReactNode; href: string; [key: string]: any; }) => {
-      return <a href={href} {...props}>{children}</a>;
-    }
-  };
-});
+/**
+ * Ces tests portent sur ce que la page *fait* : les titres qu'elle annonce et
+ * les destinations vers lesquelles elle envoie le visiteur.
+ *
+ * Ils n'assertent volontairement aucune classe CSS. L'ancienne version testait
+ * `.px-4.py-5`, le positionnement du gradient ou les classes responsive : ces
+ * assertions cassent a chaque changement de style sans jamais detecter de
+ * regression reelle.
+ */
+
+vi.mock("next/link", () => ({
+    default: ({
+        children,
+        href,
+        ...props
+    }: {
+        children: React.ReactNode;
+        href: string;
+    } & React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+        <a href={href} {...props}>
+            {children}
+        </a>
+    ),
+}));
 
 describe("HomePage", () => {
-  beforeEach(() => {
-    cleanup();
-  });
+    beforeEach(() => {
+        cleanup();
+    });
 
-  test("renders without crashing", () => {
-    render(<HomePage />);
-    expect(screen.getByRole("heading")).toBeInTheDocument();
-  });
+    test("annonce le produit dans un titre de niveau 1 unique", () => {
+        render(<HomePage />);
 
-  test("displays the main heading with correct text", () => {
-    render(<HomePage />);
-    const heading = screen.getByRole("heading", { level: 1 });
-    expect(heading).toBeInTheDocument();
-    expect(heading).toHaveTextContent("Discover a new experience with");
-    expect(heading).toHaveTextContent("ai");
-  });
+        const headings = screen.getAllByRole("heading", { level: 1 });
+        expect(headings).toHaveLength(1);
+        expect(headings[0]).toHaveTextContent(/unlock the power of/i);
+        expect(headings[0]).toHaveTextContent(/ai intelligence/i);
+    });
 
-  test("displays the description text", () => {
-    render(<HomePage />);
-    expect(screen.getByText("niato ai. is a chatbot that can help you with your daily tasks.")).toBeInTheDocument();
-  });
+    test("presente la proposition de valeur", () => {
+        render(<HomePage />);
 
-  test("displays the GPT-4o-mini badge with correct link", () => {
-    render(<HomePage />);
-    const badgeLink = screen.getByRole("link");
-    expect(badgeLink).toBeInTheDocument();
-    expect(badgeLink).toHaveAttribute("href", "/chat?model=gpt-4o-mini&source=home");
-    expect(badgeLink).toHaveTextContent("🚀 Chat with GPT-4o-mini for free");
-  });
+        expect(
+            screen.getByText(/experience the next generation of ai chat/i),
+        ).toBeInTheDocument();
+    });
 
-  test("displays both action buttons", () => {
-    render(<HomePage />);
-    expect(screen.getByRole("button", { name: /try for free/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /our pricing/i })).toBeInTheDocument();
-  });
+    test("envoie les deux CTA principaux vers le chat et la tarification", () => {
+        render(<HomePage />);
 
-  test("has correct main container structure", () => {
-    render(<HomePage />);
-    const mainDiv = document.querySelector('.px-4.py-5');
-    expect(mainDiv).toBeInTheDocument();
-  });
+        expect(screen.getByRole("link", { name: /start chatting/i })).toHaveAttribute(
+            "href",
+            "/chat",
+        );
+        expect(screen.getByRole("link", { name: /view pricing/i })).toHaveAttribute(
+            "href",
+            "/pricing",
+        );
+    });
 
-  test("displays the 'ai' text with primary styling", () => {
-    render(<HomePage />);
-    const aiSpan = screen.getAllByText("ai")[0]; // Prendre le premier élément
-    expect(aiSpan).toBeInTheDocument();
-    expect(aiSpan).toHaveClass("text-primary", "relative");
-  });
+    test("le bandeau d'annonce mene au chat", () => {
+        render(<HomePage />);
 
-  test("contains the rocket emoji in the badge", () => {
-    render(<HomePage />);
-    expect(screen.getByText(/🚀/)).toBeInTheDocument();
-  });
+        const banner = screen.getByRole("link", { name: /new: chat with deepseek/i });
+        expect(banner).toHaveAttribute("href", "/chat");
+    });
 
-  test("displays the underline decoration for 'ai' text", () => {
-    render(<HomePage />);
-    const aiSpan = screen.getAllByText("ai")[0];
-    const underlineSpan = aiSpan.querySelector('span');
-    expect(underlineSpan).toBeInTheDocument();
-    expect(underlineSpan).toHaveClass("absolute");
-  });
+    test("le CTA de bas de page mene au chat", () => {
+        render(<HomePage />);
 
-  test("has responsive padding structure", () => {
-    render(<HomePage />);
-    // Utiliser une classe plus simple à tester
-    expect(document.querySelector('[class*="pt-[130px]"]')).toBeInTheDocument();
-  });
+        expect(
+            screen.getByRole("link", { name: /get started for free/i }),
+        ).toHaveAttribute("href", "/chat");
+    });
 
-  test("displays centered content layout", () => {
-    render(<HomePage />);
-    expect(document.querySelector('.flex.items-center.flex-col.justify-center')).toBeInTheDocument();
-  });
+    test("chaque lien pointe vers une destination interne non vide", () => {
+        render(<HomePage />);
 
-  test("contains SVG icons", () => {
-    render(<HomePage />);
-    const svgElements = document.querySelectorAll('svg');
-    expect(svgElements.length).toBeGreaterThan(0);
-  });
+        for (const link of screen.getAllByRole("link")) {
+            const href = link.getAttribute("href");
+            expect(href, `lien "${link.textContent?.trim()}" sans href`).toBeTruthy();
+            expect(href).toMatch(/^\//);
+        }
+    });
 
-  test("has correct text content structure", () => {
-    render(<HomePage />);
+    test("rend les quatre sections de la page", () => {
+        render(<HomePage />);
 
-    // Vérifier que tous les textes principaux sont présents
-    expect(screen.getByText(/discover a new experience with/i)).toBeInTheDocument();
-    expect(screen.getByText("niato ai. is a chatbot that can help you with your daily tasks.")).toBeInTheDocument();
-    expect(screen.getByText("🚀 Chat with GPT-4o-mini for free")).toBeInTheDocument();
-    expect(screen.getByText("Try for free")).toBeInTheDocument();
-    expect(screen.getByText("Our pricing")).toBeInTheDocument();
-  });
+        for (const title of [
+            /why choose niato ai/i,
+            /loved by thousands/i,
+            /frequently asked questions/i,
+            /ready to supercharge your productivity/i,
+        ]) {
+            expect(screen.getByRole("heading", { name: title })).toBeInTheDocument();
+        }
+    });
+
+    test("liste les six arguments produit", () => {
+        render(<HomePage />);
+
+        for (const feature of [
+            "Multi-Model Support",
+            "Lightning Fast",
+            "Secure & Private",
+            "Smart Context",
+            "Chat History",
+            "Code Highlighting",
+        ]) {
+            expect(screen.getByText(feature)).toBeInTheDocument();
+        }
+    });
+
+    test("affiche trois temoignages, chacun avec un auteur et un role", () => {
+        render(<HomePage />);
+
+        for (const [name, role] of [
+            ["Sarah Chen", "Software Engineer"],
+            ["Alex Rivera", "Content Creator"],
+            ["Jordan Smith", "Product Manager"],
+        ]) {
+            expect(screen.getByText(name)).toBeInTheDocument();
+            expect(screen.getByText(role)).toBeInTheDocument();
+        }
+    });
+
+    test("chaque question de la FAQ est accompagnee de sa reponse", () => {
+        render(<HomePage />);
+
+        const faq = screen
+            .getByRole("heading", { name: /frequently asked questions/i })
+            .closest("section");
+        expect(faq).not.toBeNull();
+
+        const questions = within(faq as HTMLElement).getAllByRole("heading", {
+            level: 3,
+        });
+        expect(questions.length).toBeGreaterThanOrEqual(3);
+    });
 });

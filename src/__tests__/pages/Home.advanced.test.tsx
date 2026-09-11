@@ -1,148 +1,97 @@
-import { expect, test, describe, vi, beforeEach } from "vitest";
+import { describe, expect, test, beforeEach, vi } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
-import '@testing-library/jest-dom/vitest';
+import "@testing-library/jest-dom/vitest";
 import HomePage from "../../app/(home)/page";
 
-// Mock Next.js Link component
-vi.mock('next/link', () => {
-return {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    default: ({ children, href, ...props }: { children: React.ReactNode; href: string; [key: string]: any; }) => {
-        return <a href={href} {...props}>{children}</a>;
-    }
-};
-});
+/**
+ * Tests de structure accessible.
+ *
+ * L'ancienne version de ce fichier verifiait l'imbrication des `<div>` et le
+ * positionnement du gradient decoratif — du detail d'implementation qui casse
+ * a chaque refonte. On verifie ici ce qui a une consequence reelle pour un
+ * utilisateur de lecteur d'ecran ou de navigation clavier.
+ */
 
-describe("HomePage - Advanced Tests", () => {
-  beforeEach(() => {
-    cleanup();
-  });
+vi.mock("next/link", () => ({
+    default: ({
+        children,
+        href,
+        ...props
+    }: {
+        children: React.ReactNode;
+        href: string;
+    } & React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+        <a href={href} {...props}>
+            {children}
+        </a>
+    ),
+}));
 
-  test("displays all required elements in correct hierarchy", () => {
-    render(<HomePage />);
+describe("HomePage — structure accessible", () => {
+    beforeEach(() => {
+        cleanup();
+    });
 
-    // Vérifier la hiérarchie de la page
-    const mainContainer = document.querySelector('.px-4.py-5');
-    expect(mainContainer).toBeInTheDocument();
+    test("n'expose qu'un seul <h1>", () => {
+        render(<HomePage />);
+        expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
+    });
 
-    // Vérifier que le lien du badge est dans le bon conteneur
-    const badgeLink = screen.getByRole("link");
-    expect(badgeLink.closest('.flex.items-center.flex-col.justify-center')).toBeInTheDocument();
+    test("ne saute aucun niveau de titre", () => {
+        render(<HomePage />);
 
-    // Vérifier que les boutons sont dans le bon conteneur
-    const tryFreeButton = screen.getByRole("button", { name: /try for free/i });
-    const pricingButton = screen.getByRole("button", { name: /our pricing/i });
+        const levels = screen
+            .getAllByRole("heading")
+            .map((h) => Number(h.tagName.slice(1)));
 
-    expect(tryFreeButton.closest('.flex.max-sm\\:flex-col')).toBeInTheDocument();
-    expect(pricingButton.closest('.flex.max-sm\\:flex-col')).toBeInTheDocument();
-  });
+        expect(levels[0]).toBe(1);
 
-  test("badge link has correct accessibility attributes", () => {
-    render(<HomePage />);
+        // Un niveau ne peut progresser que d'un cran a la fois (h2 -> h4 est un saut).
+        for (let i = 1; i < levels.length; i += 1) {
+            expect(
+                levels[i] - levels[i - 1],
+                `saut de h${levels[i - 1]} a h${levels[i]}`,
+            ).toBeLessThanOrEqual(1);
+        }
+    });
 
-    const badgeLink = screen.getByRole("link");
-    expect(badgeLink).toHaveAttribute("href", "/chat?model=gpt-4o-mini&source=home");
+    test("les titres de features sont de vrais titres, pas des div", () => {
+        render(<HomePage />);
 
-    // Vérifier que le badge contient les éléments attendus
-    expect(badgeLink).toHaveTextContent("🚀 Chat with GPT-4o-mini for free");
+        for (const feature of ["Multi-Model Support", "Chat History"]) {
+            expect(
+                screen.getByRole("heading", { name: feature }),
+            ).toBeInTheDocument();
+        }
+    });
 
-    // Vérifier que l'icône flèche est présente
-    const arrowIcon = badgeLink.querySelector('svg');
-    expect(arrowIcon).toBeInTheDocument();
-  });
+    test("les questions de la FAQ sont de vrais titres", () => {
+        render(<HomePage />);
 
-  test("buttons have correct styling and structure", () => {
-    render(<HomePage />);
+        expect(
+            screen.getByRole("heading", { name: /is there a free plan/i }),
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole("heading", { name: /can i cancel anytime/i }),
+        ).toBeInTheDocument();
+    });
 
-    const tryFreeButton = screen.getByRole("button", { name: /try for free/i });
-    const pricingButton = screen.getByRole("button", { name: /our pricing/i });
+    test("chaque lien porte un nom accessible", () => {
+        render(<HomePage />);
 
-    // Vérifier les classes CSS importantes
-    expect(tryFreeButton).toHaveClass("group");
-    expect(pricingButton).toHaveClass("group");
+        for (const link of screen.getAllByRole("link")) {
+            expect(
+                link.textContent?.trim() || link.getAttribute("aria-label"),
+                `lien sans libelle: ${link.outerHTML.slice(0, 80)}`,
+            ).toBeTruthy();
+        }
+    });
 
-    // Vérifier que le bouton pricing a une icône
-    const pricingIcon = pricingButton.querySelector('svg');
-    expect(pricingIcon).toBeInTheDocument();
-  });
+    test("aucun titre n'est vide", () => {
+        render(<HomePage />);
 
-  test("responsive design classes are applied", () => {
-    render(<HomePage />);
-
-    // Vérifier les classes responsive sur le titre
-    const heading = screen.getByRole("heading", { level: 1 });
-    expect(heading).toHaveClass("text-3xl", "md:text-4xl", "lg:text-5xl");
-
-    // Vérifier les classes responsive sur la description
-    const description = screen.getByText("niato ai. is a chatbot that can help you with your daily tasks.");
-    expect(description).toHaveClass("base", "md:text-lg", "lg:text-xl");
-
-    // Vérifier les classes responsive sur les boutons
-    const buttonsContainer = document.querySelector('.flex.max-sm\\:flex-col');
-    expect(buttonsContainer).toBeInTheDocument();
-  });
-
-  test("gradient decoration is properly positioned", () => {
-    render(<HomePage />);
-
-    const aiSpan = screen.getAllByText("ai")[0];
-    const gradientSpan = aiSpan.querySelector('span');
-
-    expect(gradientSpan).toHaveClass(
-      "absolute",
-      "top-12",
-      "md:top-16",
-      "left-0",
-      "w-full",
-      "h-0.5",
-      "bg-gradient-to-r",
-      "from-primary",
-      "via-base-100/50",
-      "to-primary",
-      "rounded-full"
-    );
-  });
-
-  test("content is properly centered and spaced", () => {
-    render(<HomePage />);
-
-    // Vérifier le conteneur principal centré
-    const centeredContainer = document.querySelector('.flex.items-center.flex-col.justify-center.gap-5');
-    expect(centeredContainer).toBeInTheDocument();
-
-    // Vérifier les espaces
-    expect(centeredContainer).toHaveClass("gap-5");
-
-    // Vérifier le conteneur de boutons
-    const buttonContainer = document.querySelector('.flex.max-sm\\:flex-col.items-center.gap-3');
-    expect(buttonContainer).toBeInTheDocument();
-  });
-
-  test("all text content is accessible", () => {
-    render(<HomePage />);
-
-    // Vérifier que tous les textes sont visibles et accessibles
-    expect(screen.getByRole("heading", { level: 1 })).toBeVisible();
-    expect(screen.getByText("niato ai. is a chatbot that can help you with your daily tasks.")).toBeVisible();
-    expect(screen.getByRole("link")).toBeVisible();
-    expect(screen.getByRole("button", { name: /try for free/i })).toBeVisible();
-    expect(screen.getByRole("button", { name: /our pricing/i })).toBeVisible();
-  });
-
-  test("layout structure is correct", () => {
-    render(<HomePage />);
-
-    // Vérifier la structure en partant du plus haut niveau
-    const outerContainer = document.querySelector('.px-4.py-5');
-    expect(outerContainer).toBeInTheDocument();
-
-    const paddingContainer = outerContainer?.querySelector('.pt-\\[130px\\]');
-    expect(paddingContainer).toBeInTheDocument();
-
-    const maxWidthContainer = paddingContainer?.querySelector('.max-w-\\[1280px\\]');
-    expect(maxWidthContainer).toBeInTheDocument();
-
-    const centeredContainer = maxWidthContainer?.querySelector('.flex.items-center.flex-col.justify-center');
-    expect(centeredContainer).toBeInTheDocument();
-  });
+        for (const heading of screen.getAllByRole("heading")) {
+            expect(heading.textContent?.trim()).toBeTruthy();
+        }
+    });
 });

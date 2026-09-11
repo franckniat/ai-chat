@@ -4,7 +4,9 @@ export default function FaqItem({ question, answer }: { question: string, answer
     return (
         <Card>
             <CardHeader>
-                <CardTitle className="text-lg">{question}</CardTitle>
+                <CardTitle asChild className="text-lg">
+                    <h3>{question}</h3>
+                </CardTitle>
             </CardHeader>
             <CardContent>
                 <p className="text-muted-foreground">{answer}</p>
