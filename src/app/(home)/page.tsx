@@ -49,19 +49,23 @@ export default function HomePage() {
                 <div className="max-w-[1280px] mx-auto px-4 text-center">
                     <div className="flex flex-col items-center gap-6">
                         {/* New Feature Announcement Badge */}
-                        <Link href="/chat">
+                        <Link href="/chat" className="max-w-full">
+                            {/* `Badge` est en `whitespace-nowrap` : sans autorisation
+                                de retour a la ligne, ce libelle depassait la largeur
+                                de l'ecran sous 400px et rendait toute la page
+                                scrollable horizontalement. */}
                             <Badge
                                 variant="outline"
-                                className="px-4 py-2 text-sm rounded-full backdrop-blur-sm"
+                                className="max-w-full whitespace-normal rounded-full px-4 py-2 text-center text-xs backdrop-blur-sm sm:text-sm"
                             >
                                 <span className="mr-2">🚀</span>
-                                New: Chat with DeepSeek, Llama 4 & more for free
-                                <ArrowRight className="ml-2 h-4 w-4" />
+                                New: Chat with DeepSeek, Llama 4 &amp; more for free
+                                <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
                             </Badge>
                         </Link>
 
                         {/* Main Headline with Gradient Effect */}
-                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight font-mono">
+                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight font-display">
                             Unlock the power of <br className="hidden md:block" />
                             <span className="text-primary relative inline-block mt-2">
                                 AI Intelligence
