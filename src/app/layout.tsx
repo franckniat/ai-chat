@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { JetBrains_Mono, Space_Grotesk } from 'next/font/google'
+import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google'
 import { Providers } from '@/providers'
 import './globals.css'
 import 'katex/dist/katex.min.css'
@@ -7,14 +7,34 @@ import { Analytics } from '@vercel/analytics/next'
 
 const siteUrl = process.env.BETTER_AUTH_URL || 'https://ai.franckniat.me'
 
+/**
+ * Trois roles typographiques distincts, exposes en variables CSS et mappes
+ * dans `globals.css` (@theme inline) :
+ *
+ * - texte/UI  -> Inter          : lecture longue des reponses, labels, boutons
+ * - display   -> Space Grotesk  : wordmark et titres de la landing uniquement
+ * - code      -> JetBrains Mono : blocs et inline code
+ *
+ * Aucune de ces polices n'est appliquee via `.className` : on passe par les
+ * variables pour que Tailwind reste la seule source de verite (`font-sans`,
+ * `font-display`, `font-mono`).
+ */
+const inter = Inter({
+    variable: '--font-inter',
+    subsets: ['latin'],
+    display: 'swap',
+})
+
 const spaceGrotesk = Space_Grotesk({
     variable: '--font-space-grotesk',
     subsets: ['latin'],
+    display: 'swap',
 })
 
 const jetBrainsMono = JetBrains_Mono({
     variable: '--font-jetbrains-mono',
     subsets: ['latin'],
+    display: 'swap',
 })
 
 export const metadata: Metadata = {
@@ -90,7 +110,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body
-                className={`${spaceGrotesk.className} ${jetBrainsMono.variable} text-pretty antialiased`}
+                className={`${inter.variable} ${spaceGrotesk.variable} ${jetBrainsMono.variable} font-sans text-pretty antialiased`}
             >
                 <script
                     type="application/ld+json"

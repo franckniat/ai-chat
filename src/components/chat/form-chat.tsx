@@ -123,7 +123,7 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
                         {quickSuggestions.map((suggestion) => (
                             <Suggestion
                                 key={suggestion}
-                                className="h-7 bg-background text-[11px]"
+                                className="h-7 bg-background text-xs"
                                 onClick={handleSuggestionClick}
                                 suggestion={suggestion}
                             />
@@ -162,7 +162,7 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
 
                             {/* Personality Selector */}
                             <Select value={selectedPersonality} onValueChange={setSelectedPersonality}>
-                                <SelectTrigger className="h-7 w-auto gap-1.5 border-none px-1.5 text-[11px] shadow-none hover:bg-accent">
+                                <SelectTrigger className="h-7 w-auto gap-1.5 border-none px-1.5 text-xs shadow-none hover:bg-accent">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -225,7 +225,7 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
                                                                     Reasoning
                                                                 </Badge>
                                                             )}
-                                                            <Badge variant="outline" className="text-[10px] px-1 py-0">
+                                                            <Badge variant="outline" className="text-xs px-1 py-0">
                                                                 Pop #{model.popularityRank} · Perf #{model.performanceRank}
                                                             </Badge>
                                                             <ModelSelectorLogoGroup>
@@ -266,7 +266,7 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
                         )}
                     </PromptInputFooter>
                 </PromptInput>
-                <p className="mt-2 text-center text-[8px] text-foreground/50 sm:text-[10px]">
+                <p className="mt-2 text-center text-xs text-muted-foreground">
                     Please verify the information provided by the AI, as it may sometimes be incorrect.
                 </p>
             </div>

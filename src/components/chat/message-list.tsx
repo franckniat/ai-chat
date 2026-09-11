@@ -72,7 +72,9 @@ export default function MessageList() {
         <div className="relative pb-24 h-full">
             <div className="space-y-3 md:space-y-5 max-w-[800px] mx-auto px-3 h-full">
                 <div className="flex flex-col h-full mb-10">
-                    <Conversation className="relative max-h-[100vh-320px] h-full">
+                    {/* `max-h-[100vh-320px]` etait invalide (calc() manquant) et ne
+                        produisait aucune regle. */}
+                    <Conversation className="relative h-full max-h-[calc(100vh-320px)]">
                         <MessageListContent />
                         <ConversationScrollButton />
                     </Conversation>
