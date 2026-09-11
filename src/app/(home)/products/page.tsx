@@ -25,21 +25,21 @@ import {
     MoonStar,
 } from "lucide-react";
 import Link from "next/link";
-import { FREE_MODELS } from "@/lib/free-models";
+import { GOOGLE_MODELS } from "@/lib/google-models";
 import { personalities } from "@/lib/personalities";
 
 export const metadata: Metadata = {
     title: 'niato ai features',
     description:
-        'What niato ai can do: several free models behind one composer, visible reasoning, rendered code and math, a searchable history, and selectable answer tones.',
-    keywords: ['niato ai', 'ai features', 'reasoning ai', 'openrouter', 'free ai models'],
+        'What niato ai can do: the free Google Gemini models behind one composer, visible reasoning, rendered code and math, a searchable history, and selectable answer tones.',
+    keywords: ['niato ai', 'ai features', 'reasoning ai', 'gemini', 'free ai models'],
     alternates: {
         canonical: '/products',
     },
 }
 
-const modelCount = FREE_MODELS.filter((model) => model.chefSlug !== "openrouter").length;
-const reasoningCount = FREE_MODELS.filter((model) => model.isReasoning).length;
+const modelCount = GOOGLE_MODELS.length;
+const reasoningCount = GOOGLE_MODELS.filter((model) => model.isReasoning).length;
 
 interface Feature {
     title: string;
@@ -54,7 +54,7 @@ interface Feature {
  *
  * La version precedente annoncait de la generation d'images, de l'analyse de
  * documents et un acces API : aucun des trois n'existe. Elle citait aussi
- * DeepSeek, Llama 4 et Qwen, absents de lib/free-models.ts, et affichait aux
+ * DeepSeek, Llama 4 et Qwen, absents du catalogue, et affichait aux
  * visiteurs un texte de chantier (« Add image: /images/features/... ») a la
  * place d'illustrations jamais ajoutees.
  */
@@ -62,12 +62,11 @@ const mainFeatures: Feature[] = [
     {
         title: "One composer, several models",
         description:
-            `Pick among ${modelCount} free models without leaving the conversation. The selector sits under the composer, and your choice applies to the next message — the thread is never reset.`,
+            `Pick among ${modelCount} free Google models without leaving the conversation. The selector sits under the composer, and your choice applies to the next message — the thread is never reset.`,
         icon: MessageSquare,
         highlights: [
             "Models grouped by capability: Elite, Solide, Leger",
             "Switch mid-conversation, history is preserved",
-            "An automatic routing mode picks an available model for you",
             "Replies stream token by token",
         ],
     },

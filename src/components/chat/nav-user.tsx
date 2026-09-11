@@ -1,10 +1,9 @@
 "use client"
 
 import {
-    BellIcon,
     ChevronsUpDown,
-    CreditCardIcon,
     LogOutIcon,
+    SettingsIcon,
     UserCircleIcon,
 } from "lucide-react"
 
@@ -30,6 +29,8 @@ import {
 } from "@/components/ui/sidebar"
 import { authClient, useSession } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
+import { settingsHref } from "@/components/settings/settings-dialog"
 
 export function NavUser() {
     const router = useRouter()
@@ -99,18 +100,22 @@ export function NavUser() {
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
+                        {/* Ces trois entrees etaient sans handler : elles
+                            ouvrent desormais les Parametres sur l'onglet
+                            correspondant. Billing et Notifications, qui ne
+                            recouvrent aucune fonctionnalite, ont ete retirees. */}
                         <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <UserCircleIcon />
-                                Account
+                            <DropdownMenuItem asChild>
+                                <Link href={settingsHref("account")}>
+                                    <UserCircleIcon />
+                                    Account
+                                </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <CreditCardIcon />
-                                Billing
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <BellIcon />
-                                Notifications
+                            <DropdownMenuItem asChild>
+                                <Link href={settingsHref("appearance")}>
+                                    <SettingsIcon />
+                                    Settings
+                                </Link>
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />

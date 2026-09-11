@@ -2,7 +2,7 @@ import { describe, expect, test, beforeEach, vi } from "vitest";
 import { render, screen, cleanup, within } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import HomePage from "../../app/(home)/page";
-import { FREE_MODELS } from "@/lib/free-models";
+import { GOOGLE_MODELS } from "@/lib/google-models";
 import { personalities } from "@/lib/personalities";
 
 /**
@@ -126,9 +126,9 @@ describe("HomePage", () => {
         render(<HomePage />);
 
         // La section remplace d'anciens temoignages inventes. Elle est generee
-        // depuis FREE_MODELS : ce test echoue si la page reintroduit du
+        // depuis GOOGLE_MODELS : ce test echoue si la page reintroduit du
         // contenu ecrit en dur qui ne correspond plus aux modeles configures.
-        const showcased = FREE_MODELS.filter((m) => m.chefSlug !== "openrouter");
+        const showcased = GOOGLE_MODELS;
 
         const section = screen
             .getByRole("heading", { name: /available models/i })

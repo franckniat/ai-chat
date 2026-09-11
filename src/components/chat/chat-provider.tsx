@@ -9,9 +9,15 @@ import { useRouter, usePathname } from "next/navigation";
 import FormChat from "./form-chat";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { PromptInputMessage } from "../ai-elements/prompt-input";
-import { FREE_MODELS } from "@/lib/free-models";
+import { GOOGLE_MODELS } from "@/lib/google-models";
+import {
+    readPreferredModel,
+    readPreferredPersonality,
+    writePreferredModel,
+    writePreferredPersonality,
+} from "@/lib/chat-preferences";
 
-export const models = FREE_MODELS;
+export const models = GOOGLE_MODELS;
 
 const MAX_AUTO_FALLBACK_ATTEMPTS = 2;
 
@@ -41,11 +47,32 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
     const [chatId, setChatId] = useState<string | null>(null);
     const [isCreatingChat, setIsCreatingChat] = useState(false);
     const [useWebSearch, setUseWebSearch] = useState<boolean>(false);
-    const [selectedModel, setSelectedModel] = useState<string>(models[0].id);
+    // Initialiseurs paresseux : localStorage n'existe pas au rendu serveur, et
+    // `useState(fn)` n'appelle `fn` qu'au premier rendu client.
+    const [selectedModel, setSelectedModelState] = useState<string>(models[0].id);
     const selectedModelData = models.find((model) => model.id === selectedModel);
     const [input, setInput] = useState("");
     const [model, setModel] = useState<string>(models[0].id);
-    const [selectedPersonality, setSelectedPersonality] = useState<string>("default");
+    const [selectedPersonality, setSelectedPersonalityState] = useState<string>("default");
+
+    // Restaure les preferences apres l'hydratation. Les lire pendant le rendu
+    // ferait diverger le HTML serveur du HTML client.
+    useEffect(() => {
+        setSelectedModelState(readPreferredModel());
+        setSelectedPersonalityState(readPreferredPersonality());
+    }, []);
+
+    // Tout changement depuis le composeur devient la nouvelle preference : le
+    // modele ne repart plus au defaut a chaque navigation.
+    const setSelectedModel = useCallback((next: string) => {
+        setSelectedModelState(next);
+        writePreferredModel(next);
+    }, []);
+
+    const setSelectedPersonality = useCallback((next: string) => {
+        setSelectedPersonalityState(next);
+        writePreferredPersonality(next);
+    }, []);
     const selectedModelRef = useRef(selectedModel);
     const selectedPersonalityRef = useRef(selectedPersonality);
     const chatIdRef = useRef<string | null>(chatId);
@@ -83,7 +110,7 @@ export default function ChatProvider({ children }: { children: ReactNode }) {
 
                 if (nextModelId && regenerateRef.current) {
                     fallbackAttemptsRef.current += 1;
-                    setSelectedModel(nextModelId);
+                    setSelectedModelState(nextModelId);
 
                     const currentModelName = models.find((model) => model.id === currentModelId)?.name ?? currentModelId;
                     const nextModelName = models.find((model) => model.id === nextModelId)?.name ?? nextModelId;

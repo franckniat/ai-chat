@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { AppSidebar } from "@/components/chat/app-sidebar";
+import { SettingsDialog } from "@/components/settings/settings-dialog";
 import { SiteHeader } from "@/components/chat/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getUserChatList } from "@/data/chat";
@@ -34,6 +36,14 @@ export default async function ChatLayout({
 					{children}
 				</div>
 			</SidebarInset>
+
+			{/*
+				Monte une seule fois pour tout /chat. Son ouverture est portee par
+				`?settings=` : `useSearchParams` impose une frontiere Suspense.
+			*/}
+			<Suspense fallback={null}>
+				<SettingsDialog />
+			</Suspense>
 		</SidebarProvider>
 	);
 }

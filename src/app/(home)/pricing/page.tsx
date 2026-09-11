@@ -56,7 +56,7 @@ const plans: PricingPlan[] = [
         monthlyPrice: 0,
         yearlyPrice: 0,
         icon: <MessageSquare className="size-6" />,
-        // Aligne sur lib/free-models.ts et sur ce que la route /api/chat fait
+        // Aligne sur lib/google-models.ts et sur ce que la route /api/chat fait
         // reellement. L'ancienne liste citait DeepSeek / Llama / Qwen — absents
         // de l'application — et de la generation d'images, qui n'existe pas.
         features: [

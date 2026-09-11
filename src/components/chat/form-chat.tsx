@@ -44,7 +44,7 @@ import { Button } from "../ui/button";
 import { models } from "./chat-provider";
 import { Badge } from "../ui/badge";
 import { personalities } from "@/lib/personalities";
-import type { FreeModelCategory } from "@/lib/free-models";
+import type { ModelCategory } from "@/lib/google-models";
 
 interface FormChatProps {
     isLoading?: boolean;
@@ -59,7 +59,7 @@ export default function FormChat({ input, handleInputChange, handleSubmit, isLoa
 
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
     const [open, setOpen] = React.useState(false);
-    const categories: FreeModelCategory[] = ["Elite", "Solide", "Leger"];
+    const categories: ModelCategory[] = ["Elite", "Solide", "Leger"];
     const { useWebSearch, setUseWebSearch, selectedModel, setSelectedModel, selectedModelData, status, selectedPersonality, setSelectedPersonality } = useChatContext();
 
     const isStreaming = status === "streaming" || status === "submitted";

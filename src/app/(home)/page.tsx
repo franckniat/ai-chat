@@ -17,14 +17,14 @@ import React from 'react'
 import FeatureCard from '@/components/ui/FeatureCard'
 import FaqItem from '@/components/ui/FaqItem'
 import { MagicCard } from '@/components/ui/magic-card'
-import { FREE_MODELS } from '@/lib/free-models'
+import { GOOGLE_MODELS } from '@/lib/google-models'
 import { personalities } from '@/lib/personalities'
 
 export const metadata: Metadata = {
     title: 'niato ai | Free multi-model AI chat',
     description:
-        'niato ai puts several free language models behind one chat window: streaming replies, a searchable history, and automatic failover when a model is rate-limited.',
-    keywords: ['niato ai', 'ai chat', 'multi-model ai', 'openrouter', 'free ai assistant'],
+        'niato ai puts the free Google Gemini models behind one chat window: streaming replies, a searchable history, and automatic failover when a model is rate-limited.',
+    keywords: ['niato ai', 'ai chat', 'gemini', 'google ai', 'free ai assistant'],
     alternates: {
         canonical: '/',
     },
@@ -34,14 +34,12 @@ export const metadata: Metadata = {
  * Landing page.
  *
  * The copy describes only what the application actually does (see
- * lib/free-models.ts, lib/personalities.ts and the /api/chat route).
+ * lib/google-models.ts, lib/personalities.ts and the /api/chat route).
  * Features that exist in the UI but are not wired server-side — web search,
  * file attachments — are deliberately not advertised.
  */
 export default function HomePage() {
-    // The last entry of the list is OpenRouter's automatic routing, not a
-    // nameable model: it is excluded from the showcase.
-    const showcasedModels = FREE_MODELS.filter((model) => model.chefSlug !== 'openrouter')
+    const showcasedModels = GOOGLE_MODELS
 
     return (
         <div className="flex flex-col">
@@ -120,7 +118,7 @@ export default function HomePage() {
                         <FeatureCard
                             icon={<Bot className="text-primary h-10 w-10" />}
                             title="Several models"
-                            description={`${showcasedModels.length} models reachable through OpenRouter, sorted by capability. Switch between them at any point, even mid-conversation.`}
+                            description={`${showcasedModels.length} Google models on the free tier, sorted by capability. Switch between them at any point, even mid-conversation.`}
                         />
                         <FeatureCard
                             icon={<Repeat2 className="text-primary h-10 w-10" />}
@@ -186,8 +184,8 @@ export default function HomePage() {
                     </ul>
 
                     <p className="text-muted-foreground mt-6 text-center text-sm">
-                        An automatic routing mode is available too: it picks a model that is up
-                        for you.
+                        Every one of them runs on the Gemini API free tier — no billing account
+                        required.
                     </p>
                 </div>
             </section>

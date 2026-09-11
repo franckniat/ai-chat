@@ -1,6 +1,6 @@
 "use client";
 
-import { Archive, Ellipsis, MessageSquareText, Pin, Trash2, type LucideIcon } from "lucide-react";
+import { Ellipsis, MessageSquareText, Trash2, type LucideIcon } from "lucide-react";
 
 import {
     SidebarGroup,
@@ -12,7 +12,7 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar";
 import { usePathname, useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -60,32 +60,6 @@ function getChatBucket(value: string | Date) {
     return "older" as const;
 }
 
-/**
- * Une heure seule n'a de sens que pour aujourd'hui/hier : au-dela, « 14:32 »
- * ne dit rien. On bascule sur la date des que la conversation sort de ces
- * deux buckets.
- */
-function formatChatTime(value: string | Date) {
-    const date = new Date(value);
-    const bucket = getChatBucket(date);
-
-    if (bucket === "older") {
-        return new Intl.DateTimeFormat("en", {
-            month: "short",
-            day: "numeric",
-            year:
-                date.getFullYear() === new Date().getFullYear()
-                    ? undefined
-                    : "numeric",
-        }).format(date);
-    }
-
-    return new Intl.DateTimeFormat("en", {
-        hour: "2-digit",
-        minute: "2-digit",
-    }).format(date);
-}
-
 export function NavMain({
     items,
 }: {
@@ -102,6 +76,7 @@ export function NavMain({
     const { state } = useSidebar();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<{ id: string; url: string } | null>(null);
+    const [isDeleting, startDeleting] = useTransition();
 
     const groupedItems = useMemo(() => {
         return items.reduce(
@@ -122,23 +97,55 @@ export function NavMain({
         setDeleteDialogOpen(true);
     };
 
-    const handleDeleteConfirm = async () => {
-        if (!itemToDelete) return;
-        if (pathname === itemToDelete.url) {
-            router.push("/chat");
-        }
-        await deleteChatById(itemToDelete.id);
-        toast.success("Chat deleted", {
-            description: "The chat has been successfully deleted.",
-            action: {
-                label: "Cancel",
-                onClick: () => {
-                    restoreChat(itemToDelete.id);
-                },
-            },
-        });
+    /**
+     * L'ordre des operations compte.
+     *
+     * Radix pose `pointer-events: none` sur <body> tant qu'une modale est
+     * ouverte, et ne le retire qu'a la fermeture. L'ancienne version naviguait
+     * puis attendait l'action serveur AVANT d'appeler `setDeleteDialogOpen`.
+     * Si l'arbre se demontait entre-temps — ce que provoque la navigation
+     * suivie du `revalidatePath` de l'action — le nettoyage de Radix ne
+     * s'executait jamais : le style restait sur <body> et toute la page
+     * devenait inclickable jusqu'a un rechargement manuel.
+     *
+     * On ferme donc d'abord, de maniere synchrone, puis on agit.
+     */
+    const handleDeleteConfirm = () => {
+        if (!itemToDelete || isDeleting) return;
+
+        const { id, url } = itemToDelete;
+
         setDeleteDialogOpen(false);
         setItemToDelete(null);
+
+        startDeleting(async () => {
+            try {
+                await deleteChatById(id);
+
+                if (pathname === url) {
+                    router.push("/chat");
+                } else {
+                    // Rafraichit la liste laterale, rendue cote serveur.
+                    router.refresh();
+                }
+
+                toast.success("Chat deleted", {
+                    action: {
+                        label: "Undo",
+                        onClick: async () => {
+                            try {
+                                await restoreChat(id);
+                                router.refresh();
+                            } catch {
+                                toast.error("Could not restore this conversation.");
+                            }
+                        },
+                    },
+                });
+            } catch {
+                toast.error("Could not delete this conversation.");
+            }
+        });
     };
 
     return (
@@ -173,44 +180,36 @@ export function NavMain({
                                         <SidebarMenu>
                                             {sectionItems.map((item) => (
                                                 <SidebarMenuItem key={item.id} className="group/item">
+                                                    {/* Une seule ligne, sans horodatage : la date est
+                                                        deja portee par l'en-tete de section, et la
+                                                        repeter sur chaque entree ajoutait du bruit
+                                                        sans information. Le titre complet reste
+                                                        accessible en infobulle. */}
                                                     <SidebarMenuButton
                                                         tooltip={item.title}
                                                         isActive={pathname === item.url}
                                                         title={item.title}
-                                                        className="h-11 cursor-pointer items-start rounded-lg border border-transparent py-2 data-[active=true]:border-sidebar-border/60 data-[active=true]:bg-sidebar-accent/70"
+                                                        className="h-8 cursor-pointer rounded-md pr-8 text-[13px] font-normal data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium"
                                                         onClick={() => router.push(item.url)}
                                                     >
-                                                        <div className="min-w-0 flex-1">
-                                                            <p className="line-clamp-1 text-sm leading-tight">
-                                                                {item.title}
-                                                            </p>
-                                                            <p className="text-sidebar-foreground/55 mt-1 text-xs">
-                                                                {formatChatTime(item.updatedAt)}
-                                                            </p>
-                                                        </div>
+                                                        <span className="truncate">{item.title}</span>
                                                     </SidebarMenuButton>
 
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
                                                             <SidebarMenuAction showOnHover>
-                                                                <Ellipsis size={16} />
+                                                                <Ellipsis size={15} />
                                                                 <span className="sr-only">Open chat actions</span>
                                                             </SidebarMenuAction>
                                                         </DropdownMenuTrigger>
+                                                        {/* Archive et Pin etaient des `onClick={() => {}}`
+                                                            vides : ils donnaient l'illusion d'exister. */}
                                                         <DropdownMenuContent side="right" align="start">
-                                                            <DropdownMenuItem onClick={() => {}}>
-                                                                <Archive size={16} />
-                                                                Archive
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem onClick={() => {}}>
-                                                                <Pin size={16} />
-                                                                Pin
-                                                            </DropdownMenuItem>
                                                             <DropdownMenuItem
                                                                 onClick={() => handleDeleteClick(item)}
                                                                 className="text-destructive focus:text-destructive"
                                                             >
-                                                                <Trash2 size={16} />
+                                                                <Trash2 size={15} />
                                                                 Delete
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>
@@ -233,7 +232,7 @@ export function NavMain({
                             Are you absolutely sure?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete the chat.
+                            The conversation will be removed from your list. You can undo this right after.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

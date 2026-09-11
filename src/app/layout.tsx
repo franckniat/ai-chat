@@ -53,11 +53,10 @@ export const metadata: Metadata = {
         'ai assistant',
         'multi-model ai',
         // Les mots-cles doivent correspondre aux modeles reellement proposes
-        // (voir lib/free-models.ts) ; deepseek / llama / qwen n'en font pas
-        // partie et referencaient la page sur une offre inexistante.
-        'openrouter',
+        // (voir lib/google-models.ts) : le catalogue est entierement Google.
+        'gemini',
+        'google ai',
         'free ai models',
-        'nemotron',
     ],
     alternates: {
         canonical: '/',

@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import {
     streamText,
     convertToModelMessages,
@@ -12,33 +12,40 @@ import type { Message } from "@/generated/prisma/client";
 import { getMessagesByChatId } from "@/data/message";
 import { assertChatOwnership } from "@/lib/authz";
 import { getPersonalityById } from "@/lib/personalities";
-import { FREE_MODEL_IDS } from "@/lib/free-models";
+import { DEFAULT_MODEL_ID, getModelById, GOOGLE_MODELS } from "@/lib/google-models";
 
-const openrouter = createOpenRouter({
-    apiKey: process.env.OPENROUTER_API_KEY,
+/**
+ * Fournisseur Google direct, en remplacement d'OpenRouter.
+ *
+ * OpenRouter melangeait modeles gratuits et factures derriere une meme cle :
+ * une selection erronee pouvait consommer du credit. Ici le catalogue est
+ * restreint aux modeles du palier gratuit de l'API Gemini (voir
+ * lib/google-models.ts), et un identifiant inconnu retombe sur le defaut.
+ */
+const google = createGoogleGenerativeAI({
+    apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
 });
 
 export const maxDuration = 60;
 
-const reasoningModelIds = new Set<string>([
-    "liquid/lfm-2.5-1.2b-thinking:free",
-]);
+const modelConfigs = Object.fromEntries(
+    GOOGLE_MODELS.map((model) => [
+        model.id,
+        {
+            model: google(model.id),
+            isReasoning: model.isReasoning,
+            // `includeThoughts` demande a Gemini d'emettre sa chaine de
+            // raisonnement ; sans cela `sendReasoning` n'aurait rien a afficher.
+            providerOptions: model.isReasoning
+                ? { google: { thinkingConfig: { includeThoughts: true } } }
+                : undefined,
+        },
+    ])
+);
 
-const modelConfigs: Record<string, { model: ReturnType<typeof openrouter.chat>; isReasoning: boolean }> =
-    Object.fromEntries(
-        FREE_MODEL_IDS.map((modelId) => [
-            modelId,
-            {
-                model: openrouter.chat(modelId),
-                isReasoning: reasoningModelIds.has(modelId),
-            },
-        ])
-    );
-
-type ModelId = string;
-
-const DEFAULT_MODEL: ModelId = FREE_MODEL_IDS[0];
-const TITLE_MODEL = "openai/gpt-4o-mini";
+const DEFAULT_MODEL = DEFAULT_MODEL_ID;
+// Modele le plus leger du catalogue : generer un titre ne merite pas mieux.
+const TITLE_MODEL = GOOGLE_MODELS[GOOGLE_MODELS.length - 1].id;
 
 export async function POST(req: Request) {
     const session = await auth.api.getSession({
@@ -110,8 +117,7 @@ export async function POST(req: Request) {
         : await convertToModelMessages(messages);
 
     // Sélectionner le modèle
-    const selectedModelId = modelId as ModelId;
-    const modelConfig = modelConfigs[selectedModelId] || modelConfigs[DEFAULT_MODEL];
+    const modelConfig = modelConfigs[modelId] ?? modelConfigs[DEFAULT_MODEL];
 
     // Récupérer la personnalité
     const selectedPersonality = getPersonalityById(personality);
@@ -122,9 +128,8 @@ export async function POST(req: Request) {
         system: `${selectedPersonality.systemPrompt}
 Current date: ${new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`,
         temperature: 0.7,
+        providerOptions: modelConfig.providerOptions,
         onFinish: async ({ text }) => {
-            console.log("onFinish called - chatId:", currentChatId, "isNewChat:", isNewChat);
-
             try {
                 // Save the AI response
                 await saveMessage(currentChatId!, "assistant", text);
@@ -136,7 +141,7 @@ Current date: ${new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 
 
                     try {
                         const titleResult = await generateText({
-                            model: openrouter.chat(TITLE_MODEL),
+                            model: google(TITLE_MODEL),
                             system: titlePrompt,
                             prompt: userMessage.substring(0, 500),
                         });
